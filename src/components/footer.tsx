@@ -26,7 +26,7 @@ export function Footer() {
               </div>
             </div>
             <p className="text-xs text-slate-500 leading-relaxed">
-              Platform instrumen survei evaluasi mutu pembelajaran, fasilitas sarana prasarana, dan pembiasaan karakter islami santri berbasis data valid dan transparan.
+              Platform instrumen refleksi mandiri evaluasi 7 Karakter Utama Ihsanul Fikri (7 KAIH) untuk mengukur pembiasaan ibadah, literasi riset, adab ukhuwah, dan kedisiplinan santri berbasis data objektif dan terukur.
             </p>
           </div>
 

@@ -12,9 +12,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Survei Evaluasi Mutu — SMAIT Ihsanul Fikri Magelang",
+  title: "Survei 7 Karakter Utama (7 KAIH) — SMAIT Ihsanul Fikri Magelang",
   description:
-    "Platform survei dan evaluasi mutu terpadu (sarana prasarana, bimbingan pengajar, dan lingkungan asrama) SMAIT Ihsanul Fikri Kabupaten Magelang.",
+    "Platform instrumen survei refleksi mandiri evaluasi 7 Karakter Utama Ihsanul Fikri (7 KAIH) santri SMAIT Ihsanul Fikri Kabupaten Magelang secara objektif dan terukur.",
   icons: {
     icon: "/logo-ihsanul-fikri.png",
   },

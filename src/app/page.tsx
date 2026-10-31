@@ -30,10 +30,10 @@ export default function HomePage() {
 
               <div className="space-y-3">
                 <h1 className="text-3xl font-extrabold tracking-tight text-slate-950 sm:text-4xl lg:text-5xl leading-tight">
-                  Evaluasi Terpadu <span className="text-emerald-700">SMAIT Ihsanul Fikri</span> Kabupaten Magelang
+                  Evaluasi 7 Karakter Utama <span className="text-emerald-700">SMAIT Ihsanul Fikri</span> (7 KAIH)
                 </h1>
                 <p className="text-base text-slate-600 sm:text-lg leading-relaxed max-w-2xl">
-                  Platform survei mandiri berbasis web yang dirancang oleh kelompok siswa untuk mengukur kepuasan sarana prasarana, efektivitas bimbingan belajar, serta kualitas pengasuhan asrama santri secara transparan dan akuntabel.
+                  Platform kuesioner refleksi mandiri berbasis web yang dirancang untuk mengukur dan mengevaluasi <strong>7 Karakter Utama Ihsanul Fikri (KAIH)</strong>—meliputi literasi &amp; riset, adab ukhuwah bermasyarakat, kesiapan ibadah &amp; Al-Qur&apos;an, kedisiplinan asrama, hingga kebugaran jasmani santri secara objektif dan akuntabel.
                 </p>
               </div>
 
@@ -52,13 +52,17 @@ export default function HomePage() {
               </div>
 
               {/* Quick Stat Pill */}
-              <div className="pt-4 grid grid-cols-2 gap-4 border-t border-slate-200/80 max-w-md">
+              <div className="pt-4 grid grid-cols-3 gap-3 border-t border-slate-200/80 max-w-lg">
                 <div>
-                  <div className="text-xl font-bold text-slate-900">Santri</div>
-                  <div className="text-xs text-slate-500">Ikhwan & Akhwat</div>
+                  <div className="text-xl font-bold text-slate-900">7 KAIH</div>
+                  <div className="text-xs text-slate-500">Karakter Utama</div>
                 </div>
                 <div>
-                  <div className="text-xl font-bold text-emerald-700">1-4</div>
+                  <div className="text-xl font-bold text-emerald-700">35 Butir</div>
+                  <div className="text-xs text-slate-500">Refleksi Terukur</div>
+                </div>
+                <div>
+                  <div className="text-xl font-bold text-amber-700">1–4</div>
                   <div className="text-xs text-slate-500">Skala Likert Murni</div>
                 </div>
               </div>
@@ -184,13 +188,13 @@ export default function HomePage() {
               <div className="lg:col-span-8 space-y-2">
                 <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-emerald-900">
                   <GraduationCap className="h-4 w-4 text-emerald-700" />
-                  <span>Tujuan Proyek Survei Mutu</span>
+                  <span>Tujuan Proyek Instrumen 7 KAIH</span>
                 </div>
                 <h3 className="text-lg font-bold text-emerald-950">
-                  Menjembatani Suara Santri dan Pihak Sekolah
+                  Pemetaan Objektif 7 Karakter Utama Ihsanul Fikri
                 </h3>
                 <p className="text-xs sm:text-sm text-emerald-900/80 leading-relaxed">
-                  Survei ini diselenggarakan secara mandiri untuk menghimpun masukan objektif mengenai kenyamanan belajar, kesiapan fasilitas, dan penguatan karakter islami di asrama. Data yang terkumpul diolah secara terpadu di portal Super Admin untuk evaluasi berkala.
+                  Instrumen kuesioner ini dirancang secara mandiri untuk menghimpun data refleksi pembiasaan ibadah, literasi &amp; riset, kebersihan lingkungan, adab ukhuwah, kedisiplinan, hingga kebugaran jasmani santri. Hasil asesmen diolah secara terpadu di portal analitik untuk pembinaan berkelanjutan.
                 </p>
               </div>
               <div className="lg:col-span-4 flex justify-end">
