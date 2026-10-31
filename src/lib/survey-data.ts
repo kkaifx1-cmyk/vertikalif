@@ -353,7 +353,7 @@ export function getKaihThemes(jurusan: string = "tahfizh"): SurveyTheme[] {
           themeId: "kaih_5",
           butirNum: 21,
           dimension: "Action",
-          question: "Saya rutin mengikuti kegiatan olahraga sore, bela diri (silat/tapak suci), panahan, atau aktivitas fisik santri minimal 2–3 kali sepekan.",
+          question: "Saya berinisiatif secara mandiri untuk meluangkan waktu melakukan aktivitas fisik seperti olahraga, bela diri, atau panahan, guna menjaga kebugaran tubuh.",
           description: "Konsistensi menjaga kebugaran fisik melalui program keolahragaan sekolah dan asrama.",
         },
         {
@@ -403,7 +403,7 @@ export function getKaihThemes(jurusan: string = "tahfizh"): SurveyTheme[] {
           themeId: "kaih_6",
           butirNum: 26,
           dimension: "Action",
-          question: "Saya langsung beristirahat saat bel tanda jam malam asrama (tathfi'ul anwar) berbunyi dan menahan diri dari begadang/ngalong untuk hal yang tidak penting.",
+          question: "Saya langsung beristirahat saat jam malam asrama telah tiba dan menahan diri dari begadang atau ngalong untuk hal yang tidak penting.",
           description: "Kepatuhan mematikan lampu kamar asrama tepat waktu untuk menjaga hak tubuh beristirahat.",
         },
         {
@@ -419,7 +419,7 @@ export function getKaihThemes(jurusan: string = "tahfizh"): SurveyTheme[] {
           themeId: "kaih_6",
           butirNum: 28,
           dimension: "Atensi Terbuka",
-          question: "Saat menerima materi pelajaran atau instruksi baru yang menantang, pikiran saya tetap tenang, fleksibel, dan tidak panik memproses informasi yang rumit.",
+          question: "Saat menerima materi pelajaran atau tugas, pikiran saya tetap tenang, fleksibel, dan tidak panik memproses informasi yang rumit.",
           description: "Kelenturan kognitif otak yang terisi energi cukup dalam memproses problem rumit.",
         },
         {
@@ -435,7 +435,7 @@ export function getKaihThemes(jurusan: string = "tahfizh"): SurveyTheme[] {
           themeId: "kaih_6",
           butirNum: 30,
           dimension: "Confidency",
-          question: "Mental saya selalu siaga dan percaya diri saat guru mengajukan pertanyaan spontan (cold calling) di depan kelas tanpa merasa gugup berlebihan.",
+          question: "Mental dan energi saya tercukupi sehingga saya tidak mudah panik atau mendadak bingung ketika guru menunjuk saya secara langsung untuk menjawab pertanyaan.",
           description: "Kesiapan mental menjawab spontan tanpa blank saat ditunjuk guru di kelas.",
         },
       ],
@@ -453,7 +453,7 @@ export function getKaihThemes(jurusan: string = "tahfizh"): SurveyTheme[] {
           themeId: "kaih_7",
           butirNum: 31,
           dimension: "Action",
-          question: "Saya selalu makan tepat waktu di ruang makan asrama dan rutin menjaga kecukupan minum air putih selama beraktivitas dari pagi hingga malam.",
+          question: "Saya selalu makan tepat waktu dan rutin menjaga kecukupan minum air putih selama beraktivitas dari pagi hingga malam.",
           description: "Menjaga jadwal makan utama dapur asrama dan pemenuhan hidrasi harian tubuh.",
         },
         {
@@ -469,7 +469,7 @@ export function getKaihThemes(jurusan: string = "tahfizh"): SurveyTheme[] {
           themeId: "kaih_7",
           butirNum: 33,
           dimension: "Atensi Terbuka",
-          question: "Saya peka merasakan tanda-tanda kelelahan atau dehidrasi pada tubuh saya sendiri dan segera mengambil jeda minum air serta mengatur napas.",
+          question: "Saya peka merasakan tanda-tanda kelelahan atau dehidrasi pada tubuh saya sendiri dan segera mengambil tindakan terkait.",
           description: "Kesadaran peka terhadap sinyal fisik diri sendiri agar tidak sampai jatuh sakit.",
         },
         {
