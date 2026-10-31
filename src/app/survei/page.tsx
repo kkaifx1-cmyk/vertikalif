@@ -192,7 +192,9 @@ export default function SurveyPage() {
   // Ambil daftar santri yang sudah pernah mengisi survei (limit kuota 1x)
   const fetchSubmittedStudents = useCallback(async () => {
     try {
-      const res = await fetch("/api/survey?submitted_only=true");
+      const res = await fetch(`/api/survey?submitted_only=true&t=${Date.now()}`, {
+        cache: "no-store",
+      });
       const json = await res.json();
       if (json.success && Array.isArray(json.data)) {
         setSubmittedList(json.data);
@@ -430,6 +432,8 @@ export default function SurveyPage() {
         setValidationError(
           `Santri "${found.nama}" (NIS: ${found.nis}) telah menyelesaikan pengisian kuesioner ini sebelumnya. Kuota pengisian 1 kali telah tercapai dan tidak dapat diisi ulang demi integritas data.`
         );
+      } else {
+        setValidationError("");
       }
     }
   };

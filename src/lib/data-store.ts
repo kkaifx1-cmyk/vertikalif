@@ -252,13 +252,47 @@ export async function getAllResponses(): Promise<ResponseRecord[]> {
 export async function deleteResponse(id: string): Promise<boolean> {
   deletedIds.add(id);
   responsesCache = responsesCache.filter((r) => r.id !== id);
+
+  try {
+    const { error } = await supabase.from("survey_responses").delete().eq("id", id);
+    if (error) {
+      console.warn("Notice Supabase delete error:", error.message);
+    } else {
+      console.log(`✓ Deleted response ${id} from Supabase. Student limit has been reset.`);
+    }
+  } catch (err) {
+    console.warn("Notice Supabase delete catch:", err);
+  }
+
   return true;
 }
 
 export async function clearAllResponses(): Promise<boolean> {
   const current = await getAllResponses();
+  const idsToDelete = current.map((r) => r.id);
   current.forEach((r) => deletedIds.add(r.id));
   responsesCache = [];
+
+  try {
+    if (idsToDelete.length > 0) {
+      const { error } = await supabase
+        .from("survey_responses")
+        .delete()
+        .in("id", idsToDelete);
+
+      if (error) {
+        console.warn("Notice Supabase clearAll error:", error.message);
+        await supabase.from("survey_responses").delete().neq("id", "");
+      } else {
+        console.log(`✓ Cleared ${idsToDelete.length} responses from Supabase. All student limits reset.`);
+      }
+    } else {
+      await supabase.from("survey_responses").delete().neq("id", "");
+    }
+  } catch (err) {
+    console.warn("Notice Supabase clearAll catch:", err);
+  }
+
   return true;
 }
 

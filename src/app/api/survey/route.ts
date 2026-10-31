@@ -7,6 +7,12 @@ export async function GET(request: Request) {
     const submittedOnly = searchParams.get("submitted_only") === "true";
     const responses = await getAllResponses();
 
+    const noCacheHeaders = {
+      "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0",
+      Pragma: "no-cache",
+      Expires: "0",
+    };
+
     if (submittedOnly) {
       const submitted = responses.map((r) => ({
         id: r.id,
@@ -15,10 +21,10 @@ export async function GET(request: Request) {
         kategori: r.kategori,
         createdAt: r.createdAt,
       }));
-      return NextResponse.json({ success: true, data: submitted });
+      return NextResponse.json({ success: true, data: submitted }, { headers: noCacheHeaders });
     }
 
-    return NextResponse.json({ success: true, data: responses });
+    return NextResponse.json({ success: true, data: responses }, { headers: noCacheHeaders });
   } catch (error) {
     console.error("Failed to fetch responses:", error);
     return NextResponse.json(

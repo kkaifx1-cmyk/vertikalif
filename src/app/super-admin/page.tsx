@@ -72,7 +72,7 @@ function SuperAdminDashboard() {
   const fetchAnalytics = async () => {
     setLoadingAnalytics(true);
     try {
-      const res = await fetch("/api/analytics");
+      const res = await fetch(`/api/analytics?t=${Date.now()}`, { cache: "no-store" });
       const json = await res.json();
       if (json.success && json.data) {
         setAnalytics(json.data);
@@ -87,7 +87,7 @@ function SuperAdminDashboard() {
   const fetchResponses = async () => {
     setLoadingResponses(true);
     try {
-      const res = await fetch("/api/survey");
+      const res = await fetch(`/api/survey?t=${Date.now()}`, { cache: "no-store" });
       const json = await res.json();
       if (json.success && json.data) {
         setResponses(json.data);
@@ -169,11 +169,18 @@ function SuperAdminDashboard() {
 
   // Handler Hapus 1 Respon
   const handleDeleteResponse = async (id: string, name: string) => {
-    if (!confirm(`Apakah Anda yakin ingin menghapus respon survei dari "${name}"?`)) return;
+    if (
+      !confirm(
+        `Apakah Anda yakin ingin menghapus respon survei dari "${name}"?\n\nLimit pengisian santri ini akan otomatis direset, sehingga santri ini langsung dapat mengisi survei kembali.`
+      )
+    ) {
+      return;
+    }
     try {
       const res = await fetch(`/api/survey?id=${id}`, { method: "DELETE" });
       const json = await res.json();
       if (json.success) {
+        alert(`Respon santri "${name}" berhasil dihapus dari database. Limit pengisian santri tersebut telah otomatis direset dan siap mengisi survei kembali.`);
         fetchResponses();
         fetchAnalytics();
       } else {
@@ -188,7 +195,7 @@ function SuperAdminDashboard() {
   const handleClearAll = async () => {
     if (
       !confirm(
-        "PERINGATAN: Apakah Anda yakin ingin MENGHAPUS SEMUA data respon survei? Seluruh grafik dan tabel akan dikosongkan."
+        "PERINGATAN KOSONGKAN SEMUA:\nApakah Anda yakin ingin MENGHAPUS SEMUA data respon survei?\n\nSeluruh basis data survei akan dibersihkan, dan limit kuota seluruh santri akan otomatis direset menjadi 0, sehingga seluruh santri langsung dapat mengisi survei kembali."
       )
     ) {
       return;
@@ -197,6 +204,7 @@ function SuperAdminDashboard() {
       const res = await fetch("/api/survey?all=true", { method: "DELETE" });
       const json = await res.json();
       if (json.success) {
+        alert("Semua data respon survei berhasil dikosongkan dari database! Seluruh limit santri telah otomatis direset dan dapat mengisi kembali.");
         fetchResponses();
         fetchAnalytics();
       } else {
