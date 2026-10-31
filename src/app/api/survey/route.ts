@@ -1,9 +1,23 @@
 import { NextResponse } from "next/server";
 import { getAllResponses, saveResponse, deleteResponse, clearAllResponses } from "@/lib/data-store";
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url);
+    const submittedOnly = searchParams.get("submitted_only") === "true";
     const responses = await getAllResponses();
+
+    if (submittedOnly) {
+      const submitted = responses.map((r) => ({
+        id: r.id,
+        nomorId: r.nomorId || "",
+        nama: r.nama,
+        kategori: r.kategori,
+        createdAt: r.createdAt,
+      }));
+      return NextResponse.json({ success: true, data: submitted });
+    }
+
     return NextResponse.json({ success: true, data: responses });
   } catch (error) {
     console.error("Failed to fetch responses:", error);
@@ -17,7 +31,7 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { nama, kategori, jenisKelamin, nomorId, answers, feedback } = body;
+    const { nama, kategori, jenisKelamin, nomorId, answers, feedback, violationsCount } = body;
 
     if (!nama || !kategori || !answers) {
       return NextResponse.json(
@@ -26,13 +40,51 @@ export async function POST(request: Request) {
       );
     }
 
+    // Pengecekan Limit Pengisian: 1 Santri hanya dapat mengisi 1 kali
+    const existing = await getAllResponses();
+    const cleanName = nama.trim().toLowerCase();
+    const cleanNomorId = (nomorId || "").trim();
+
+    const isDuplicate = existing.some((r) => {
+      // 1. Cek kecocokan nomor ID / NIS
+      if (cleanNomorId && r.nomorId && r.nomorId.trim() === cleanNomorId) {
+        return true;
+      }
+      // 2. Cek kecocokan nama lengkap dan kategori kelas
+      if (
+        r.nama.trim().toLowerCase() === cleanName &&
+        r.kategori.trim().toLowerCase() === kategori.trim().toLowerCase()
+      ) {
+        return true;
+      }
+      return false;
+    });
+
+    if (isDuplicate) {
+      return NextResponse.json(
+        {
+          success: false,
+          code: "STUDENT_LIMIT_EXCEEDED",
+          message: `Pengisian ditolak: Santri atas nama "${nama}" (${cleanNomorId ? `NIS: ${cleanNomorId}` : kategori}) sudah pernah menyelesaikan pengisian survei ini sebelumnya. Kuota pengisian dibatasi tepat 1 kali per santri demi integritas dan validitas data instrumen.`,
+        },
+        { status: 409 }
+      );
+    }
+
+    // Format catatan masukan santri beserta log integritas jika ada
+    let finalFeedback = (feedback || "").trim();
+    if (typeof violationsCount === "number" && violationsCount > 0) {
+      const integrityNote = `[Catatan Sistem: Terdeteksi ${violationsCount} kali perpindahan tab/jendela selama pengisian]`;
+      finalFeedback = finalFeedback ? `${finalFeedback}\n\n${integrityNote}` : integrityNote;
+    }
+
     const saved = await saveResponse({
       nama,
       kategori,
       jenisKelamin: jenisKelamin || "Ikhwan",
       nomorId: nomorId || "",
       answers,
-      feedback: feedback || "",
+      feedback: finalFeedback,
     });
 
     return NextResponse.json({

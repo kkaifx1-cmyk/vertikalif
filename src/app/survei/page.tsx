@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -24,6 +24,11 @@ import {
   Compass,
   Globe,
   Award,
+  Lock,
+  Maximize2,
+  Minimize2,
+  AlertTriangle,
+  ShieldAlert,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
@@ -80,10 +85,22 @@ export default function SurveyPage() {
     nomorId: "",
   });
 
-  const [selectedStudentId, setSelectedStudentId] = useState<string>("" );
-  const [selectedRombel, setSelectedRombel] = useState<string>("" );
-  const [searchQuery, setSearchQuery] = useState<string>("" );
+  const [selectedStudentId, setSelectedStudentId] = useState<string>("");
+  const [selectedRombel, setSelectedRombel] = useState<string>("");
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const [isManualName, setIsManualName] = useState<boolean>(false);
+
+  // Data Santri yang Sudah Mengisi (Limit 1x per Santri)
+  const [submittedList, setSubmittedList] = useState<
+    { id: string; nomorId: string; nama: string; kategori: string; createdAt: string }[]
+  >([]);
+  const [isLoadingSubmitted, setIsLoadingSubmitted] = useState<boolean>(true);
+
+  // Anti-Curang & Mode Karantina Ujian State
+  const [violationsCount, setViolationsCount] = useState<number>(0);
+  const [showCheatModal, setShowCheatModal] = useState<boolean>(false);
+  const [showExitModal, setShowExitModal] = useState<boolean>(false);
+  const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
 
   // Survey Answers: Record<questionId, score 1-4>
   const [answers, setAnswers] = useState<Record<string, number>>({});
@@ -171,6 +188,184 @@ export default function SurveyPage() {
     setValidationError("");
   };
 
+  // Ambil daftar santri yang sudah pernah mengisi survei (limit kuota 1x)
+  const fetchSubmittedStudents = useCallback(async () => {
+    try {
+      const res = await fetch("/api/survey?submitted_only=true");
+      const json = await res.json();
+      if (json.success && Array.isArray(json.data)) {
+        setSubmittedList(json.data);
+      }
+    } catch (err) {
+      console.warn("Gagal memuat status respon santri:", err);
+    } finally {
+      setIsLoadingSubmitted(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchSubmittedStudents();
+  }, [fetchSubmittedStudents]);
+
+  // Pemeriksa apakah siswa sudah mengisi kuesioner sebelumnya
+  const isStudentAlreadySubmitted = useCallback(
+    (nis: string, name: string, category: string): boolean => {
+      const cleanNis = (nis || "").trim();
+      const cleanName = (name || "").trim().toLowerCase();
+      const cleanCat = (category || "").trim().toLowerCase();
+
+      return submittedList.some((s) => {
+        // Cocokkan NIS jika ada
+        if (cleanNis && s.nomorId && s.nomorId.trim() === cleanNis) {
+          return true;
+        }
+        // Cocokkan nama dan kategori kelas
+        if (
+          cleanName &&
+          s.nama.trim().toLowerCase() === cleanName &&
+          (!cleanCat || !s.kategori || s.kategori.trim().toLowerCase() === cleanCat)
+        ) {
+          return true;
+        }
+        return false;
+      });
+    },
+    [submittedList]
+  );
+
+  // Status Mode Karantina Ujian: Aktif saat mengerjakan butir KAIH 1 s.d. Konfirmasi
+  const isExamActive = currentStep >= 1 && currentStep <= currentThemes.length + 1;
+
+  // Bunyikan peringatan nada singkat saat santri membuka tab/jendela lain
+  const playWarningBeep = useCallback(() => {
+    try {
+      const AudioCtx =
+        window.AudioContext ||
+        (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      if (AudioCtx) {
+        const ctx = new AudioCtx();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = "sawtooth";
+        osc.frequency.setValueAtTime(440, ctx.currentTime);
+        gain.gain.setValueAtTime(0.12, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.35);
+      }
+    } catch {
+      // Audio autoplay policy catch
+    }
+  }, []);
+
+  // Toggle Mode Layar Penuh (Fullscreen)
+  const toggleFullscreen = useCallback(async () => {
+    try {
+      if (!document.fullscreenElement) {
+        await document.documentElement.requestFullscreen();
+        setIsFullscreen(true);
+      } else {
+        if (document.exitFullscreen) {
+          await document.exitFullscreen();
+          setIsFullscreen(false);
+        }
+      }
+    } catch {
+      // Fullscreen permission rejection catch
+    }
+  }, []);
+
+  // Proteksi Karantina: Anti Buka Tab Lain & Kunci Navigasi Keluar
+  useEffect(() => {
+    if (!isExamActive) return;
+
+    // 1. Tangkap seluruh klik link pada halaman web (navbar, logo, footer, dll.)
+    const handleDocumentClick = (e: MouseEvent) => {
+      const target = (e.target as HTMLElement).closest("a");
+      if (target && target.getAttribute("href") && target.getAttribute("href") !== "#") {
+        e.preventDefault();
+        e.stopPropagation();
+        setShowExitModal(true);
+      }
+    };
+    document.addEventListener("click", handleDocumentClick, true);
+
+    // 2. Cegah tombol back browser (popstate trap)
+    window.history.pushState({ inSurveySession: true }, "", window.location.href);
+    const handlePopState = () => {
+      window.history.pushState({ inSurveySession: true }, "", window.location.href);
+      setShowExitModal(true);
+    };
+    window.addEventListener("popstate", handlePopState);
+
+    // 3. Tangkap keyboard shortcut navigasi/refresh (F5, Ctrl+R, Ctrl+W, Ctrl+T, Ctrl+N, Alt+Left)
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (
+        e.key === "F5" ||
+        (e.ctrlKey && (e.key === "r" || e.key === "R")) ||
+        (e.ctrlKey && (e.key === "w" || e.key === "W")) ||
+        (e.ctrlKey && (e.key === "t" || e.key === "T")) ||
+        (e.ctrlKey && (e.key === "n" || e.key === "N")) ||
+        (e.altKey && e.key === "ArrowLeft")
+      ) {
+        e.preventDefault();
+        e.stopPropagation();
+        setShowExitModal(true);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+
+    // 4. Cegah reload / tutup tab browser via beforeunload
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue =
+        "Peringatan: Kuesioner sedang dikerjakan. Anda tidak diperbolehkan keluar dari halaman survei sebelum menyelesaikannya!";
+      return e.returnValue;
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    // 5. Deteksi perpindahan tab browser atau jendela aplikasi lain
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        setViolationsCount((c) => c + 1);
+        setShowCheatModal(true);
+        playWarningBeep();
+      }
+    };
+
+    const handleWindowBlur = () => {
+      setShowCheatModal((isOpen) => {
+        if (!isOpen) {
+          setViolationsCount((c) => c + 1);
+          playWarningBeep();
+          return true;
+        }
+        return isOpen;
+      });
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("blur", handleWindowBlur);
+
+    // 6. Sinkronisasi status fullscreen
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+
+    return () => {
+      document.removeEventListener("click", handleDocumentClick, true);
+      window.removeEventListener("popstate", handlePopState);
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("blur", handleWindowBlur);
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+    };
+  }, [isExamActive, playWarningBeep]);
+
   // Handler when Student Name is selected
   const handleStudentSelect = (studentId: string) => {
     setSelectedStudentId(studentId);
@@ -197,6 +392,14 @@ export default function SurveyPage() {
         jenisKelamin: found.jenisKelamin,
         nomorId: found.nis,
       }));
+
+      // Cek apakah santri sudah mengisi sebelumnya
+      const alreadyFilled = isStudentAlreadySubmitted(found.nis, found.nama, found.kelas);
+      if (alreadyFilled) {
+        setValidationError(
+          `Santri "${found.nama}" (NIS: ${found.nis}) telah menyelesaikan pengisian kuesioner ini sebelumnya. Kuota pengisian 1 kali telah tercapai dan tidak dapat diisi ulang demi integritas data.`
+        );
+      }
     }
   };
 
@@ -229,6 +432,12 @@ export default function SurveyPage() {
         setValidationError("Mohon tentukan Nama Lengkap Anda dari daftar kelas yang sesuai.");
         return false;
       }
+      if (isStudentAlreadySubmitted(identity.nomorId, identity.nama, identity.kategori)) {
+        setValidationError(
+          `Santri "${identity.nama}" (${identity.nomorId ? `NIS: ${identity.nomorId}` : identity.kategori}) sudah pernah mengisi survei ini. Kuota pengisian dibatasi tepat 1 kali per santri demi menjaga validitas data.`
+        );
+        return false;
+      }
       return true;
     }
 
@@ -251,6 +460,16 @@ export default function SurveyPage() {
 
   const handleNext = () => {
     if (validateCurrentStep()) {
+      // Minta izin mode layar penuh saat santri pertama kali masuk ke KAIH 1
+      if (currentStep === 0) {
+        try {
+          if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
+            document.documentElement.requestFullscreen().catch(() => {});
+          }
+        } catch {
+          // ignore
+        }
+      }
       setCurrentStep((prev) => prev + 1);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
@@ -279,11 +498,16 @@ export default function SurveyPage() {
           nomorId: identity.nomorId,
           answers,
           feedback,
+          violationsCount,
         }),
       });
 
       const result = await response.json();
       if (result.success && result.data) {
+        // Keluar dari mode layar penuh saat pengerjaan berhasil diselesaikan
+        if (document.fullscreenElement && document.exitFullscreen) {
+          document.exitFullscreen().catch(() => {});
+        }
         setSubmittedData({
           id: result.data.id,
           totalScore: result.data.totalScore,
@@ -307,8 +531,10 @@ export default function SurveyPage() {
     setIsManualName(false);
     setAnswers({});
     setFeedback("");
+    setViolationsCount(0);
     setCurrentStep(0);
     setSubmittedData(null);
+    fetchSubmittedStudents();
   };
 
   // Dimension badge style helper
@@ -353,21 +579,27 @@ export default function SurveyPage() {
               <p>Setiap butir penilaian Anda dianalisis secara objektif untuk penyempurnaan mutu dan pembentukan karakter santri SMAIT Ihsanul Fikri Magelang.</p>
             </div>
 
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4 border-t border-slate-100">
+            <div className="rounded-xl border border-emerald-200 bg-emerald-50/70 p-3.5 text-xs text-emerald-950 flex items-center justify-center gap-2">
+              <CheckCircle2 className="h-4 w-4 text-emerald-700 shrink-0" />
+              <span>Status: Respon tersimpan aman • Kuota pengisian untuk santri ini telah selesai (1x).</span>
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2 border-t border-slate-100">
               <Link href="/" className="w-full sm:w-auto">
                 <Button variant="primary" size="md" className="w-full">
                   Kembali ke Beranda
                 </Button>
               </Link>
-              <Button
-                variant="outline"
-                size="md"
-                onClick={handleResetSurvey}
-                className="w-full sm:w-auto text-slate-700 hover:text-slate-900 gap-1.5"
-              >
-                <RotateCcw className="h-4 w-4 text-slate-500" />
-                Isi Kuesioner Baru
-              </Button>
+              <Link href="/data" className="w-full sm:w-auto">
+                <Button
+                  variant="outline"
+                  size="md"
+                  className="w-full text-slate-700 hover:text-slate-900 gap-1.5"
+                >
+                  <Award className="h-4 w-4 text-emerald-600" />
+                  Lihat Hasil Ringkasan Data
+                </Button>
+              </Link>
             </div>
           </CardContent>
         </Card>
@@ -391,17 +623,58 @@ export default function SurveyPage() {
         {/* Top Header & Step Indicator */}
         <div className="mb-6 space-y-3">
           <div className="flex items-center justify-between">
-            <Link
-              href="/"
-              className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-emerald-700 transition-colors"
-            >
-              <ArrowLeft className="h-3.5 w-3.5" />
-              Kembali ke Profil
-            </Link>
+            {isExamActive ? (
+              <button
+                type="button"
+                onClick={() => setShowExitModal(true)}
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-900 bg-amber-100/90 px-3 py-1 rounded-full border border-amber-300 hover:bg-amber-200 transition-colors cursor-pointer"
+              >
+                <Lock className="h-3.5 w-3.5 text-amber-700" />
+                <span>Karantina Pengerjaan Aktif</span>
+              </button>
+            ) : (
+              <Link
+                href="/"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-emerald-700 transition-colors"
+              >
+                <ArrowLeft className="h-3.5 w-3.5" />
+                Kembali ke Profil
+              </Link>
+            )}
             <Badge variant="gold" className="text-xs font-bold">
               Instrumen KAIH Resmi (35 Butir)
             </Badge>
           </div>
+
+          {/* Banner Karantina & Anti-Curang Saat Pengerjaan */}
+          {isExamActive && (
+            <div className="rounded-xl border border-amber-300 bg-gradient-to-r from-amber-50 via-amber-100/60 to-amber-50 p-3 sm:px-4 text-xs text-amber-950 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5 shadow-xs animate-in fade-in">
+              <div className="flex items-center gap-2">
+                <span className="relative flex h-2.5 w-2.5 shrink-0">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-rose-600"></span>
+                </span>
+                <span className="font-bold text-amber-950">
+                  🔒 Sesi Karantina Survei Aktif: Dilarang membuka tab lain atau keluar halaman sebelum mengirimkan respon.
+                </span>
+              </div>
+              <div className="flex items-center gap-2 self-end sm:self-auto shrink-0">
+                {violationsCount > 0 && (
+                  <span className="text-[10px] font-black bg-rose-100 text-rose-800 border border-rose-300 px-2 py-0.5 rounded-full">
+                    Peringatan Tab: {violationsCount}x
+                  </span>
+                )}
+                <button
+                  type="button"
+                  onClick={toggleFullscreen}
+                  className="inline-flex items-center gap-1 rounded-lg bg-white px-2.5 py-1 text-[11px] font-bold text-amber-950 border border-amber-300 hover:bg-amber-100 cursor-pointer shadow-xs"
+                >
+                  {isFullscreen ? <Minimize2 className="h-3 w-3" /> : <Maximize2 className="h-3 w-3" />}
+                  <span>{isFullscreen ? "Keluar Layar Penuh" : "Kunci Layar Penuh"}</span>
+                </button>
+              </div>
+            </div>
+          )}
 
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
             <div>
@@ -726,11 +999,19 @@ export default function SurveyPage() {
                           if (studentsInRombel.length === 0) return null;
                           return (
                             <optgroup key={r} label={`Kelas ${r} (${studentsInRombel[0]?.jenisKelamin})`}>
-                              {studentsInRombel.map((s) => (
-                                <option key={s.id} value={s.id}>
-                                  {s.nama} ({s.rombel})
-                                </option>
-                              ))}
+                              {studentsInRombel.map((s) => {
+                                const alreadyFilled = isStudentAlreadySubmitted(s.nis, s.nama, s.kelas);
+                                return (
+                                  <option
+                                    key={s.id}
+                                    value={s.id}
+                                    disabled={alreadyFilled}
+                                    className={alreadyFilled ? "text-slate-400 bg-slate-100 font-normal italic" : "text-slate-900 font-medium"}
+                                  >
+                                    {s.nama} ({s.nis}) {alreadyFilled ? "🔒 [Sudah Mengisi / Limit Tercapai]" : ""}
+                                  </option>
+                                );
+                              })}
                             </optgroup>
                           );
                         })}
@@ -752,6 +1033,19 @@ export default function SurveyPage() {
                       </div>
                     </div>
                     <span className="text-emerald-700 font-bold text-[11px]">Terverifikasi</span>
+                  </div>
+                )}
+
+                {/* Banner Peringatan jika nama santri sudah terkena limit kuota */}
+                {isStudentAlreadySubmitted(identity.nomorId, identity.nama, identity.kategori) && (
+                  <div className="rounded-xl border border-rose-300 bg-rose-50 p-4 text-rose-900 flex items-start gap-3 shadow-xs animate-in fade-in">
+                    <AlertTriangle className="h-5 w-5 text-rose-600 shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-sm font-bold text-rose-950">Limit Pengisian Tercapai (Kuota 1x)</p>
+                      <p className="text-xs text-rose-800 mt-1 leading-relaxed">
+                        Santri <strong>{identity.nama}</strong> ({identity.nomorId ? `NIS: ${identity.nomorId}` : identity.kategori}) telah tercatat menyelesaikan instrumen survei ini sebelumnya. Demi integritas dan objektivitas data sekolah, santri hanya diperbolehkan mengisi sebanyak 1 kali.
+                      </p>
+                    </div>
                   </div>
                 )}
 
@@ -815,10 +1109,42 @@ export default function SurveyPage() {
               </div>
             </CardContent>
 
-            <CardFooter className="border-t border-slate-100 bg-slate-50/50 p-4 flex justify-end rounded-b-2xl">
-              <Button onClick={handleNext} variant="primary" size="md" className="gap-2 font-semibold">
-                Lanjut ke KAIH 1
-                <ArrowRight className="h-4 w-4" />
+            <CardFooter className="border-t border-slate-100 bg-slate-50/50 p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-b-2xl">
+              <div className="text-xs text-slate-500">
+                {isStudentAlreadySubmitted(identity.nomorId, identity.nama, identity.kategori) ? (
+                  <span className="text-rose-700 font-bold flex items-center gap-1.5">
+                    <Lock className="h-4 w-4" /> Akun santri ini sudah menyelesaikan survei (Limit 1x)
+                  </span>
+                ) : (
+                  <span>Pastikan jenjang kelas dan nama santri sudah sesuai sebelum memulai.</span>
+                )}
+              </div>
+              <Button
+                onClick={handleNext}
+                variant="primary"
+                size="md"
+                disabled={
+                  !identity.nama.trim() ||
+                  !identity.kategori ||
+                  isStudentAlreadySubmitted(identity.nomorId, identity.nama, identity.kategori)
+                }
+                className={`gap-2 font-semibold ${
+                  isStudentAlreadySubmitted(identity.nomorId, identity.nama, identity.kategori)
+                    ? "bg-slate-300 text-slate-500 cursor-not-allowed hover:bg-slate-300 shadow-none border-slate-300"
+                    : ""
+                }`}
+              >
+                {isStudentAlreadySubmitted(identity.nomorId, identity.nama, identity.kategori) ? (
+                  <>
+                    <Lock className="h-4 w-4" />
+                    Terkunci (Limit 1x Tercapai)
+                  </>
+                ) : (
+                  <>
+                    Mulai Pengerjaan KAIH 1
+                    <ArrowRight className="h-4 w-4" />
+                  </>
+                )}
               </Button>
             </CardFooter>
           </Card>
@@ -1045,6 +1371,96 @@ export default function SurveyPage() {
               </Button>
             </CardFooter>
           </Card>
+        )}
+
+        {/* MODAL 1: PERINGATAN ANTI-CURANG (TERDETEKSI MEMBUKA TAB LAIN) */}
+        {showCheatModal && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/85 p-4 backdrop-blur-md animate-in fade-in">
+            <div className="w-full max-w-md rounded-2xl border-2 border-rose-500 bg-white p-6 shadow-2xl shadow-rose-950/50 text-center space-y-4">
+              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-rose-100 ring-8 ring-rose-50 text-rose-600 animate-bounce">
+                <ShieldAlert className="h-9 w-9 text-rose-600" />
+              </div>
+
+              <div className="space-y-1.5">
+                <span className="inline-block rounded-full bg-rose-100 px-3 py-1 text-[11px] font-black uppercase tracking-wider text-rose-800 border border-rose-300">
+                  ⚠️ Peringatan Integritas Pengerjaan
+                </span>
+                <h3 className="text-lg sm:text-xl font-black text-slate-950">
+                  Dilarang Membuka Tab / Jendela Lain!
+                </h3>
+                <p className="text-xs text-slate-600 leading-relaxed pt-1">
+                  Sistem mendeteksi bahwa layar survei kehilangan fokus karena Anda berpindah ke tab browser lain atau membuka aplikasi eksternal.
+                </p>
+              </div>
+
+              <div className="rounded-xl border border-rose-200 bg-rose-50/90 p-3.5 text-xs text-rose-950 text-left space-y-1.5">
+                <div className="flex items-center justify-between font-bold">
+                  <span>Pelanggaran Terdeteksi:</span>
+                  <span className="rounded bg-rose-600 px-2.5 py-0.5 text-white font-mono font-black text-xs">
+                    Ke-{violationsCount} kali
+                  </span>
+                </div>
+                <p className="text-[11px] text-rose-900 leading-normal">
+                  Ketentuan Ujian/Survei SMAIT Ihsanul Fikri: Santri wajib fokus dan menyelesaikan 35 butir instrumen tanpa distraksi tab lain. Seluruh riwayat perpindahan tab dicatat oleh sistem pengawas Super Admin.
+                </p>
+              </div>
+
+              <Button
+                onClick={() => {
+                  setShowCheatModal(false);
+                  try {
+                    if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
+                      document.documentElement.requestFullscreen().catch(() => {});
+                    }
+                  } catch {}
+                }}
+                variant="primary"
+                size="lg"
+                className="w-full bg-rose-700 hover:bg-rose-800 text-white font-extrabold shadow-md cursor-pointer"
+              >
+                Saya Mengerti & Kembali Fokus ke Survei
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {/* MODAL 2: PERINGATAN ANTI-KELUAR (TERDETEKSI MENCOBA MENUTUP / KELUAR DARI WEB) */}
+        {showExitModal && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/85 p-4 backdrop-blur-md animate-in fade-in">
+            <div className="w-full max-w-md rounded-2xl border-2 border-amber-500 bg-white p-6 shadow-2xl shadow-amber-950/50 text-center space-y-4">
+              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-amber-100 ring-8 ring-amber-50 text-amber-700">
+                <Lock className="h-9 w-9 text-amber-600" />
+              </div>
+
+              <div className="space-y-1.5">
+                <span className="inline-block rounded-full bg-amber-100 px-3 py-1 text-[11px] font-black uppercase tracking-wider text-amber-900 border border-amber-300">
+                  🔒 Navigasi Keluar Dikunci
+                </span>
+                <h3 className="text-lg sm:text-xl font-black text-slate-950">
+                  Anda Sedang Mengerjakan Kuesioner!
+                </h3>
+                <p className="text-xs text-slate-600 leading-relaxed pt-1">
+                  Anda tidak diperbolehkan meninggalkan halaman, me-refresh, atau menutup web sebelum menyelesaikan seluruh butir penilaian pada 7 Karakter Utama (KAIH).
+                </p>
+              </div>
+
+              <div className="rounded-xl border border-amber-200 bg-amber-50/90 p-3.5 text-xs text-amber-950 text-left space-y-1">
+                <p className="font-bold">Progres Jawaban Anda Tersimpan Aman:</p>
+                <p className="text-[11px] text-amber-900 leading-normal">
+                  Silakan tuntaskan pengisian hingga tahap akhir, lalu klik tombol <strong>Kirim Respon Survei</strong> untuk menyelesaikan sesi ini dengan sah.
+                </p>
+              </div>
+
+              <Button
+                onClick={() => setShowExitModal(false)}
+                variant="gold"
+                size="lg"
+                className="w-full text-slate-950 font-black shadow-md cursor-pointer"
+              >
+                Lanjutkan Pengerjaan Kuesioner
+              </Button>
+            </div>
+          </div>
         )}
       </div>
     </div>
