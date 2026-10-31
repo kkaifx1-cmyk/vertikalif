@@ -100,6 +100,7 @@ export default function SurveyPage() {
   const [violationsCount, setViolationsCount] = useState<number>(0);
   const [showCheatModal, setShowCheatModal] = useState<boolean>(false);
   const [showExitModal, setShowExitModal] = useState<boolean>(false);
+  const [showFullscreenLockModal, setShowFullscreenLockModal] = useState<boolean>(false);
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
 
   // Survey Answers: Record<questionId, score 1-4>
@@ -260,26 +261,36 @@ export default function SurveyPage() {
     }
   }, []);
 
-  // Toggle Mode Layar Penuh (Fullscreen)
-  const toggleFullscreen = useCallback(async () => {
+  // Helper kunci tombol Escape agar tidak bisa keluar dari Fullscreen (W3C Keyboard Lock API)
+  const lockEscapeKey = useCallback(async () => {
     try {
-      if (!document.fullscreenElement) {
-        await document.documentElement.requestFullscreen();
-        setIsFullscreen(true);
-      } else {
-        if (document.exitFullscreen) {
-          await document.exitFullscreen();
-          setIsFullscreen(false);
-        }
+      if (typeof window !== "undefined" && "keyboard" in navigator && (navigator as any).keyboard?.lock) {
+        await (navigator as any).keyboard.lock(["Escape"]);
       }
     } catch {
-      // Fullscreen permission rejection catch
+      // Browser permissions or unsupported catch
     }
   }, []);
 
-  // Proteksi Karantina: Anti Buka Tab Lain & Kunci Navigasi Keluar
+  // Kunci Layar Penuh (Fullscreen Lock - Tidak Bisa Keluar / Anti-ESC)
+  const enterFullscreenAndLock = useCallback(async () => {
+    try {
+      if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
+        await document.documentElement.requestFullscreen();
+        setIsFullscreen(true);
+      }
+      await lockEscapeKey();
+    } catch {
+      // Fullscreen permission rejection catch
+    }
+  }, [lockEscapeKey]);
+
+  // Proteksi Karantina: Anti Buka Tab Lain, Kunci Layar Penuh & Nonaktifkan Tombol ESC
   useEffect(() => {
     if (!isExamActive) return;
+
+    // Pastikan langsung mengunci layar penuh dan mengunci tombol Escape saat ujian aktif
+    enterFullscreenAndLock();
 
     // 1. Tangkap seluruh klik link pada halaman web (navbar, logo, footer, dll.)
     const handleDocumentClick = (e: MouseEvent) => {
@@ -300,8 +311,18 @@ export default function SurveyPage() {
     };
     window.addEventListener("popstate", handlePopState);
 
-    // 3. Tangkap keyboard shortcut navigasi/refresh (F5, Ctrl+R, Ctrl+W, Ctrl+T, Ctrl+N, Alt+Left)
+    // 3. Tangkap keyboard shortcut navigasi/refresh dan NONAKTIFKAN TOMBOL ESC
     const handleKeyDown = (e: KeyboardEvent) => {
+      // Matikan total fungsi tombol Escape (ESC) agar santri tidak bisa keluar layar penuh
+      if (e.key === "Escape" || e.keyCode === 27) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
+          document.documentElement.requestFullscreen().then(() => lockEscapeKey()).catch(() => {});
+        }
+        return false;
+      }
+
       if (
         e.key === "F5" ||
         (e.ctrlKey && (e.key === "r" || e.key === "R")) ||
@@ -315,7 +336,7 @@ export default function SurveyPage() {
         setShowExitModal(true);
       }
     };
-    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown, true);
 
     // 4. Cegah reload / tutup tab browser via beforeunload
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
@@ -349,22 +370,32 @@ export default function SurveyPage() {
     document.addEventListener("visibilitychange", handleVisibilityChange);
     window.addEventListener("blur", handleWindowBlur);
 
-    // 6. Sinkronisasi status fullscreen
+    // 6. Sinkronisasi status fullscreen & Blokir jika layar penuh terlepas
     const handleFullscreenChange = () => {
-      setIsFullscreen(!!document.fullscreenElement);
+      const isFull = !!document.fullscreenElement;
+      setIsFullscreen(isFull);
+      if (isFull) {
+        lockEscapeKey();
+        setShowFullscreenLockModal(false);
+      } else if (isExamActive) {
+        // Mode layar penuh terlepas saat sesi ujian/survei masih aktif!
+        setViolationsCount((c) => c + 1);
+        playWarningBeep();
+        setShowFullscreenLockModal(true);
+      }
     };
     document.addEventListener("fullscreenchange", handleFullscreenChange);
 
     return () => {
       document.removeEventListener("click", handleDocumentClick, true);
       window.removeEventListener("popstate", handlePopState);
-      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keydown", handleKeyDown, true);
       window.removeEventListener("beforeunload", handleBeforeUnload);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       window.removeEventListener("blur", handleWindowBlur);
       document.removeEventListener("fullscreenchange", handleFullscreenChange);
     };
-  }, [isExamActive, playWarningBeep]);
+  }, [isExamActive, playWarningBeep, enterFullscreenAndLock, lockEscapeKey]);
 
   // Handler when Student Name is selected
   const handleStudentSelect = (studentId: string) => {
@@ -460,15 +491,9 @@ export default function SurveyPage() {
 
   const handleNext = () => {
     if (validateCurrentStep()) {
-      // Minta izin mode layar penuh saat santri pertama kali masuk ke KAIH 1
+      // Kunci mode layar penuh & matikan fungsi ESC saat santri mulai masuk ke KAIH 1
       if (currentStep === 0) {
-        try {
-          if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
-            document.documentElement.requestFullscreen().catch(() => {});
-          }
-        } catch {
-          // ignore
-        }
+        enterFullscreenAndLock();
       }
       setCurrentStep((prev) => prev + 1);
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -504,9 +529,16 @@ export default function SurveyPage() {
 
       const result = await response.json();
       if (result.success && result.data) {
-        // Keluar dari mode layar penuh saat pengerjaan berhasil diselesaikan
-        if (document.fullscreenElement && document.exitFullscreen) {
-          document.exitFullscreen().catch(() => {});
+        // Lepaskan kunci keyboard dan keluar dari mode layar penuh saat pengerjaan berhasil diselesaikan
+        try {
+          if (typeof window !== "undefined" && "keyboard" in navigator && (navigator as any).keyboard?.unlock) {
+            (navigator as any).keyboard.unlock();
+          }
+          if (document.fullscreenElement && document.exitFullscreen) {
+            document.exitFullscreen().catch(() => {});
+          }
+        } catch {
+          // ignore
         }
         setSubmittedData({
           id: result.data.id,
@@ -664,14 +696,21 @@ export default function SurveyPage() {
                     Peringatan Tab: {violationsCount}x
                   </span>
                 )}
-                <button
-                  type="button"
-                  onClick={toggleFullscreen}
-                  className="inline-flex items-center gap-1 rounded-lg bg-white px-2.5 py-1 text-[11px] font-bold text-amber-950 border border-amber-300 hover:bg-amber-100 cursor-pointer shadow-xs"
-                >
-                  {isFullscreen ? <Minimize2 className="h-3 w-3" /> : <Maximize2 className="h-3 w-3" />}
-                  <span>{isFullscreen ? "Keluar Layar Penuh" : "Kunci Layar Penuh"}</span>
-                </button>
+                {isFullscreen ? (
+                  <div className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-800 text-white px-2.5 py-1 text-[11px] font-bold shadow-xs">
+                    <ShieldCheck className="h-3.5 w-3.5 text-amber-300" />
+                    <span>Layar Penuh Terkunci (Anti-ESC)</span>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={enterFullscreenAndLock}
+                    className="inline-flex items-center gap-1.5 rounded-lg bg-rose-600 text-white px-2.5 py-1 text-[11px] font-extrabold hover:bg-rose-700 animate-pulse cursor-pointer shadow-md"
+                  >
+                    <Maximize2 className="h-3.5 w-3.5" />
+                    <span>Wajib Kunci Layar Penuh</span>
+                  </button>
+                )}
               </div>
             </div>
           )}
@@ -1408,11 +1447,7 @@ export default function SurveyPage() {
               <Button
                 onClick={() => {
                   setShowCheatModal(false);
-                  try {
-                    if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
-                      document.documentElement.requestFullscreen().catch(() => {});
-                    }
-                  } catch {}
+                  enterFullscreenAndLock();
                 }}
                 variant="primary"
                 size="lg"
@@ -1458,6 +1493,49 @@ export default function SurveyPage() {
                 className="w-full text-slate-950 font-black shadow-md cursor-pointer"
               >
                 Lanjutkan Pengerjaan Kuesioner
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {/* MODAL 3: PERINGATAN LAYAR PENUH TERLEPAS (TIDAK BISA DI-ESC) */}
+        {showFullscreenLockModal && (
+          <div className="fixed inset-0 z-[110] flex items-center justify-center bg-slate-950/90 p-4 backdrop-blur-md animate-in fade-in">
+            <div className="w-full max-w-md rounded-2xl border-2 border-rose-500 bg-white p-6 shadow-2xl text-center space-y-4">
+              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-rose-100 ring-8 ring-rose-50 text-rose-600 animate-bounce">
+                <ShieldAlert className="h-9 w-9 text-rose-600" />
+              </div>
+
+              <div className="space-y-1.5">
+                <span className="inline-block rounded-full bg-rose-100 px-3 py-1 text-[11px] font-black uppercase tracking-wider text-rose-900 border border-rose-300">
+                  ⚠️ Layar Penuh Wajib Terkunci
+                </span>
+                <h3 className="text-lg sm:text-xl font-black text-slate-950">
+                  Mode Layar Penuh Terlepas!
+                </h3>
+                <p className="text-xs text-slate-600 leading-relaxed pt-1">
+                  Untuk menjaga integritas dan objektivitas evaluasi 7 Karakter Santri SMAIT Ihsanul Fikri, <strong>survei terkunci dalam layar penuh</strong> dan fungsi tombol ESC dinonaktifkan.
+                </p>
+              </div>
+
+              <div className="rounded-xl border border-rose-200 bg-rose-50/90 p-3 text-xs text-rose-950 text-left flex items-center justify-between">
+                <span className="font-bold">Pelanggaran Terdeteksi:</span>
+                <span className="rounded bg-rose-600 px-2.5 py-0.5 text-white font-mono font-black text-xs">
+                  {violationsCount} kali
+                </span>
+              </div>
+
+              <Button
+                onClick={() => {
+                  setShowFullscreenLockModal(false);
+                  enterFullscreenAndLock();
+                }}
+                variant="primary"
+                size="lg"
+                className="w-full bg-gradient-to-r from-rose-600 via-rose-700 to-rose-800 hover:from-rose-700 hover:to-rose-900 text-white font-extrabold shadow-lg cursor-pointer flex items-center justify-center gap-2"
+              >
+                <Maximize2 className="h-4 w-4" />
+                <span>Kunci Kembali Layar Penuh &amp; Lanjutkan</span>
               </Button>
             </div>
           </div>
