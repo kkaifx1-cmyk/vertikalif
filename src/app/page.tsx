@@ -37,14 +37,27 @@ export default function HomePage() {
                 </p>
               </div>
 
-              {/* Action Buttons */}
+              {/* Action Buttons with Standout CTA Text and Accessibility */}
               <div className="flex flex-wrap items-center gap-3 pt-2">
-                <Link href="/survei">
-                  <Button variant="primary" size="lg" className="gap-2 font-semibold shadow-xs">
-                    <ClipboardCheck className="h-5 w-5 text-amber-300" />
-                    Mulai Isi Kuesioner
-                    <ArrowRight className="h-4 w-4" />
-                  </Button>
+                <Link
+                  href="/survei"
+                  aria-label="Mulai Survei Sekarang - Kuesioner Evaluasi 7 KAIH Santri"
+                  title="Mulai Survei Sekarang"
+                  className="inline-flex items-center justify-center gap-2.5 rounded-xl bg-gradient-to-r from-emerald-700 via-emerald-800 to-emerald-900 px-6 py-3.5 text-sm sm:text-base font-extrabold text-white shadow-[0_10px_25px_-3px_rgba(21,128,61,0.45),0_0_16px_2px_rgba(34,197,94,0.3)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_14px_30px_-3px_rgba(21,128,61,0.55),0_0_22px_3px_rgba(34,197,94,0.4)] active:translate-y-0 active:scale-95 border border-emerald-600/60 group cursor-pointer"
+                >
+                  <ClipboardCheck className="h-5 w-5 text-amber-300 transition-transform duration-300 group-hover:scale-110" />
+                  <span className="tracking-wide">Mulai Survei Sekarang</span>
+                  <ArrowRight className="h-4 w-4 text-amber-300 transition-transform duration-300 group-hover:translate-x-1" />
+                </Link>
+
+                <Link
+                  href="/kebijakan-privasi"
+                  aria-label="Kebijakan Privasi dan Protokol Teknis Agregasi Data"
+                  title="Kebijakan Privasi & Agregasi Data"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-white border border-slate-300 px-4 py-3.5 text-xs sm:text-sm font-bold text-slate-700 transition-all duration-300 hover:bg-emerald-50 hover:border-emerald-500 hover:text-emerald-900 hover:-translate-y-0.5 hover:shadow-xs shadow-2xs cursor-pointer"
+                >
+                  <ShieldCheck className="h-4 w-4 text-emerald-600" />
+                  <span>Kebijakan Privasi</span>
                 </Link>
               </div>
 
@@ -191,10 +204,15 @@ export default function HomePage() {
                 </p>
               </div>
               <div className="lg:col-span-4 flex justify-end">
-                <Link href="/survei" className="w-full sm:w-auto">
-                  <Button variant="gold" size="lg" className="w-full font-bold shadow-xs">
-                    Mulai Isi Kuesioner
-                  </Button>
+                <Link
+                  href="/survei"
+                  aria-label="Mulai Survei Sekarang - Kuesioner Evaluasi 7 KAIH Santri"
+                  title="Mulai Survei Sekarang"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 rounded-xl bg-gradient-to-r from-amber-400 via-amber-400 to-amber-500 px-7 py-3.5 text-sm sm:text-base font-extrabold text-slate-950 shadow-[0_10px_24px_-4px_rgba(245,158,11,0.5),0_0_16px_2px_rgba(251,191,36,0.35)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_14px_30px_-4px_rgba(245,158,11,0.6),0_0_20px_3px_rgba(251,191,36,0.45)] active:translate-y-0 active:scale-95 border border-amber-300/80 group cursor-pointer"
+                >
+                  <ClipboardCheck className="h-5 w-5 text-slate-950" />
+                  <span>Mulai Survei Sekarang</span>
+                  <ArrowRight className="h-4 w-4 text-slate-950 transition-transform duration-300 group-hover:translate-x-1" />
                 </Link>
               </div>
             </div>

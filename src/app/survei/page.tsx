@@ -38,6 +38,7 @@ import {
   getKaihThemes,
   SurveyTheme,
 } from "@/lib/survey-data";
+import { PrivacyModal } from "@/components/privacy-modal";
 
 const THEME_ICONS: Record<string, React.ElementType> = {
   BookOpen,
@@ -50,6 +51,9 @@ const THEME_ICONS: Record<string, React.ElementType> = {
 };
 
 export default function SurveyPage() {
+  // Pop-up Kebijakan Privasi
+  const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState<boolean>(false);
+
   // Jurusan / Peminatan Santri
   const [selectedJurusan, setSelectedJurusan] = useState<string>("tahfizh");
 
@@ -807,11 +811,20 @@ export default function SurveyPage() {
                 </div>
               </div>
 
-              <div className="rounded-lg border border-slate-200 bg-slate-50 p-3.5 text-xs text-slate-600 flex items-start gap-2.5">
-                <ShieldCheck className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
-                <span>
-                  Survei ini mematuhi standar etika penelitian sekolah. Jawaban Anda bersifat rahasia dan dinilai secara kolektif untuk kemaslahatan pendidikan bersama.
-                </span>
+              <div className="rounded-xl border border-emerald-200 bg-emerald-50/70 p-3.5 text-xs text-emerald-950 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                <div className="flex items-start gap-2.5">
+                  <ShieldCheck className="h-4 w-4 text-emerald-700 shrink-0 mt-0.5" />
+                  <span>
+                    Survei ini mematuhi standar <strong>UU PDP No. 27/2022</strong>. Data santri diolah secara <strong>agregat kolektif</strong> tanpa pelacakan perorangan.
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsPrivacyModalOpen(true)}
+                  className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-800 hover:text-emerald-950 underline shrink-0 cursor-pointer"
+                >
+                  Pelajari Kebijakan Privasi &rarr;
+                </button>
               </div>
             </CardContent>
 
@@ -1016,13 +1029,24 @@ export default function SurveyPage() {
                 </p>
               </div>
 
-              {/* Statement */}
-              <div className="rounded-lg border border-amber-200 bg-amber-50/60 p-4 text-xs text-amber-900 flex items-start gap-3">
+              {/* Statement & Privacy Reminder */}
+              <div className="rounded-xl border border-amber-200 bg-amber-50/60 p-4 text-xs text-amber-900 flex items-start gap-3">
                 <Sparkles className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
-                <div>
-                  <p className="font-semibold">Konfirmasi Pengiriman</p>
-                  <p className="mt-0.5 text-amber-800">
-                    Dengan menekan tombol kirim di bawah, Anda menyatakan bahwa penilaian yang diberikan dibuat secara jujur untuk kemaslahatan pembinaan bersama.
+                <div className="space-y-1">
+                  <p className="font-semibold">Konfirmasi Pengiriman & Jaminan Privasi</p>
+                  <p className="text-amber-800 leading-snug">
+                    Dengan menekan tombol kirim di bawah, Anda menyatakan bahwa penilaian dibuat secara jujur untuk kemaslahatan pembinaan bersama.
+                  </p>
+                  <p className="text-[11px] text-emerald-900 pt-0.5">
+                    Data Anda dilindungi penuh oleh{" "}
+                    <button
+                      type="button"
+                      onClick={() => setIsPrivacyModalOpen(true)}
+                      className="font-bold underline text-emerald-800 hover:text-emerald-950 cursor-pointer"
+                    >
+                      Kebijakan Privasi & Protokol Agregasi Data
+                    </button>
+                    .
                   </p>
                 </div>
               </div>
@@ -1047,6 +1071,12 @@ export default function SurveyPage() {
           </Card>
         )}
       </div>
+
+      {/* Pop-up Dialog Kebijakan Privasi */}
+      <PrivacyModal
+        isOpen={isPrivacyModalOpen}
+        onClose={() => setIsPrivacyModalOpen(false)}
+      />
     </div>
   );
 }
