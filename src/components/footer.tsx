@@ -51,16 +51,6 @@ export function Footer() {
                   <span>Mulai Survei Sekarang (7 KAIH)</span>
                 </Link>
               </li>
-              <li>
-                <Link
-                  href="/kebijakan-privasi"
-                  aria-label="Kebijakan Privasi & Ketentuan Agregasi Data"
-                  title="Kebijakan Privasi & Ketentuan Agregasi Data"
-                  className="hover:text-emerald-700 transition-colors"
-                >
-                  Kebijakan Privasi & Agregasi Data
-                </Link>
-              </li>
             </ul>
           </div>
 
@@ -72,19 +62,11 @@ export function Footer() {
             <div className="space-y-2 text-xs text-slate-500">
               <div className="flex items-start gap-2">
                 <ShieldCheck className="h-4 w-4 shrink-0 text-emerald-600 mt-0.5" />
-                <span>Privasi data santri dijamin sesuai UU PDP No. 27/2022 dan diproses secara agregat murni.</span>
+                <span>Privasi data santri dijamin dan diolah secara agregat objektif.</span>
               </div>
               <div className="flex items-start gap-2">
                 <CheckCircle2 className="h-4 w-4 shrink-0 text-amber-500 mt-0.5" />
                 <span>Seluruh 35 butir instrumen KAIH terstandar skala Likert 1–4.</span>
-              </div>
-              <div className="pt-1">
-                <Link
-                  href="/kebijakan-privasi"
-                  className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 hover:text-emerald-900 hover:underline"
-                >
-                  <span>Lihat Dokumen Kebijakan Privasi Legal & Teknis &rarr;</span>
-                </Link>
               </div>
             </div>
           </div>

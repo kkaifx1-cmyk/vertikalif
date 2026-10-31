@@ -49,16 +49,6 @@ export default function HomePage() {
                   <span className="tracking-wide">Mulai Survei Sekarang</span>
                   <ArrowRight className="h-4 w-4 text-amber-300 transition-transform duration-300 group-hover:translate-x-1" />
                 </Link>
-
-                <Link
-                  href="/kebijakan-privasi"
-                  aria-label="Kebijakan Privasi dan Protokol Teknis Agregasi Data"
-                  title="Kebijakan Privasi & Agregasi Data"
-                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-white border border-slate-300 px-4 py-3.5 text-xs sm:text-sm font-bold text-slate-700 transition-all duration-300 hover:bg-emerald-50 hover:border-emerald-500 hover:text-emerald-900 hover:-translate-y-0.5 hover:shadow-xs shadow-2xs cursor-pointer"
-                >
-                  <ShieldCheck className="h-4 w-4 text-emerald-600" />
-                  <span>Kebijakan Privasi</span>
-                </Link>
               </div>
 
               {/* Quick Stat Pill */}
