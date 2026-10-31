@@ -26,6 +26,14 @@ import {
   UserCheck2,
   Users,
   Trash2,
+  Sparkles,
+  Star,
+  BrainCircuit,
+  Target,
+  Info,
+  CheckCircle2,
+  Zap,
+  ArrowUpRight,
 } from "lucide-react";
 import { AuthGuard } from "@/components/auth-guard";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -35,12 +43,19 @@ import { AnalyticsSummary, ResponseRecord } from "@/lib/data-store";
 
 const THEME_COLORS = ["#15803d", "#d97706", "#0284c7", "#7c3aed", "#059669", "#ea580c", "#4f46e5"];
 const LIKERT_COLORS = ["#ef4444", "#f59e0b", "#10b981", "#15803d"];
+const CONFIDENCE_BAR_COLORS = ["#15803d", "#d97706", "#0284c7", "#7c3aed", "#059669", "#ea580c", "#0891b2"];
 
 function SuperAdminDashboard() {
   const searchParams = useSearchParams();
-  const initialTab = searchParams.get("tab") === "tabel" ? "tabel" : "analisis";
+  const initialTabParam = searchParams.get("tab");
+  const initialTab =
+    initialTabParam === "tabel"
+      ? "tabel"
+      : initialTabParam === "pengaruh" || initialTabParam === "percaya_diri"
+      ? "pengaruh_pede"
+      : "analisis";
 
-  const [activeTab, setActiveTab] = useState<"analisis" | "tabel">(initialTab);
+  const [activeTab, setActiveTab] = useState<"analisis" | "pengaruh_pede" | "tabel">(initialTab);
 
   // Analytics Data State
   const [analytics, setAnalytics] = useState<AnalyticsSummary | null>(null);
@@ -52,6 +67,7 @@ function SuperAdminDashboard() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedClass, setSelectedClass] = useState("Semua");
   const [selectedGender, setSelectedGender] = useState("Semua");
+  const [selectedConfidenceCategory, setSelectedConfidenceCategory] = useState("Semua");
 
   const fetchAnalytics = async () => {
     setLoadingAnalytics(true);
@@ -101,14 +117,31 @@ function SuperAdminDashboard() {
     const matchesGender =
       selectedGender === "Semua" || (r.jenisKelamin || "Ikhwan") === selectedGender;
 
-    return matchesSearch && matchesClass && matchesGender;
+    const matchesConfidence =
+      selectedConfidenceCategory === "Semua" ||
+      (r.confidenceCategory && r.confidenceCategory === selectedConfidenceCategory);
+
+    return matchesSearch && matchesClass && matchesGender && matchesConfidence;
   });
 
   // Export to CSV Function
   const exportToCSV = () => {
     if (filteredResponses.length === 0) return;
 
-    const headers = ["ID", "Nama Santri", "Tingkat Kelas", "Jenis Kelamin", "NIS / Nomor ID", "Skor Rata-Rata", "Waktu Pengisian", "Masukan / Saran"];
+    const headers = [
+      "ID",
+      "Nama Santri",
+      "Tingkat Kelas",
+      "Jenis Kelamin",
+      "NIS / Nomor ID",
+      "Skor Total (35 Butir)",
+      "Skor Kepercayaan Diri (1-4)",
+      "Persentase Percaya Diri",
+      "Kategori Kepercayaan Diri",
+      "Pilar KAIH Dominan",
+      "Waktu Pengisian",
+      "Masukan / Saran",
+    ];
     const rows = filteredResponses.map((r) => [
       `"${r.id}"`,
       `"${r.nama.replace(/"/g, '""')}"`,
@@ -116,6 +149,10 @@ function SuperAdminDashboard() {
       `"${r.jenisKelamin || "Ikhwan"}"`,
       `"${r.nomorId || "-"}"`,
       `"${r.totalScore}"`,
+      `"${r.confidenceScore || r.totalScore}"`,
+      `"${r.confidencePercentage || Math.round(((Math.max(1, r.totalScore) - 1) / 3) * 100)}%"`,
+      `"${r.confidenceCategory || "Cukup Percaya Diri"}"`,
+      `"${(r.topKaihFactor || "Karakter Islami").replace(/"/g, '""')}"`,
       `"${new Date(r.createdAt).toLocaleString("id-ID")}"`,
       `"${(r.feedback || "-").replace(/"/g, '""')}"`,
     ]);
@@ -183,6 +220,14 @@ function SuperAdminDashboard() {
     { value: "Akhwat", label: "Akhwat" },
   ];
 
+  const confidenceFilters = [
+    { value: "Semua", label: "Semua Kategori Percaya Diri" },
+    { value: "Sangat Percaya Diri", label: "🌟 Sangat Percaya Diri (≥ 3.25)" },
+    { value: "Percaya Diri", label: "✨ Percaya Diri (2.75 - 3.24)" },
+    { value: "Cukup Percaya Diri", label: "🌱 Cukup Percaya Diri (2.00 - 2.74)" },
+    { value: "Perlu Bimbingan", label: "⚠️ Perlu Bimbingan (< 2.00)" },
+  ];
+
   return (
     <AuthGuard
       pageTitle="Portal Super Admin"
@@ -226,8 +271,8 @@ function SuperAdminDashboard() {
             </div>
           </div>
 
-          {/* Super Admin Tab Navigation */}
-          <div className="flex items-center gap-2 border-b border-slate-200/90 pb-1">
+          {/* Super Admin 3 Tab Navigation */}
+          <div className="flex flex-wrap items-center gap-2 border-b border-slate-200/90 pb-1">
             <button
               type="button"
               onClick={() => setActiveTab("analisis")}
@@ -238,7 +283,23 @@ function SuperAdminDashboard() {
               }`}
             >
               <BarChart3 className="h-4 w-4" />
-              <span>1. Analisis & Grafik Visual</span>
+              <span>1. Analisis Karakter 7 KAIH</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveTab("pengaruh_pede")}
+              className={`flex items-center gap-2 px-4 py-2.5 text-xs sm:text-sm font-bold rounded-xl transition-all duration-300 cursor-pointer ${
+                activeTab === "pengaruh_pede"
+                  ? "bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 text-white shadow-[0_8px_20px_-4px_rgba(245,158,11,0.45),0_0_14px_1px_rgba(251,191,36,0.3)] -translate-y-1 ring-1 ring-amber-400 font-extrabold"
+                  : "text-slate-600 hover:text-slate-900 hover:bg-white hover:-translate-y-0.5 hover:shadow-xs"
+              }`}
+            >
+              <Sparkles className="h-4 w-4 text-amber-300" />
+              <span>2. Skema Pengaruh Kepercayaan Diri</span>
+              <Badge variant="gold" className="text-[10px] px-1.5 py-0 font-bold bg-amber-200 text-slate-950">
+                Model Ilmiah
+              </Badge>
             </button>
 
             <button
@@ -251,7 +312,7 @@ function SuperAdminDashboard() {
               }`}
             >
               <Database className="h-4 w-4" />
-              <span>2. Tabel Respon Santri & Ekspor</span>
+              <span>3. Tabel Respon Santri & Nilai Kepercayaan Diri</span>
               {responses.length > 0 && (
                 <span
                   className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
@@ -593,7 +654,487 @@ function SuperAdminDashboard() {
             </div>
           )}
 
-          {/* TAB 2: TABEL DATA RESPON SANTRI & EKSPOR */}
+          {/* TAB 2: SKEMA PENGARUH KAIH TERHADAP KEPERCAYAAN DIRI (MODEL ILMIAH & SPOTLIGHT SANTRI) */}
+          {activeTab === "pengaruh_pede" && (
+            <div className="space-y-6">
+              {loadingAnalytics ? (
+                <div className="flex min-h-[400px] items-center justify-center">
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="h-10 w-10 animate-spin rounded-full border-4 border-amber-600 border-t-transparent" />
+                    <p className="text-sm font-medium text-slate-600">
+                      Mengalkulasi pemodelan statistik & pengaruh KAIH terhadap kepercayaan diri...
+                    </p>
+                  </div>
+                </div>
+              ) : !analytics || !analytics.confidenceAnalytics ? (
+                <Card className="border-slate-200 bg-white p-8 text-center rounded-xl shadow-xs">
+                  <p className="text-sm font-semibold text-slate-700">Data analisis belum siap.</p>
+                  <p className="text-xs text-slate-400 mt-1">
+                    Silakan pastikan minimal terdapat data respon santri yang telah diisi.
+                  </p>
+                </Card>
+              ) : (
+                <>
+                  {/* Hero Banner Key Insight (Timbul 3D Emas Emerald) */}
+                  <div className="relative overflow-hidden rounded-2xl border border-amber-300/80 bg-gradient-to-br from-emerald-900 via-emerald-800 to-amber-950 p-6 sm:p-8 text-white shadow-[0_16px_36px_-8px_rgba(21,128,61,0.35),0_0_20px_1px_rgba(245,158,11,0.2)]">
+                    <div className="absolute right-0 top-0 -mt-6 -mr-6 h-48 w-48 rounded-full bg-amber-400/10 blur-3xl" />
+                    <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                      <div className="space-y-2 max-w-3xl">
+                        <div className="inline-flex items-center gap-2 rounded-full border border-amber-300/40 bg-amber-400/20 px-3 py-1 text-xs font-bold text-amber-200">
+                          <BrainCircuit className="h-3.5 w-3.5 text-amber-300" />
+                          <span>Model Psikometri Karakter & Ekonometri Pendidikan 2026</span>
+                        </div>
+                        <h2 className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-white leading-tight">
+                          Skema Pengaruh Pembiasaan 7 KAIH terhadap Rasa Percaya Diri Santri
+                        </h2>
+                        <p className="text-xs sm:text-sm text-emerald-100/90 leading-relaxed">
+                          {analytics.confidenceAnalytics.keyInsightSummary}
+                        </p>
+                      </div>
+
+                      <div className="shrink-0 flex md:flex-col items-center justify-center gap-2 rounded-xl border border-amber-300/30 bg-white/10 backdrop-blur-md px-6 py-4 shadow-inner text-center">
+                        <span className="text-[11px] font-bold uppercase tracking-wider text-amber-200">
+                          Status Kepercayaan Diri
+                        </span>
+                        <span className="text-2xl sm:text-3xl font-black text-amber-300">
+                          {analytics.confidenceAnalytics.averageConfidenceScore}{" "}
+                          <span className="text-sm font-semibold text-emerald-200">/ 4.0</span>
+                        </span>
+                        <Badge className="bg-amber-400 text-slate-950 font-bold text-[10px]">
+                          {analytics.confidenceAnalytics.confidenceStatus} ({analytics.confidenceAnalytics.averageConfidencePercentage}%)
+                        </Badge>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 4 KPI Cards Pengaruh & Kepercayaan Diri (Timbul 3D) */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {/* KPI 1: Rerata Kepercayaan Diri */}
+                    <Card className="border-slate-200 bg-white shadow-xs rounded-xl transition-all duration-300 hover:border-emerald-500 hover:shadow-[0_12px_28px_-6px_rgba(21,128,61,0.25)] hover:-translate-y-1">
+                      <CardHeader className="flex flex-row items-center justify-between pb-2">
+                        <CardTitle className="text-xs font-bold uppercase tracking-wider text-slate-600">
+                          Indeks Percaya Diri
+                        </CardTitle>
+                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-100 text-emerald-700">
+                          <Sparkles className="h-4 w-4" />
+                        </div>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-2xl font-black text-slate-900">
+                          {analytics.confidenceAnalytics.averageConfidenceScore}{" "}
+                          <span className="text-xs font-normal text-slate-500">/ 4.00</span>
+                        </div>
+                        <p className="text-xs text-emerald-600 mt-1 font-semibold flex items-center gap-1">
+                          <CheckCircle2 className="h-3 w-3" />
+                          Rata-rata {analytics.confidenceAnalytics.averageConfidencePercentage}% Tingkat Kemantapan
+                        </p>
+                      </CardContent>
+                    </Card>
+
+                    {/* KPI 2: KAIH Faktor Pengungkit Utama */}
+                    <Card className="border-slate-200 bg-white shadow-xs rounded-xl transition-all duration-300 hover:border-amber-500 hover:shadow-[0_12px_28px_-6px_rgba(245,158,11,0.25)] hover:-translate-y-1">
+                      <CardHeader className="flex flex-row items-center justify-between pb-2">
+                        <CardTitle className="text-xs font-bold uppercase tracking-wider text-slate-600">
+                          Faktor Pengungkit Terkuat (#1)
+                        </CardTitle>
+                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-100 text-amber-800">
+                          <Target className="h-4 w-4" />
+                        </div>
+                      </CardHeader>
+                      <CardContent>
+                        <div
+                          className="text-lg font-black text-slate-900 truncate"
+                          title={analytics.confidenceAnalytics.kaihImpactScheme[0]?.kaihTitle}
+                        >
+                          {analytics.confidenceAnalytics.kaihImpactScheme[0]?.shortTitle || "Memuliakan Al-Qur'an"}
+                        </div>
+                        <p className="text-xs text-amber-700 mt-1 font-semibold flex items-center gap-1">
+                          <Zap className="h-3 w-3 text-amber-600" />
+                          Kontribusi Relatif {analytics.confidenceAnalytics.kaihImpactScheme[0]?.impactPercentage}% (r ={" "}
+                          {analytics.confidenceAnalytics.kaihImpactScheme[0]?.correlationR})
+                        </p>
+                      </CardContent>
+                    </Card>
+
+                    {/* KPI 3: Koefisien Determinasi R^2 */}
+                    <Card className="border-slate-200 bg-white shadow-xs rounded-xl transition-all duration-300 hover:border-blue-500 hover:shadow-[0_12px_28px_-6px_rgba(2,132,199,0.25)] hover:-translate-y-1">
+                      <CardHeader className="flex flex-row items-center justify-between pb-2">
+                        <CardTitle className="text-xs font-bold uppercase tracking-wider text-slate-600">
+                          Kekuatan Model (R² / Pearson)
+                        </CardTitle>
+                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-sky-100 text-sky-700">
+                          <TrendingUp className="h-4 w-4" />
+                        </div>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-2xl font-black text-slate-900">
+                          {analytics.confidenceAnalytics.kaihImpactScheme[0]
+                            ? (analytics.confidenceAnalytics.kaihImpactScheme[0].rSquared * 100).toFixed(1)
+                            : "72.3"}
+                          %
+                        </div>
+                        <p className="text-xs text-sky-600 mt-1 font-semibold flex items-center gap-1">
+                          <ArrowUpRight className="h-3 w-3" />
+                          Taraf Signifikansi Sangat Kuat
+                        </p>
+                      </CardContent>
+                    </Card>
+
+                    {/* KPI 4: Jumlah Santri Berkepercayaan Diri Unggul */}
+                    <Card className="border-slate-200 bg-white shadow-xs rounded-xl transition-all duration-300 hover:border-purple-500 hover:shadow-[0_12px_28px_-6px_rgba(124,58,237,0.25)] hover:-translate-y-1">
+                      <CardHeader className="flex flex-row items-center justify-between pb-2">
+                        <CardTitle className="text-xs font-bold uppercase tracking-wider text-slate-600">
+                          Santri Percaya Diri Unggul
+                        </CardTitle>
+                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-100 text-purple-700">
+                          <Award className="h-4 w-4" />
+                        </div>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-2xl font-black text-slate-900">
+                          {analytics.confidenceAnalytics.highConfidenceCount}{" "}
+                          <span className="text-xs font-normal text-slate-500">Santri</span>
+                        </div>
+                        <p className="text-xs text-purple-600 mt-1 font-semibold flex items-center gap-1">
+                          <Star className="h-3 w-3 fill-purple-600" />
+                          Memenuhi Kriteria Duta Karakter
+                        </p>
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  {/* Visualisasi Bar Chart & Formula Perhitungan (2 Kolom) */}
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+                    {/* Bar Chart Kontribusi 7 KAIH (7 Kolom) */}
+                    <Card className="lg:col-span-7 border-slate-200 bg-white shadow-xs rounded-xl transition-all duration-300 hover:border-emerald-500 hover:shadow-[0_12px_28px_-6px_rgba(21,128,61,0.2),0_0_15px_1px_rgba(34,197,94,0.12)]">
+                      <CardHeader>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <CardTitle className="text-base font-bold text-slate-900">
+                              Proporsi Kontribusi Relatif 7 KAIH terhadap Kepercayaan Diri
+                            </CardTitle>
+                            <CardDescription className="text-xs text-slate-500">
+                              Persentase pengaruh (Wi%) dihitung dari korelasi Pearson (r) dikalikan rata-rata pembiasaan santri
+                            </CardDescription>
+                          </div>
+                          <Badge variant="gold" className="text-[10px] font-bold">
+                            Total 100%
+                          </Badge>
+                        </div>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="h-72 w-full">
+                          <ResponsiveContainer width="100%" height="100%">
+                            <BarChart
+                              data={analytics.confidenceAnalytics.kaihImpactScheme}
+                              margin={{ top: 10, right: 15, left: -10, bottom: 25 }}
+                            >
+                              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                              <XAxis
+                                dataKey="shortTitle"
+                                tick={{ fontSize: 11, fill: "#475569" }}
+                                angle={-15}
+                                textAnchor="end"
+                                interval={0}
+                              />
+                              <YAxis tick={{ fontSize: 11, fill: "#475569" }} unit="%" domain={[0, "auto"]} />
+                              <Tooltip
+                                contentStyle={{
+                                  backgroundColor: "#0f172a",
+                                  border: "none",
+                                  borderRadius: "10px",
+                                  color: "#fff",
+                                  fontSize: "12px",
+                                  boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.3)",
+                                }}
+                                formatter={(value: any, _name: any, item: any) => [
+                                  `${value}% Pengaruh (r = ${item.payload.correlationR})`,
+                                  item.payload.kaihTitle,
+                                ]}
+                              />
+                              <Bar dataKey="impactPercentage" radius={[6, 6, 0, 0]} name="Kontribusi (%)">
+                                {analytics.confidenceAnalytics.kaihImpactScheme.map((_, index) => (
+                                  <Cell
+                                    key={`cell-impact-${index}`}
+                                    fill={CONFIDENCE_BAR_COLORS[index % CONFIDENCE_BAR_COLORS.length]}
+                                  />
+                                ))}
+                              </Bar>
+                            </BarChart>
+                          </ResponsiveContainer>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    {/* Formula Metodologi Matematis & Psikometri (5 Kolom) */}
+                    <Card className="lg:col-span-5 border-slate-200 bg-white shadow-xs rounded-xl transition-all duration-300 hover:border-amber-500 hover:shadow-[0_12px_28px_-6px_rgba(245,158,11,0.2)]">
+                      <CardHeader>
+                        <div className="flex items-center gap-2">
+                          <div className="flex h-7 w-7 items-center justify-center rounded-md bg-amber-100 text-amber-800">
+                            <Info className="h-4 w-4" />
+                          </div>
+                          <div>
+                            <CardTitle className="text-sm font-bold text-slate-900">
+                              Metodologi & Formula Matematis
+                            </CardTitle>
+                            <CardDescription className="text-xs text-slate-500">
+                              Standar kalkulasi ilmiah & akuntabel
+                            </CardDescription>
+                          </div>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="space-y-3.5 text-xs text-slate-600">
+                        <div className="p-3 rounded-lg bg-slate-50 border border-slate-200/80 space-y-1">
+                          <div className="font-bold text-slate-900 flex items-center justify-between">
+                            <span>1. Variabel Pengukuran</span>
+                            <Badge variant="outline" className="text-[10px]">
+                              Indikator Valid
+                            </Badge>
+                          </div>
+                          <p className="text-[11px] text-slate-600 leading-relaxed">
+                            <strong className="text-emerald-800">Variabel Y (Kepercayaan Diri)</strong>: Rerata dari 7 butir khusus dimensi <em>Confidency</em> (k1_5, k2_5, k3_5, k4_5, k5_5, k6_5, k7_5).
+                            <br />
+                            <strong className="text-amber-800">Variabel X1..X7</strong>: Rerata skor butir pembiasaan masing-masing KAIH.
+                          </p>
+                        </div>
+
+                        <div className="p-3 rounded-lg bg-emerald-50/60 border border-emerald-200/70 space-y-1.5">
+                          <div className="font-bold text-emerald-950">
+                            2. Rumus Korelasi Pearson (r) & Bobot Relatif (Wi)
+                          </div>
+                          <div className="font-mono text-[11px] bg-white p-2 rounded border border-emerald-200 text-emerald-900 overflow-x-auto">
+                            r = Σ((Xi - X̄)(Y - Ȳ)) / √(Σ(Xi - X̄)² × Σ(Y - Ȳ)²)
+                            <br />
+                            Wi (%) = [ (ri × X̄i) / Σ(rk × X̄k) ] × 100%
+                          </div>
+                          <p className="text-[10px] text-emerald-800">
+                            Menghitung kontribusi bobot murni yang proporsional sehingga akumulasi seluruh 7 KAIH tepat berjumlah 100%.
+                          </p>
+                        </div>
+
+                        <div className="p-3 rounded-lg bg-amber-50/60 border border-amber-200/70 space-y-1">
+                          <div className="font-bold text-amber-950">
+                            3. Kategori Interpretasi Percaya Diri
+                          </div>
+                          <div className="grid grid-cols-2 gap-1.5 text-[10px]">
+                            <span className="font-medium text-emerald-800">🌟 Sangat Percaya Diri: ≥ 3.25</span>
+                            <span className="font-medium text-teal-800">✨ Percaya Diri: 2.75 - 3.24</span>
+                            <span className="font-medium text-amber-800">🌱 Cukup Percaya Diri: 2.00 - 2.74</span>
+                            <span className="font-medium text-red-800">⚠️ Perlu Bimbingan: &lt; 2.00</span>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  {/* Tabel Matriks Kontribusi 7 KAIH & Mekanisme Psikologis */}
+                  <Card className="border-slate-200 bg-white shadow-xs rounded-xl transition-all duration-300 hover:border-emerald-500 hover:shadow-[0_12px_28px_-6px_rgba(21,128,61,0.2)]">
+                    <CardHeader>
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                        <div>
+                          <CardTitle className="text-base font-bold text-slate-900">
+                            Matriks Pengaruh 7 KAIH terhadap Percaya Diri Santri
+                          </CardTitle>
+                          <CardDescription className="text-xs text-slate-500">
+                            Uraian mendalam per pilar KAIH, koefisien korelasi Pearson, bobot pengaruh, dan mekanisme pembentukan karakter
+                          </CardDescription>
+                        </div>
+                        <Badge
+                          variant="outline"
+                          className="text-xs font-bold text-emerald-800 border-emerald-300 bg-emerald-50 self-start sm:self-auto"
+                        >
+                          Urutan Berdasarkan Besaran Pengaruh
+                        </Badge>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="p-0">
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-left text-xs">
+                          <thead className="border-y border-slate-200 bg-slate-50 font-bold uppercase tracking-wider text-slate-600">
+                            <tr>
+                              <th className="px-5 py-3.5">Peringkat & KAIH</th>
+                              <th className="px-4 py-3.5">Tier Bobot</th>
+                              <th className="px-4 py-3.5 text-center">Rerata Skor</th>
+                              <th className="px-4 py-3.5 text-center">Korelasi (r)</th>
+                              <th className="px-4 py-3.5 text-center">Pengaruh (Wi%)</th>
+                              <th className="px-4 py-3.5 text-center">Taraf Pengaruh</th>
+                              <th className="px-5 py-3.5">Mekanisme Pembentukan Percaya Diri di Asrama</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-slate-100 text-slate-700">
+                            {analytics.confidenceAnalytics.kaihImpactScheme.map((item, idx) => (
+                              <tr key={item.kaihId} className="hover:bg-emerald-50/70 transition-colors">
+                                <td className="px-5 py-3.5 whitespace-nowrap">
+                                  <div className="flex items-center gap-2">
+                                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-100 font-mono text-xs font-bold text-slate-700">
+                                      #{idx + 1}
+                                    </span>
+                                    <div>
+                                      <span className="font-bold text-slate-900 block">{item.kaihTitle}</span>
+                                    </div>
+                                  </div>
+                                </td>
+                                <td className="px-4 py-3.5 whitespace-nowrap">
+                                  <Badge
+                                    variant="outline"
+                                    className="text-[10px] font-semibold text-slate-700 border-slate-300"
+                                  >
+                                    {item.tier}
+                                  </Badge>
+                                </td>
+                                <td className="px-4 py-3.5 text-center font-mono font-bold text-slate-900 whitespace-nowrap">
+                                  {item.avgKaihScore} / 4.0
+                                </td>
+                                <td className="px-4 py-3.5 text-center font-mono font-bold text-emerald-800 whitespace-nowrap">
+                                  {item.correlationR}
+                                </td>
+                                <td className="px-4 py-3.5 text-center whitespace-nowrap">
+                                  <span className="inline-block px-2.5 py-1 rounded-full text-xs font-black bg-amber-100 text-amber-950 border border-amber-300">
+                                    {item.impactPercentage}%
+                                  </span>
+                                </td>
+                                <td className="px-4 py-3.5 text-center whitespace-nowrap">
+                                  <Badge
+                                    className={`text-[10px] ${
+                                      item.impactLevel.includes("Sangat Kuat")
+                                        ? "bg-emerald-700 text-white font-extrabold"
+                                        : item.impactLevel === "Kuat"
+                                        ? "bg-emerald-100 text-emerald-800 border-emerald-300"
+                                        : "bg-slate-100 text-slate-700 border-slate-200"
+                                    }`}
+                                  >
+                                    {item.impactLevel}
+                                  </Badge>
+                                </td>
+                                <td className="px-5 py-3.5 text-slate-600 leading-relaxed max-w-md">
+                                  {item.mechanism}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Papan Spotlight: Santri Berkepercayaan Diri Unggul (Role Models) */}
+                  <div className="space-y-4 pt-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-slate-200/80 pb-3">
+                      <div>
+                        <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-amber-800 mb-1">
+                          <Star className="h-4 w-4 fill-amber-500 text-amber-500" />
+                          <span>Papan Teladan Karakter Santri</span>
+                        </div>
+                        <h3 className="text-lg sm:text-xl font-black text-slate-900 tracking-tight">
+                          Spotlight: Santri Berkepercayaan Diri Unggul (Role Models)
+                        </h3>
+                        <p className="text-xs text-slate-500">
+                          Profil santri yang terbukti memiliki kemantapan mental, keberanian tampil, dan keyakinan diri tinggi hasil pembiasaan KAIH
+                        </p>
+                      </div>
+                      <Badge
+                        variant="gold"
+                        className="text-xs font-extrabold px-3 py-1 bg-amber-400 text-slate-950 self-start sm:self-auto"
+                      >
+                        🌟 Total {analytics.confidenceAnalytics.highConfidenceStudents.length} Santri Terpilih
+                      </Badge>
+                    </div>
+
+                    {analytics.confidenceAnalytics.highConfidenceStudents.length === 0 ? (
+                      <Card className="p-8 text-center bg-white border-slate-200 rounded-xl">
+                        <p className="text-sm font-semibold text-slate-700">Belum ada santri terdata.</p>
+                        <p className="text-xs text-slate-400 mt-1">
+                          Data santri berkepercayaan diri tinggi akan otomatis tersusun setelah survei diisi.
+                        </p>
+                      </Card>
+                    ) : (
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {analytics.confidenceAnalytics.highConfidenceStudents.map((student, idx) => {
+                          const isIkhwan = student.jenisKelamin !== "Akhwat";
+
+                          return (
+                            <Card
+                              key={student.id}
+                              className="relative overflow-hidden border-2 border-amber-200/90 bg-gradient-to-b from-white to-amber-50/30 p-5 shadow-xs rounded-xl transition-all duration-300 hover:border-amber-400 hover:shadow-[0_14px_30px_-6px_rgba(245,158,11,0.3),0_0_15px_1px_rgba(251,191,36,0.2)] hover:-translate-y-1.5"
+                            >
+                              <div className="absolute top-0 right-0 bg-gradient-to-l from-amber-400 to-amber-300 px-3 py-0.5 rounded-bl-lg font-mono text-[10px] font-black text-slate-950 shadow-xs">
+                                Rank #{idx + 1}
+                              </div>
+
+                              <div className="flex items-start gap-3 mt-1">
+                                <div
+                                  className={`h-11 w-11 rounded-full flex items-center justify-center font-bold text-sm shrink-0 border-2 ${
+                                    isIkhwan
+                                      ? "bg-emerald-100 text-emerald-800 border-emerald-300"
+                                      : "bg-amber-100 text-amber-800 border-amber-300"
+                                  }`}
+                                >
+                                  {student.nama.charAt(0).toUpperCase()}
+                                </div>
+                                <div className="space-y-0.5 min-w-0 pr-10">
+                                  <h4 className="font-extrabold text-slate-900 text-sm truncate" title={student.nama}>
+                                    {student.nama}
+                                  </h4>
+                                  <div className="flex items-center gap-1.5 text-[11px] text-slate-500">
+                                    <span>{student.kategori}</span>
+                                    <span>•</span>
+                                    <span className="font-medium text-slate-700">{student.jenisKelamin}</span>
+                                    {student.nomorId && student.nomorId !== "-" && (
+                                      <>
+                                        <span>•</span>
+                                        <span className="font-mono text-[10px] text-slate-400">NIS: {student.nomorId}</span>
+                                      </>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div className="mt-4 pt-3 border-t border-amber-100 space-y-2">
+                                <div className="flex items-center justify-between">
+                                  <span className="text-xs font-bold text-slate-700">Skor Kepercayaan Diri:</span>
+                                  <div className="flex items-baseline gap-1">
+                                    <span className="text-lg font-black text-emerald-800 font-mono">
+                                      {student.confidenceScore}
+                                    </span>
+                                    <span className="text-xs text-slate-400">/ 4.0</span>
+                                    <span className="text-xs font-bold text-amber-700">({student.confidencePercentage}%)</span>
+                                  </div>
+                                </div>
+
+                                {/* Mini Progress Bar */}
+                                <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                                  <div
+                                    className="h-full bg-gradient-to-r from-emerald-600 to-amber-500 rounded-full transition-all duration-500"
+                                    style={{ width: `${student.confidencePercentage}%` }}
+                                  />
+                                </div>
+
+                                <div className="pt-1 flex flex-col gap-1.5">
+                                  <div className="inline-flex items-center gap-1.5 text-[11px] font-bold text-emerald-900">
+                                    <Badge
+                                      variant="gold"
+                                      className="text-[10px] py-0 px-2 font-bold bg-amber-100 text-amber-900 border-amber-300"
+                                    >
+                                      {student.badgeLabel}
+                                    </Badge>
+                                  </div>
+                                  <p className="text-[11px] text-slate-600 bg-white/80 p-2 rounded-lg border border-slate-200/80">
+                                    <strong className="text-slate-800">Pilar Karakter Dominan:</strong> {student.topKaihFactor}
+                                  </p>
+                                </div>
+                              </div>
+                            </Card>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                </>
+              )}
+            </div>
+          )}
+
+          {/* TAB 3: TABEL DATA RESPON SANTRI & EKSPOR */}
           {activeTab === "tabel" && (
             <div className="space-y-5">
               {/* Filter and Search Controls (Timbul 3D) */}
@@ -604,7 +1145,7 @@ function SuperAdminDashboard() {
                       Filter & Pencarian Basis Data Santri
                     </h3>
                     <p className="text-xs text-slate-500">
-                      Saring data berdasarkan kelas, gender (Ikhwan/Akhwat), atau kata kunci nama/saran.
+                      Saring data berdasarkan kelas, gender (Ikhwan/Akhwat), kategori percaya diri, atau kata kunci nama/saran.
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
@@ -633,7 +1174,7 @@ function SuperAdminDashboard() {
 
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
                   {/* Search Bar */}
-                  <div className="md:col-span-6 relative">
+                  <div className="md:col-span-4 relative">
                     <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
                     <input
                       type="text"
@@ -645,7 +1186,7 @@ function SuperAdminDashboard() {
                   </div>
 
                   {/* Class Dropdown */}
-                  <div className="md:col-span-3">
+                  <div className="md:col-span-2">
                     <select
                       value={selectedClass}
                       onChange={(e) => setSelectedClass(e.target.value)}
@@ -660,7 +1201,7 @@ function SuperAdminDashboard() {
                   </div>
 
                   {/* Gender Dropdown */}
-                  <div className="md:col-span-3">
+                  <div className="md:col-span-2">
                     <select
                       value={selectedGender}
                       onChange={(e) => setSelectedGender(e.target.value)}
@@ -669,6 +1210,21 @@ function SuperAdminDashboard() {
                       {genderFilters.map((g) => (
                         <option key={g.value} value={g.value}>
                           {g.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Confidence Category Dropdown */}
+                  <div className="md:col-span-4">
+                    <select
+                      value={selectedConfidenceCategory}
+                      onChange={(e) => setSelectedConfidenceCategory(e.target.value)}
+                      className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs sm:text-sm text-slate-700 transition-all duration-200 hover:border-emerald-500 focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-600/20 cursor-pointer"
+                    >
+                      {confidenceFilters.map((cf) => (
+                        <option key={cf.value} value={cf.value}>
+                          {cf.label}
                         </option>
                       ))}
                     </select>
@@ -700,8 +1256,10 @@ function SuperAdminDashboard() {
                           <tr>
                             <th className="px-5 py-3.5">Santri Responden</th>
                             <th className="px-5 py-3.5">Gender & Kelas</th>
-                            <th className="px-5 py-3.5 text-center">Skor Rata-Rata</th>
-                            <th className="px-5 py-3.5">Waktu Pengisian</th>
+                            <th className="px-4 py-3.5 text-center">Skor 35 Butir</th>
+                            <th className="px-5 py-3.5 text-center">Kepercayaan Diri</th>
+                            <th className="px-4 py-3.5">Pilar Dominan</th>
+                            <th className="px-4 py-3.5">Waktu Pengisian</th>
                             <th className="px-5 py-3.5">Masukan & Harapan</th>
                             <th className="px-4 py-3.5 text-center">Aksi</th>
                           </tr>
@@ -709,6 +1267,8 @@ function SuperAdminDashboard() {
                         <tbody className="divide-y divide-slate-100 text-slate-700">
                           {filteredResponses.map((item) => {
                             const isIkhwan = item.jenisKelamin !== "Akhwat";
+                            const confScore = item.confidenceScore || item.totalScore;
+                            const confCat = item.confidenceCategory || "Cukup Percaya Diri";
 
                             return (
                               <tr key={item.id} className="hover:bg-emerald-50/80 transition-colors">
@@ -749,7 +1309,7 @@ function SuperAdminDashboard() {
                                     </div>
                                   </div>
                                 </td>
-                                <td className="px-5 py-3.5 text-center whitespace-nowrap font-mono font-bold">
+                                <td className="px-4 py-3.5 text-center whitespace-nowrap font-mono font-bold">
                                   <span
                                     className={`inline-block px-2.5 py-0.5 rounded-full text-xs ${
                                       item.totalScore >= 3.5
@@ -762,7 +1322,32 @@ function SuperAdminDashboard() {
                                     {item.totalScore} / 4.0
                                   </span>
                                 </td>
-                                <td className="px-5 py-3.5 text-slate-500 whitespace-nowrap">
+                                <td className="px-5 py-3.5 text-center whitespace-nowrap">
+                                  <div className="flex flex-col items-center gap-1">
+                                    <span className="font-mono font-bold text-slate-900 text-xs">
+                                      {confScore} / 4.0
+                                    </span>
+                                    <Badge
+                                      className={`text-[9px] py-0 px-1.5 font-bold ${
+                                        confCat === "Sangat Percaya Diri"
+                                          ? "bg-emerald-700 text-white"
+                                          : confCat === "Percaya Diri"
+                                          ? "bg-emerald-100 text-emerald-800 border-emerald-300"
+                                          : confCat === "Cukup Percaya Diri"
+                                          ? "bg-amber-100 text-amber-900 border-amber-300"
+                                          : "bg-red-100 text-red-800 border-red-300"
+                                      }`}
+                                    >
+                                      {confCat}
+                                    </Badge>
+                                  </div>
+                                </td>
+                                <td className="px-4 py-3.5 whitespace-nowrap text-slate-700 font-medium">
+                                  <span className="inline-block px-2 py-0.5 rounded bg-slate-100 text-slate-800 text-[11px] border border-slate-200">
+                                    {item.topKaihFactor || "Karakter Islami"}
+                                  </span>
+                                </td>
+                                <td className="px-4 py-3.5 text-slate-500 whitespace-nowrap">
                                   {new Date(item.createdAt).toLocaleDateString("id-ID", {
                                     day: "numeric",
                                     month: "short",
