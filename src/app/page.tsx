@@ -8,11 +8,102 @@ import {
   ShieldCheck,
   Sparkles,
   Users2,
+  BookOpen,
+  Users,
+  Compass,
+  BookMarked,
+  HeartPulse,
+  Moon,
+  Apple,
+  Award,
+  Layers,
+  ChevronRight,
+  Lock,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { WHITELIST_MEMBERS } from "@/lib/survey-data";
+
+const KAIH_SHOWCASE = [
+  {
+    num: 1,
+    title: "Gemar Membaca & Literasi Riset",
+    focus: "Membangun tradisi membaca mendalam, literasi digital beretika, dan daya argumentasi kritis berbasis data.",
+    category: "Literasi & Akademik",
+    tier: "Tier 1 (Bobot ×3)",
+    impact: "18% Pengaruh",
+    color: "from-emerald-600 to-teal-700",
+    badgeBg: "bg-emerald-50 text-emerald-800 border-emerald-200",
+    icon: BookOpen,
+  },
+  {
+    num: 2,
+    title: "Bermasyarakat, Ukhuwah & Adab Sosial",
+    focus: "Menjaga kebersihan asrama, kepedulian sosial, serta adab santun dalam interaksi sesama santri dan masyarakat.",
+    category: "Sosial & Lingkungan",
+    tier: "Tier 3 (Bobot ×1)",
+    impact: "11% Pengaruh",
+    color: "from-sky-600 to-cyan-700",
+    badgeBg: "bg-sky-50 text-sky-800 border-sky-200",
+    icon: Users,
+  },
+  {
+    num: 3,
+    title: "Kesiapan & Kekhusyukan Ibadah",
+    focus: "Disiplin bangun pagi, kemantapan salat berjamaah tepat waktu di masjid, dan keistiqamahan halaqah subuh.",
+    category: "Spiritual & Disiplin",
+    tier: "Tier 2 (Bobot ×2)",
+    impact: "14% Pengaruh",
+    color: "from-amber-500 to-amber-700",
+    badgeBg: "bg-amber-50 text-amber-900 border-amber-200",
+    icon: Compass,
+  },
+  {
+    num: 4,
+    title: "Memuliakan Al-Qur'an (Tilawah & Tahfizh)",
+    focus: "Kelancaran tilawah mutqin, setoran hafalan halaqah Qur'an, dan internalisasi akhlak mulia dalam keseharian.",
+    category: "Pilar Utama Qur'ani",
+    tier: "Tier 1 (Bobot ×3)",
+    impact: "20% Pengaruh",
+    color: "from-purple-600 to-indigo-700",
+    badgeBg: "bg-purple-50 text-purple-900 border-purple-200",
+    icon: BookMarked,
+  },
+  {
+    num: 5,
+    title: "Gemar Berolahraga & Ketahanan Fisik",
+    focus: "Menjaga kebugaran jasmani, stamina prima, serta pembiasaan olahraga sunnah dan ketangkasan motorik santri.",
+    category: "Jasmani & Kebugaran",
+    tier: "Tier 2 (Bobot ×2)",
+    impact: "16% Pengaruh",
+    color: "from-emerald-500 to-green-700",
+    badgeBg: "bg-emerald-50 text-emerald-900 border-emerald-200",
+    icon: HeartPulse,
+  },
+  {
+    num: 6,
+    title: "Istirahat Teratur & Disiplin Asrama",
+    focus: "Kepatuhan jam malam tidur asrama, pemulihan energi otak optimal, dan kesiapan fokus belajar esok hari.",
+    category: "Manajemen Diri",
+    tier: "Tier 3 (Bobot ×1)",
+    impact: "12% Pengaruh",
+    color: "from-indigo-600 to-blue-800",
+    badgeBg: "bg-indigo-50 text-indigo-900 border-indigo-200",
+    icon: Moon,
+  },
+  {
+    num: 7,
+    title: "Makan Bergizi & Menjaga Adab Makan",
+    focus: "Memilih makanan halal, thayyib dan bergizi, mencukupi hidrasi, serta mengamalkan sunnah adab makan Islami.",
+    category: "Kesehatan & Adab",
+    tier: "Tier 3 (Bobot ×1)",
+    impact: "9% Pengaruh",
+    color: "from-orange-500 to-rose-600",
+    badgeBg: "bg-orange-50 text-orange-900 border-orange-200",
+    icon: Apple,
+  },
+];
 
 export default function HomePage() {
   return (
@@ -112,6 +203,112 @@ export default function HomePage() {
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 7 Karakter Utama Ihsanul Fikri (7 KAIH) Showcase Section */}
+      <section id="kaih-showcase" className="py-16 sm:py-24 border-b border-slate-200/80 bg-white/70 backdrop-blur-xs">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-3xl mx-auto space-y-3 mb-12">
+            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-100/70 px-3.5 py-1 text-xs font-semibold text-emerald-900 shadow-2xs">
+              <Sparkles className="h-3.5 w-3.5 text-amber-600" />
+              <span>Instrumen Resmi KAIH SMAIT Ihsanul Fikri</span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-slate-950">
+              7 Karakter Utama Ihsanul Fikri (7 KAIH)
+            </h2>
+            <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
+              Tujuh pilar pembiasaan komprehensif yang dirancang untuk mengokohkan marwah Qur&apos;ani, nalar riset, adab ukhuwah, kebugaran jasmani, dan rasa percaya diri santri.
+            </p>
+          </div>
+
+          {/* Cards Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+            {KAIH_SHOWCASE.map((k) => {
+              const IconComp = k.icon;
+              return (
+                <div
+                  key={k.num}
+                  className={`group relative rounded-2xl border border-slate-200/90 bg-white p-5 shadow-xs transition-all duration-300 hover:-translate-y-1.5 hover:border-emerald-500 hover:shadow-[0_12px_28px_-6px_rgba(21,128,61,0.22),0_0_15px_1px_rgba(34,197,94,0.12)] flex flex-col justify-between ${
+                    k.num === 4 ? "md:col-span-2 lg:col-span-1 ring-1 ring-purple-300/60 bg-gradient-to-b from-purple-50/20 via-white to-white" : ""
+                  }`}
+                >
+                  <div className="space-y-3.5">
+                    {/* Header: Number & Tier Badge */}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-800 text-[11px] font-black text-amber-300 shadow-xs">
+                          {k.num}
+                        </span>
+                        <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                          KAIH {k.num}
+                        </span>
+                      </div>
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${k.badgeBg}`}>
+                        {k.impact}
+                      </span>
+                    </div>
+
+                    {/* Icon & Title */}
+                    <div className="flex items-start gap-3">
+                      <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${k.color} text-white shadow-md shadow-emerald-950/10 transition-transform duration-300 group-hover:scale-105`}>
+                        <IconComp className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <h3 className="text-sm sm:text-base font-bold text-slate-900 leading-snug group-hover:text-emerald-800 transition-colors">
+                          {k.title}
+                        </h3>
+                        <span className="text-[11px] font-medium text-slate-400">
+                          {k.category}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Focus Description */}
+                    <p className="text-xs text-slate-600 leading-relaxed">
+                      {k.focus}
+                    </p>
+                  </div>
+
+                  {/* Card Footer: Tier & Indicator info */}
+                  <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px]">
+                    <span className="font-semibold text-slate-500">
+                      {k.tier}
+                    </span>
+                    <span className="font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200/80">
+                      5 Butir Refleksi
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+
+            {/* Final Highlight Card: Total Akumulasi & CTA */}
+            <div className="rounded-2xl border-2 border-dashed border-amber-300 bg-gradient-to-br from-amber-50/80 via-white to-emerald-50/50 p-5 flex flex-col justify-between shadow-xs">
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-amber-900">
+                  <Award className="h-4 w-4 text-amber-600" />
+                  <span>Total Instrumen</span>
+                </div>
+                <div>
+                  <div className="text-3xl font-black text-slate-950">
+                    35 Butir <span className="text-sm font-semibold text-emerald-800">Resmi</span>
+                  </div>
+                  <p className="text-xs text-slate-600 mt-1 leading-relaxed">
+                    Setiap santri mengevaluasi seluruh 7 pilar pembiasaan dengan skala Likert 1–4 terstandarisasi.
+                  </p>
+                </div>
+              </div>
+
+              <Link
+                href="/survei"
+                className="mt-4 inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-700 via-emerald-800 to-emerald-900 px-4 py-2.5 text-xs font-bold text-white shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
+              >
+                <span>Mulai Isi KAIH 1</span>
+                <ChevronRight className="h-3.5 w-3.5 text-amber-300" />
+              </Link>
             </div>
           </div>
         </div>

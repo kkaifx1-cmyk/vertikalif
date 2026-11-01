@@ -38,7 +38,12 @@ export function Footer() {
             <ul className="space-y-2 text-xs">
               <li>
                 <Link href="/" className="hover:text-emerald-700 transition-colors">
-                  Profil & Anggota Tim Peneliti
+                  Beranda & Profil Tim Pengembang
+                </Link>
+              </li>
+              <li>
+                <Link href="/#kaih-showcase" className="hover:text-emerald-700 transition-colors">
+                  7 Karakter Utama (KAIH 1 s.d. 7)
                 </Link>
               </li>
               <li>
@@ -48,7 +53,18 @@ export function Footer() {
                   title="Mulai Survei Sekarang"
                   className="font-bold text-emerald-800 hover:text-emerald-950 transition-colors inline-flex items-center gap-1"
                 >
-                  <span>Mulai Survei Sekarang (7 KAIH)</span>
+                  <span>Mulai Survei Santri (35 Butir)</span>
+                </Link>
+              </li>
+              <li>
+                <Link href="/super-admin" className="hover:text-emerald-700 transition-colors flex items-center gap-1">
+                  <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" />
+                  <span>Portal Super Admin & Rekapitulasi</span>
+                </Link>
+              </li>
+              <li>
+                <Link href="/super-admin?tab=pengaruh_pede" className="hover:text-emerald-700 transition-colors">
+                  Skema Ilmiah Pengaruh Kepercayaan Diri
                 </Link>
               </li>
             </ul>
