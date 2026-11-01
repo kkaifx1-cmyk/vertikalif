@@ -89,6 +89,8 @@ interface ExtendedStudentData {
   persona: "anchored_leader" | "quiet_hafidz" | "fragile_performer" | "developing";
   personaLabel: string;
   personaBadgeClass: string;
+  sessionBadge?: string;
+  sessionName?: string;
 }
 
 function SuperAdminDashboard() {
@@ -495,6 +497,11 @@ function SuperAdminDashboard() {
         personaBadgeClass = "bg-amber-100 text-amber-950 border-amber-300 font-extrabold";
       }
 
+      const respDate = extractWibDate(r.createdAt);
+      const matchedSess = EVALUATION_SESSIONS.find((s) => s.dateKey === respDate);
+      const sessionName = matchedSess ? matchedSess.name : (respDate ? `Tgl ${respDate}` : "Respon");
+      const sessionBadge = matchedSess ? matchedSess.badge : (respDate === "2026-11-02" ? "Sesi 1" : "Uji Coba");
+
       return {
         id: r.id,
         nama: r.nama,
@@ -519,6 +526,8 @@ function SuperAdminDashboard() {
         persona,
         personaLabel,
         personaBadgeClass,
+        sessionBadge,
+        sessionName,
       };
     });
 
@@ -901,6 +910,35 @@ function SuperAdminDashboard() {
                 </CardHeader>
 
                 <CardContent className="p-3 space-y-2.5">
+                  {/* Banner Sesi Aktif Hari Ini */}
+                  <div className="p-3 rounded-xl bg-emerald-50/90 dark:bg-black border border-emerald-300 dark:border-emerald-500/60 shadow-xs dark:shadow-[0_0_15px_rgba(16,185,129,0.25)] flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <span className="relative flex h-2.5 w-2.5 shrink-0">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                      </span>
+                      <div>
+                        <span className="font-extrabold text-emerald-950 dark:text-emerald-300 block text-xs leading-tight">
+                          Sesi Aktif: Senin, 02 Nov 2026
+                        </span>
+                        <span className="text-[10px] text-emerald-700 dark:text-emerald-400 font-mono">
+                          Sesi 1 • Respon Hari Ini Otomatis Masuk
+                        </span>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedSessionId("sesi_1")}
+                      className={`shrink-0 px-2.5 py-1 rounded-lg text-[10px] font-black transition-all cursor-pointer ${
+                        selectedSessionId === "sesi_1"
+                          ? "bg-emerald-600 text-white shadow-xs"
+                          : "bg-white dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-400/50 hover:bg-emerald-100"
+                      }`}
+                    >
+                      {selectedSessionId === "sesi_1" ? "Sedang Dibuka" : "Buka Sesi 1"}
+                    </button>
+                  </div>
+
                   {/* 1. KARTU REKAPAN GABUNGAN 4 SESI */}
                   {(() => {
                     const consolidatedSummary = sessionSummaries.find((s) => s.session.id === "all");
@@ -1014,6 +1052,12 @@ function SuperAdminDashboard() {
                                 <span className={`text-xs font-bold ${isSelected ? "text-white" : "text-slate-900"}`}>
                                   {item.session.dayName}, {item.session.formattedDate}
                                 </span>
+                                {(item.session.dateKey === "2026-11-02" || item.status === "Aktif Hari Ini") && (
+                                  <span className="inline-flex items-center gap-1 text-[9px] font-black px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 border border-emerald-500/50 animate-pulse">
+                                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-ping"></span>
+                                    <span>Hari Ini</span>
+                                  </span>
+                                )}
                               </div>
                               <span
                                 className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded ${
@@ -2678,13 +2722,18 @@ function SuperAdminDashboard() {
 
                                 {/* 7. Waktu & Masukan */}
                                 <td className="px-4 py-3.5 max-w-[200px]">
-                                  <span className="block text-[10px] font-mono text-slate-400">
-                                    {new Date(item.createdAt).toLocaleDateString("id-ID", {
-                                      day: "numeric",
-                                      month: "short",
-                                      year: "numeric",
-                                    })}
-                                  </span>
+                                  <div className="flex items-center gap-1.5 mb-1">
+                                    <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-blue-50 dark:bg-black text-blue-800 dark:text-blue-300 border border-blue-200 dark:border-blue-500/50">
+                                      {item.sessionBadge || "Sesi 1"}
+                                    </span>
+                                    <span className="text-[10px] font-mono text-slate-500 dark:text-slate-400">
+                                      {new Date(item.createdAt).toLocaleDateString("id-ID", {
+                                        weekday: "short",
+                                        day: "numeric",
+                                        month: "short",
+                                      })}
+                                    </span>
+                                  </div>
                                   <p className="text-[11px] text-slate-600 truncate mt-0.5" title={item.feedback || "-"}>
                                     {item.feedback || "-"}
                                   </p>
