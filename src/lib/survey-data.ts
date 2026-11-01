@@ -546,6 +546,7 @@ export const WHITELIST_MEMBERS: WhitelistProfile[] = [
     kelas: "XI-4",
     peran: "Presentation Lead",
     avatar: "/arbi-saiful-bahri.jpg",
+    avatarPosition: "object-[center_38%]",
     bio: "Memimpin penyusunan visualisasi laporan eksekutif, materi diseminasi hasil temuan survei, dan presentasi pertanggungjawaban proyek kepada dewan sekolah.",
   },
   {
