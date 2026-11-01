@@ -559,7 +559,7 @@ export const WHITELIST_MEMBERS: WhitelistProfile[] = [
     nis: "19910202",
     kelas: "Pembimbing",
     peran: "Substantive Advisor & Penjamin Mutu 7 KAIH",
-    avatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=300&q=80",
+    avatar: "/taufan-maulana-haris.png",
     bio: "Mengawal kebenaran data, objektivitas metodologi, serta memastikan keselarasan butir evaluasi kuesioner dengan standar 7 Karakter Utama Ihsanul Fikri (7 KAIH).",
   },
 ];
