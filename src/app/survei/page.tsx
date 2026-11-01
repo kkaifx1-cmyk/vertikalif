@@ -23,7 +23,6 @@ import {
   BookMarked,
   Compass,
   Globe,
-  Award,
   Lock,
   Maximize2,
   Minimize2,
@@ -659,16 +658,6 @@ export default function SurveyPage() {
               <Link href="/" className="w-full sm:w-auto">
                 <Button variant="primary" size="md" className="w-full">
                   Kembali ke Beranda
-                </Button>
-              </Link>
-              <Link href="/data" className="w-full sm:w-auto">
-                <Button
-                  variant="outline"
-                  size="md"
-                  className="w-full text-slate-700 hover:text-slate-900 gap-1.5"
-                >
-                  <Award className="h-4 w-4 text-emerald-600" />
-                  Lihat Hasil Ringkasan Data
                 </Button>
               </Link>
             </div>

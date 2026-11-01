@@ -344,8 +344,8 @@ export function getKaihThemes(jurusan: string = "tahfizh"): SurveyTheme[] {
       id: "kaih_5",
       kaihNumber: 5,
       title: "KAIH 5: Gemar Berolahraga & Ketahanan Fisik",
-      subtitle: "Kebugaran jasmani santri, ketahanan konsentrasi muthala'ah, dan ketangkasan motorik lapangan.",
-      tier: "Tier 3",
+      subtitle: "Kebugaran jasmani santri, ketahanan konsentrasi muthala'ah, dan ketangkasan motorik lapangan (Tier 2 — Bobot ×2).",
+      tier: "Tier 2 — Bobot ×2",
       iconName: "Activity",
       questions: [
         {
@@ -394,8 +394,8 @@ export function getKaihThemes(jurusan: string = "tahfizh"): SurveyTheme[] {
       id: "kaih_6",
       kaihNumber: 6,
       title: "KAIH 6: Istirahat Teratur & Disiplin Jam Tidur Asrama",
-      subtitle: "Kepatuhan tata tertib jam malam asrama (tathfi'ul anwar), kesegaran bangun, dan stabilitas emosi.",
-      tier: "Tier 3",
+      subtitle: "Kepatuhan tata tertib jam malam asrama (tathfi'ul anwar), kesegaran bangun, dan stabilitas emosi (Tier 3 — Bobot ×1).",
+      tier: "Tier 3 — Bobot ×1",
       iconName: "Moon",
       questions: [
         {
@@ -444,8 +444,8 @@ export function getKaihThemes(jurusan: string = "tahfizh"): SurveyTheme[] {
       id: "kaih_7",
       kaihNumber: 7,
       title: "KAIH 7: Makan Makanan Bergizi & Menjaga Adab Makan",
-      subtitle: "Keteraturan pola konsumsi dapur asrama, hidrasi air putih, dan pengendalian impuls jajan.",
-      tier: "Tier 3",
+      subtitle: "Keteraturan pola konsumsi dapur asrama, hidrasi air putih, dan pengendalian impuls jajan (Tier 3 — Bobot ×1).",
+      tier: "Tier 3 — Bobot ×1",
       iconName: "UtensilsCrossed",
       questions: [
         {
