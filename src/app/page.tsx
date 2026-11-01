@@ -181,18 +181,18 @@ function HomeInner() {
 
   return (
     <div className="flex flex-col min-h-screen bg-transparent">
-      {/* Tab Navigation Switcher Bar (Segmented Control yang Elegan dengan Efek Timbul) */}
-      <div className="sticky top-16 z-40 border-b border-slate-200/70 bg-white/80 backdrop-blur-md shadow-xs">
+      {/* Tab Navigation Switcher Bar (Segmented Control yang Elegan dengan Efek Timbul & Cahaya Berpendar) */}
+      <div className="sticky top-16 z-40 border-b border-emerald-500/30 bg-white/85 backdrop-blur-xl shadow-[0_10px_30px_-5px_rgba(16,185,129,0.18),0_4px_12px_rgba(0,0,0,0.04)]">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-3">
           <div className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-1.5 sm:gap-2 p-1 bg-slate-100/80 backdrop-blur-xs rounded-2xl border border-slate-200/80 w-full sm:w-auto overflow-x-auto shadow-inner">
+            <div className="flex items-center gap-1.5 sm:gap-2 p-1.5 bg-slate-100/90 backdrop-blur-md rounded-2xl border border-emerald-400/40 w-full sm:w-auto overflow-x-auto shadow-[inset_0_2px_4px_rgba(0,0,0,0.06),0_4px_20px_rgba(16,185,129,0.15)]">
               <button
                 type="button"
                 onClick={() => switchTab("beranda")}
-                className={`flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-3.5 sm:px-5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all duration-300 cursor-pointer whitespace-nowrap active:translate-y-0 active:scale-95 ${
+                className={`flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold transition-all duration-300 cursor-pointer whitespace-nowrap active:translate-y-0 active:scale-95 ${
                   activeTab === "beranda"
-                    ? "bg-emerald-700 text-white shadow-md ring-1 ring-emerald-800 -translate-y-0.5"
-                    : "text-slate-600 hover:text-slate-900 hover:bg-white hover:shadow-md hover:-translate-y-0.5"
+                    ? "bg-gradient-to-r from-emerald-700 via-emerald-800 to-emerald-900 text-white shadow-[0_8px_25px_rgba(16,185,129,0.55),0_0_14px_rgba(34,197,94,0.4)] ring-2 ring-emerald-400 -translate-y-1 scale-102"
+                    : "text-slate-700 hover:text-emerald-950 hover:bg-white hover:shadow-[0_8px_22px_rgba(16,185,129,0.3),0_0_12px_rgba(250,204,21,0.25)] hover:ring-1 hover:ring-emerald-400/60 hover:-translate-y-1"
                 }`}
               >
                 <Home className="h-4 w-4" />
@@ -202,15 +202,15 @@ function HomeInner() {
               <button
                 type="button"
                 onClick={() => switchTab("kaih")}
-                className={`flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-3.5 sm:px-5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all duration-300 cursor-pointer whitespace-nowrap active:translate-y-0 active:scale-95 ${
+                className={`flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold transition-all duration-300 cursor-pointer whitespace-nowrap active:translate-y-0 active:scale-95 ${
                   activeTab === "kaih"
-                    ? "bg-emerald-700 text-white shadow-md ring-1 ring-emerald-800 -translate-y-0.5"
-                    : "text-slate-600 hover:text-slate-900 hover:bg-white hover:shadow-md hover:-translate-y-0.5"
+                    ? "bg-gradient-to-r from-emerald-700 via-emerald-800 to-emerald-900 text-white shadow-[0_8px_25px_rgba(16,185,129,0.55),0_0_14px_rgba(34,197,94,0.4)] ring-2 ring-emerald-400 -translate-y-1 scale-102"
+                    : "text-slate-700 hover:text-emerald-950 hover:bg-white hover:shadow-[0_8px_22px_rgba(16,185,129,0.3),0_0_12px_rgba(250,204,21,0.25)] hover:ring-1 hover:ring-emerald-400/60 hover:-translate-y-1"
                 }`}
               >
-                <Sparkles className="h-4 w-4 text-amber-400" />
+                <Sparkles className="h-4 w-4 text-amber-400 animate-pulse" />
                 <span>7 Karakter KAIH</span>
-                <span className="hidden sm:inline-flex text-[10px] bg-emerald-800/40 text-emerald-100 px-1.5 py-0.2 rounded-full">
+                <span className="hidden sm:inline-flex text-[10px] bg-emerald-800/60 text-amber-300 px-2 py-0.5 rounded-full font-black border border-amber-300/40">
                   35 Butir
                 </span>
               </button>
@@ -218,10 +218,10 @@ function HomeInner() {
               <button
                 type="button"
                 onClick={() => switchTab("profil")}
-                className={`flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-3.5 sm:px-5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all duration-300 cursor-pointer whitespace-nowrap active:translate-y-0 active:scale-95 ${
+                className={`flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold transition-all duration-300 cursor-pointer whitespace-nowrap active:translate-y-0 active:scale-95 ${
                   activeTab === "profil"
-                    ? "bg-emerald-700 text-white shadow-md ring-1 ring-emerald-800 -translate-y-0.5"
-                    : "text-slate-600 hover:text-slate-900 hover:bg-white hover:shadow-md hover:-translate-y-0.5"
+                    ? "bg-gradient-to-r from-emerald-700 via-emerald-800 to-emerald-900 text-white shadow-[0_8px_25px_rgba(16,185,129,0.55),0_0_14px_rgba(34,197,94,0.4)] ring-2 ring-emerald-400 -translate-y-1 scale-102"
+                    : "text-slate-700 hover:text-emerald-950 hover:bg-white hover:shadow-[0_8px_22px_rgba(16,185,129,0.3),0_0_12px_rgba(250,204,21,0.25)] hover:ring-1 hover:ring-emerald-400/60 hover:-translate-y-1"
                 }`}
               >
                 <Users2 className="h-4 w-4 text-emerald-500" />
@@ -229,11 +229,11 @@ function HomeInner() {
               </button>
             </div>
 
-            {/* Quick Standout Survey CTA dengan Efek Timbul */}
+            {/* Quick Standout Survey CTA dengan Efek Timbul & Cahaya Emas Menyala */}
             <div className="hidden md:flex items-center">
               <Link
                 href="/survei"
-                className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-amber-400 via-amber-400 to-amber-500 px-4 py-2 text-xs font-extrabold text-slate-950 shadow-md hover:shadow-lg hover:-translate-y-1 active:translate-y-0 active:scale-95 transition-all duration-300 border border-amber-500/60 cursor-pointer"
+                className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 px-5 py-2.5 text-xs font-black text-slate-950 shadow-[0_6px_22px_rgba(245,158,11,0.5),0_0_16px_rgba(251,191,36,0.45)] hover:shadow-[0_12px_32px_rgba(245,158,11,0.75),0_0_24px_rgba(251,191,36,0.6)] hover:-translate-y-1 hover:scale-105 active:scale-95 transition-all duration-300 border border-amber-300 ring-2 ring-amber-300/60 cursor-pointer"
               >
                 <ClipboardCheck className="h-4 w-4 text-slate-950" />
                 <span>Isi Survei Santri</span>
