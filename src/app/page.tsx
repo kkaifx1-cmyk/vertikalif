@@ -632,12 +632,12 @@ function HomeInner() {
                         alt={member.nama}
                         fill
                         sizes="(max-width: 640px) 96px, 128px"
-                        className="object-cover object-top"
+                        className={`object-cover ${member.avatarPosition || "object-top"}`}
                       />
                     </div>
 
                     <div className="space-y-1.5 px-4 w-full">
-                      <CardTitle className="text-base font-bold text-slate-900 leading-snug">
+                      <CardTitle className="text-base font-bold text-slate-900 dark:text-white leading-snug">
                         {member.nama}
                       </CardTitle>
                       <div>
@@ -659,7 +659,7 @@ function HomeInner() {
                     </div>
                   </div>
 
-                  <CardContent className="pt-2 pb-5 px-5 text-xs text-slate-600 text-center leading-relaxed border-t border-slate-100 mt-2">
+                  <CardContent className="pt-2 pb-5 px-5 text-xs text-slate-600 dark:text-slate-300 text-center leading-relaxed border-t border-slate-100 dark:border-slate-800 mt-2">
                     {member.bio}
                   </CardContent>
                 </Card>

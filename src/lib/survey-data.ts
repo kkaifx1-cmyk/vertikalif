@@ -502,6 +502,7 @@ export interface WhitelistProfile {
   kelas: string;
   peran: string;
   avatar: string;
+  avatarPosition?: string;
   bio: string;
 }
 
@@ -535,7 +536,8 @@ export const WHITELIST_MEMBERS: WhitelistProfile[] = [
     nis: "4014",
     kelas: "XI-4",
     peran: "Gemini Insight Lead",
-    avatar: "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&w=300&q=80",
+    avatar: "/muhammad-gus-ubay-izzulhaq.jpg",
+    avatarPosition: "object-[78%_25%]",
     bio: "Mengembangkan integrasi analitik cerdas, penalaran wawasan komprehensif, dan interpretasi naratif rekomendasi mutu berbasis AI untuk kemajuan sekolah.",
   },
   {
