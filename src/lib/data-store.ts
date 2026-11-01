@@ -364,8 +364,7 @@ export interface AnalyticsSummary {
   confidenceAnalytics: ConfidenceAnalytics;
 }
 
-export async function getAnalytics(): Promise<AnalyticsSummary> {
-  const responses = await getAllResponses();
+export function computeAnalyticsFromResponses(responses: ResponseRecord[]): AnalyticsSummary {
   const total = responses.length;
 
   const defaultKaihImpactScheme: KaihImpactItem[] = [
@@ -850,4 +849,9 @@ export async function getAnalytics(): Promise<AnalyticsSummary> {
     questionAverages,
     confidenceAnalytics,
   };
+}
+
+export async function getAnalytics(): Promise<AnalyticsSummary> {
+  const responses = await getAllResponses();
+  return computeAnalyticsFromResponses(responses);
 }

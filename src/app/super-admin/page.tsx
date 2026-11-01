@@ -48,7 +48,17 @@ import { AuthGuard } from "@/components/auth-guard";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { AnalyticsSummary, ResponseRecord } from "@/lib/data-store";
+import { AnalyticsSummary, ResponseRecord, computeAnalyticsFromResponses } from "@/lib/data-store";
+import {
+  EVALUATION_SESSIONS,
+  filterResponsesBySession,
+  computeSessionMetrics,
+  extractWibDate,
+  OFFICIAL_SESSION_DATES,
+  EvaluationSession,
+  SessionMetricsSummary,
+} from "@/lib/session-helper";
+import { CalendarDays, Calendar, Clock, Check } from "lucide-react";
 
 const THEME_COLORS = ["#15803d", "#d97706", "#0284c7", "#7c3aed", "#059669", "#ea580c", "#4f46e5"];
 const LIKERT_COLORS = ["#ef4444", "#f59e0b", "#10b981", "#15803d"];
@@ -103,6 +113,34 @@ function SuperAdminDashboard() {
   const [selectedClass, setSelectedClass] = useState("Semua");
   const [selectedGender, setSelectedGender] = useState("Semua");
   const [selectedConfidenceCategory, setSelectedConfidenceCategory] = useState("Semua");
+
+  // Filter Sesi Evaluasi 4 Hari & Rekapan Gabungan
+  const [selectedSessionId, setSelectedSessionId] = useState<string>("all");
+
+  const activeResponses = useMemo(
+    () => filterResponsesBySession(responses, selectedSessionId),
+    [responses, selectedSessionId]
+  );
+
+  const activeAnalytics = useMemo(
+    () => computeAnalyticsFromResponses(activeResponses),
+    [activeResponses]
+  );
+
+  const sessionSummaries = useMemo(
+    () => EVALUATION_SESSIONS.map((sess) => computeSessionMetrics(sess, responses)),
+    [responses]
+  );
+
+  const otherResponsesCount = useMemo(() => {
+    const officialSet = new Set(OFFICIAL_SESSION_DATES as readonly string[]);
+    return responses.filter((r) => !officialSet.has(extractWibDate(r.createdAt))).length;
+  }, [responses]);
+
+  const activeSession = useMemo(
+    () => EVALUATION_SESSIONS.find((s) => s.id === selectedSessionId) || EVALUATION_SESSIONS[0],
+    [selectedSessionId]
+  );
 
   // Chart View States (Default Diagram Garis)
   const [kaihChartType, setKaihChartType] = useState<"line" | "bar">("line");
@@ -164,7 +202,7 @@ function SuperAdminDashboard() {
       "K7.5 Vitalitas Energi Bicara",
     ];
 
-    if (!responses || responses.length === 0) {
+    if (!activeResponses || activeResponses.length === 0) {
       return {
         total: 0,
         avgConsistency: 0,
@@ -202,7 +240,7 @@ function SuperAdminDashboard() {
       };
     }
 
-    const total = responses.length;
+    const total = activeResponses.length;
     const kList: number[] = [];
     const fList: number[] = [];
     const cList: number[] = [];
@@ -216,7 +254,7 @@ function SuperAdminDashboard() {
     const itemConfSum = [0, 0, 0, 0, 0, 0, 0];
     const itemConfCnt = [0, 0, 0, 0, 0, 0, 0];
 
-    responses.forEach((r) => {
+    activeResponses.forEach((r) => {
       const answers = r.answers || {};
 
       // 1. Konsistensi (Butir 1 dari 7 KAIH)
@@ -369,7 +407,7 @@ function SuperAdminDashboard() {
       };
     }
 
-    const students: ExtendedStudentData[] = responses.map((r) => {
+    const students: ExtendedStudentData[] = activeResponses.map((r) => {
       const answers = r.answers || {};
 
       // 1. Konsistensi (Butir 1 dari KAIH 1-7)
@@ -487,7 +525,7 @@ function SuperAdminDashboard() {
     const avgThemeScores: Record<number, number> = {};
     for (let k = 1; k <= 7; k++) {
       let sum = 0, count = 0;
-      responses.forEach((r) => {
+      activeResponses.forEach((r) => {
         const answers = r.answers || {};
         for (let b = 1; b <= 5; b++) {
           const v = answers['k' + k + '_' + b];
@@ -536,11 +574,11 @@ function SuperAdminDashboard() {
         developing,
       },
     };
-  }, [responses, cognitivePipelineData]);
+  }, [activeResponses, cognitivePipelineData]);
 
   // Kekuatan Jalur Mediasi Kognitif untuk Tab 2 (Waterfall & The Hook)
   const { pathStrength, mediationPct, directEffect } = useMemo(() => {
-    if (!responses || responses.length < 2) {
+    if (!activeResponses || activeResponses.length < 2) {
       return { pathStrength: "0.000", mediationPct: "0.0", directEffect: "0.0" };
     }
     const rKF = cognitivePipelineData.rConsistencyFocus;
@@ -553,7 +591,7 @@ function SuperAdminDashboard() {
       mediationPct: medPct.toFixed(1),
       directEffect: direct.toFixed(1),
     };
-  }, [responses, cognitivePipelineData]);
+  }, [activeResponses, cognitivePipelineData]);
 
   // Filter Table Logic
   const filteredStudents = useMemo(() => {
@@ -793,7 +831,7 @@ function SuperAdminDashboard() {
       pageDescription="Pusat Kendali Data & Analisis Hasil Survei Santri"
     >
       <div className="min-h-screen bg-slate-50/60 pb-16">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-8 space-y-6">
+        <div className="mx-auto max-w-[1600px] px-4 sm:px-6 lg:px-8 pt-8 space-y-6">
           {/* Header Dashboard */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-slate-200/90">
             <div>
@@ -830,7 +868,329 @@ function SuperAdminDashboard() {
             </div>
           </div>
 
-          {/* Super Admin 3 Tab Navigation (Elegan & Timbul 3D) */}
+          
+          {/* ========================================================================= */}
+          {/* GRID UTAMA: KOLOM KIRI (NAVIGASI SESI 4 HARI) & KOLOM KANAN (KONTEN TAB) */}
+          {/* ========================================================================= */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
+
+            {/* ======================================================================= */}
+            {/* KOLOM KIRI: PANEL REKAPAN 4 SESI & TIMELINE PENGISIAN                   */}
+            {/* ======================================================================= */}
+            <aside className="lg:col-span-4 xl:col-span-3 space-y-4 lg:sticky lg:top-4 z-10">
+              {/* Card Navigasi Sesi */}
+              <Card className="border-slate-200/90 bg-white shadow-md rounded-2xl overflow-hidden hover:border-emerald-500 transition-all">
+                <CardHeader className="p-4 pb-3.5 bg-gradient-to-r from-emerald-800 via-emerald-900 to-slate-900 text-white">
+                  <div className="flex items-center justify-between">
+                    <span className="inline-flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-wider text-amber-300 bg-amber-400/20 px-2 py-0.5 rounded-full border border-amber-400/30">
+                      <CalendarDays className="h-3 w-3" />
+                      <span>Timeline Evaluasi</span>
+                    </span>
+                    <Badge className="bg-white/10 text-white border-white/20 text-[10px] font-mono">
+                      4 Sesi Resmi
+                    </Badge>
+                  </div>
+                  <CardTitle className="text-sm sm:text-base font-black text-white mt-1.5 flex items-center gap-2">
+                    <span>Rekapan Harian 4 Sesi</span>
+                  </CardTitle>
+                  <CardDescription className="text-[11px] text-slate-300 leading-snug">
+                    Pilih sesi pengisian untuk memfilter seluruh data atau pantau rekapan gabungan.
+                  </CardDescription>
+                </CardHeader>
+
+                <CardContent className="p-3 space-y-2.5">
+                  {/* 1. KARTU REKAPAN GABUNGAN 4 SESI */}
+                  {(() => {
+                    const consolidatedSummary = sessionSummaries.find((s) => s.session.id === "all");
+                    const isSelected = selectedSessionId === "all";
+                    return (
+                      <div
+                        onClick={() => setSelectedSessionId("all")}
+                        className={`p-3.5 rounded-xl border transition-all duration-200 cursor-pointer ${
+                          isSelected
+                            ? "bg-gradient-to-br from-emerald-900 via-emerald-950 to-slate-950 text-white border-emerald-500 shadow-md ring-2 ring-emerald-500/40 -translate-y-0.5"
+                            : "bg-emerald-50/50 hover:bg-emerald-50 border-emerald-200/80 text-slate-900 hover:border-emerald-400 hover:shadow-2xs"
+                        }`}
+                      >
+                        <div className="flex items-center justify-between mb-1.5">
+                          <span
+                            className={`text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full ${
+                              isSelected ? "bg-amber-400 text-slate-950 font-black" : "bg-emerald-700 text-white font-bold"
+                            }`}
+                          >
+                            ✨ Rekapan Gabungan
+                          </span>
+                          <span
+                            className={`text-[11px] font-mono font-bold ${
+                              isSelected ? "text-amber-300" : "text-emerald-800"
+                            }`}
+                          >
+                            {consolidatedSummary?.totalCount || 0} Santri
+                          </span>
+                        </div>
+
+                        <div className="flex items-baseline justify-between">
+                          <div>
+                            <h4
+                              className={`text-xs font-black tracking-tight ${
+                                isSelected ? "text-white" : "text-slate-900"
+                              }`}
+                            >
+                              Konsolidasi 4 Hari
+                            </h4>
+                            <p className={`text-[10px] ${isSelected ? "text-slate-300" : "text-slate-500"}`}>
+                              02 - 12 Nov 2026
+                            </p>
+                          </div>
+                          <div className="text-right">
+                            <span
+                              className={`text-sm font-black font-mono ${
+                                isSelected ? "text-white" : "text-emerald-900"
+                              }`}
+                            >
+                              {consolidatedSummary?.ikvPct || 0}%
+                            </span>
+                            <span className={`block text-[9px] ${isSelected ? "text-slate-300" : "text-slate-500"}`}>
+                              IKV: {consolidatedSummary?.avgIkv || 0} / 4.0
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Trio Metrik Mini Pill */}
+                        <div
+                          className={`mt-2.5 pt-2 border-t grid grid-cols-3 gap-1 text-[10px] text-center font-mono ${
+                            isSelected ? "border-emerald-700/60 text-slate-200" : "border-emerald-200/60 text-slate-600"
+                          }`}
+                        >
+                          <div className="truncate">
+                            <span className="block text-[8px] uppercase tracking-wider opacity-75">Ik</span>
+                            <strong>{consolidatedSummary?.avgIk || 0}%</strong>
+                          </div>
+                          <div className="truncate border-x border-current/20">
+                            <span className="block text-[8px] uppercase tracking-wider opacity-75">If</span>
+                            <strong>{consolidatedSummary?.avgIf || 0}%</strong>
+                          </div>
+                          <div className="truncate">
+                            <span className="block text-[8px] uppercase tracking-wider opacity-75">Ic</span>
+                            <strong>{consolidatedSummary?.avgIc || 0}%</strong>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })()}
+
+                  <div className="pt-1 pb-0.5 flex items-center justify-between text-[11px] font-bold text-slate-500 px-1">
+                    <span>Sesi Harian Terjadwal</span>
+                    <span className="text-[10px] font-normal text-slate-400">Pilih untuk audit</span>
+                  </div>
+
+                  {/* 2. DAFTAR 4 KARTU SESI (Senin 2 Nov, Kamis 5 Nov, Senin 9 Nov, Kamis 12 Nov) */}
+                  <div className="space-y-2">
+                    {sessionSummaries
+                      .filter((s) => s.session.id !== "all")
+                      .map((item) => {
+                        const isSelected = selectedSessionId === item.session.id;
+                        return (
+                          <div
+                            key={item.session.id}
+                            onClick={() => setSelectedSessionId(item.session.id)}
+                            className={`p-3 rounded-xl border transition-all duration-200 cursor-pointer ${
+                              isSelected
+                                ? "bg-slate-900 text-white border-emerald-500 shadow-md ring-2 ring-emerald-500/30 -translate-y-0.5"
+                                : "bg-white hover:bg-slate-50/80 border-slate-200 text-slate-800 hover:border-slate-300 hover:shadow-2xs"
+                            }`}
+                          >
+                            <div className="flex items-center justify-between mb-1">
+                              <div className="flex items-center gap-1.5">
+                                <span
+                                  className={`text-[10px] font-extrabold px-2 py-0.5 rounded-md ${
+                                    isSelected ? item.session.badgeColor : "bg-slate-100 text-slate-800"
+                                  }`}
+                                >
+                                  {item.session.badge}
+                                </span>
+                                <span className={`text-xs font-bold ${isSelected ? "text-white" : "text-slate-900"}`}>
+                                  {item.session.dayName}, {item.session.formattedDate}
+                                </span>
+                              </div>
+                              <span
+                                className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded ${
+                                  item.totalCount > 0
+                                    ? isSelected
+                                      ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
+                                      : "bg-emerald-50 text-emerald-800 border border-emerald-200"
+                                    : "text-slate-400"
+                                }`}
+                              >
+                                {item.totalCount} Santri
+                              </span>
+                            </div>
+
+                            <div className="flex items-center justify-between text-[11px] mt-1.5">
+                              <span className={`text-[10px] ${isSelected ? "text-slate-400" : "text-slate-500"}`}>
+                                {item.session.phase}
+                              </span>
+                              <div className="flex items-center gap-2">
+                                <span
+                                  className={`text-xs font-mono font-black ${
+                                    item.totalCount > 0
+                                      ? isSelected
+                                        ? "text-emerald-400"
+                                        : "text-emerald-700"
+                                      : "text-slate-400"
+                                  }`}
+                                >
+                                  {item.totalCount > 0 ? `${item.ikvPct}%` : "0%"}
+                                </span>
+                                <span className={`text-[10px] ${isSelected ? "text-slate-400" : "text-slate-500"}`}>
+                                  ({item.totalCount > 0 ? item.avgIkv : "0.00"})
+                                </span>
+                              </div>
+                            </div>
+
+                            {/* Progress Bar per Sesi */}
+                            <div className="w-full bg-slate-100 rounded-full h-1 mt-1.5 overflow-hidden">
+                              <div
+                                className={`h-full rounded-full transition-all duration-500 ${
+                                  item.totalCount > 0 ? "bg-emerald-500" : "bg-slate-200"
+                                }`}
+                                style={{ width: `${item.totalCount > 0 ? item.ikvPct : 0}%` }}
+                              />
+                            </div>
+                          </div>
+                        );
+                      })}
+                  </div>
+
+                  {/* 3. OPTIONAL OTHER / TEST DATA CARD */}
+                  {otherResponsesCount > 0 && (
+                    <div
+                      onClick={() => setSelectedSessionId("other")}
+                      className={`p-2.5 rounded-xl border text-xs transition-all cursor-pointer ${
+                        selectedSessionId === "other"
+                          ? "bg-amber-950 text-amber-100 border-amber-500 ring-2 ring-amber-500/30"
+                          : "bg-amber-50/60 border-amber-200/80 text-amber-900 hover:bg-amber-50"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold flex items-center gap-1.5 text-[11px]">
+                          <span>📌 Sesi Uji Coba / Tanggal Lain</span>
+                        </span>
+                        <Badge variant="outline" className="text-[10px] bg-white border-amber-300 font-mono text-amber-950">
+                          {otherResponsesCount} Data
+                        </Badge>
+                      </div>
+                      <p className="text-[10px] text-amber-800/80 mt-1 leading-snug">
+                        Respon di luar 4 tanggal resmi (tetap terekam tanpa ada data yang hilang).
+                      </p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* 4. TABEL MATRIKS KOMPARASI 4 SESI (MINI MATRIX) */}
+              <Card className="border-slate-200 bg-white shadow-xs rounded-2xl overflow-hidden">
+                <CardHeader className="p-3.5 pb-2 border-b border-slate-100 bg-slate-50/70">
+                  <CardTitle className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                    <Activity className="h-3.5 w-3.5 text-emerald-700" />
+                    <span>Matriks Komparasi 4 Hari</span>
+                  </CardTitle>
+                  <CardDescription className="text-[10px] text-slate-500">
+                    Perbandingan langsung capaian antar-sesi pengisian.
+                  </CardDescription>
+                </CardHeader>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-[10px] text-left">
+                    <thead className="bg-slate-100/70 text-slate-600 font-bold uppercase tracking-wider text-[9px] border-b border-slate-200/80">
+                      <tr>
+                        <th className="py-1.5 px-2.5">Sesi</th>
+                        <th className="py-1.5 px-2 text-center">N</th>
+                        <th className="py-1.5 px-2 text-center">IKV</th>
+                        <th className="py-1.5 px-2.5 text-right">Ik • If • Ic</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {sessionSummaries.map((s) => {
+                        const isConsolidated = s.session.id === "all";
+                        const isSelected = selectedSessionId === s.session.id;
+                        return (
+                          <tr
+                            key={s.session.id}
+                            onClick={() => setSelectedSessionId(s.session.id)}
+                            className={`cursor-pointer transition-colors ${
+                              isSelected
+                                ? "bg-emerald-50/80 font-bold text-emerald-950"
+                                : isConsolidated
+                                ? "bg-slate-50/50 font-semibold text-slate-900"
+                                : "hover:bg-slate-50 text-slate-700"
+                            }`}
+                          >
+                            <td className="py-1.5 px-2.5">
+                              <div className="flex items-center gap-1">
+                                {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />}
+                                <span>{isConsolidated ? "Gabungan" : s.session.badge}</span>
+                              </div>
+                              <span className="text-[8px] text-slate-400 block">{s.session.formattedDate}</span>
+                            </td>
+                            <td className="py-1.5 px-2 text-center font-mono font-bold">
+                              {s.totalCount}
+                            </td>
+                            <td className="py-1.5 px-2 text-center font-mono">
+                              <span className={s.totalCount > 0 ? "text-emerald-700 font-bold" : "text-slate-400"}>
+                                {s.totalCount > 0 ? `${s.ikvPct}%` : "-"}
+                              </span>
+                            </td>
+                            <td className="py-1.5 px-2.5 text-right font-mono text-[9px] text-slate-600">
+                              {s.totalCount > 0 ? `${s.avgIk} • ${s.avgIf} • ${s.avgIc}` : "-"}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </Card>
+            </aside>
+
+            {/* ======================================================================= */}
+            {/* KOLOM KANAN: DASHBOARD UTAMA (TAB 1, TAB 2, TAB 3)                      */}
+            {/* ======================================================================= */}
+            <div className="lg:col-span-8 xl:col-span-9 space-y-6 min-w-0">
+              {/* Banner Status Sesi Aktif */}
+              <div className="rounded-2xl border border-emerald-300/80 bg-gradient-to-r from-emerald-50 via-teal-50/40 to-white p-4 sm:p-5 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex items-start sm:items-center gap-3.5">
+                  <div className={`h-11 w-11 rounded-xl flex items-center justify-center font-black text-sm shadow-xs shrink-0 ${activeSession.badgeColor}`}>
+                    {activeSession.badge}
+                  </div>
+                  <div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-800 bg-emerald-100/70 px-2 py-0.5 rounded-md">
+                        {activeSession.id === "all" ? "Kompilasi Agregat 4 Sesi" : "Filter Sesi Harian"}
+                      </span>
+                      <h2 className="text-base sm:text-lg font-black text-slate-900 tracking-tight">
+                        {activeSession.name}
+                      </h2>
+                    </div>
+                    <p className="text-xs text-slate-600 mt-0.5">
+                      {activeSession.description} • Terverifikasi: <strong className="text-emerald-800 font-mono font-bold">{activeResponses.length} santri</strong>
+                    </p>
+                  </div>
+                </div>
+
+                {selectedSessionId !== "all" && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setSelectedSessionId("all")}
+                    className="shrink-0 gap-1.5 text-xs font-bold text-emerald-800 border-emerald-300 hover:bg-emerald-50 hover:border-emerald-500 shadow-2xs cursor-pointer"
+                  >
+                    <Sparkles className="h-3.5 w-3.5 text-amber-500" />
+                    <span>Kembali ke Rekapan Gabungan</span>
+                  </Button>
+                )}
+              </div>
+
+              {/* Super Admin 3 Tab Navigation (Elegan & Timbul 3D) */}
           <div className="flex flex-wrap items-center gap-2 border-b border-slate-200/90 pb-1">
             <button
               type="button"
@@ -872,13 +1232,13 @@ function SuperAdminDashboard() {
             >
               <Database className="h-4 w-4" />
               <span>3. Basis Data Santri &amp; Rekapitulasi Nilai</span>
-              {responses.length > 0 && (
+              {activeResponses.length > 0 && (
                 <span
                   className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
                     activeTab === "tabel" ? "bg-amber-400 text-slate-950 font-bold" : "bg-slate-200 text-slate-700"
                   }`}
                 >
-                  {responses.length}
+                  {activeResponses.length}
                 </span>
               )}
             </button>
@@ -976,7 +1336,7 @@ function SuperAdminDashboard() {
                       </CardHeader>
                       <CardContent className="p-5 pt-0">
                         <div className="text-3xl font-extrabold text-slate-900 font-mono">
-                          {analytics.totalResponses}
+                          {activeAnalytics.totalResponses}
                         </div>
                         <p className="text-[11px] text-slate-400 mt-1">
                           Santri Ikhwan &amp; Akhwat terverifikasi
@@ -1020,11 +1380,11 @@ function SuperAdminDashboard() {
                         </div>
                       </CardHeader>
                       <CardContent className="p-5 pt-0">
-                        <div className="text-lg font-bold text-slate-900 truncate" title={analytics.highestTheme.title}>
-                          {analytics.highestTheme.title}
+                        <div className="text-lg font-bold text-slate-900 truncate" title={activeAnalytics.highestTheme.title}>
+                          {activeAnalytics.highestTheme.title}
                         </div>
                         <div className="text-xs text-blue-700 font-semibold mt-1 font-mono">
-                          Skor: {analytics.highestTheme.score} / 4.0
+                          Skor: {activeAnalytics.highestTheme.score} / 4.0
                         </div>
                       </CardContent>
                     </Card>
@@ -1042,11 +1402,11 @@ function SuperAdminDashboard() {
                         </div>
                       </CardHeader>
                       <CardContent className="p-5 pt-0">
-                        <div className="text-lg font-bold text-slate-900 truncate" title={analytics.lowestTheme.title}>
-                          {analytics.lowestTheme.title}
+                        <div className="text-lg font-bold text-slate-900 truncate" title={activeAnalytics.lowestTheme.title}>
+                          {activeAnalytics.lowestTheme.title}
                         </div>
                         <div className="text-xs text-orange-700 font-semibold mt-1 font-mono">
-                          Skor: {analytics.lowestTheme.score} / 4.0
+                          Skor: {activeAnalytics.lowestTheme.score} / 4.0
                         </div>
                       </CardContent>
                     </Card>
@@ -1066,7 +1426,7 @@ function SuperAdminDashboard() {
                         </CardDescription>
                       </CardHeader>
                       <CardContent className="space-y-4">
-                        {analytics.genderBreakdown.map((item) => {
+                        {activeAnalytics.genderBreakdown.map((item) => {
                           const isIkhwan = item.gender.toLowerCase().includes("ikhwan");
                           return (
                             <div key={item.gender} className="space-y-1.5">
@@ -1109,7 +1469,7 @@ function SuperAdminDashboard() {
                         </CardDescription>
                       </CardHeader>
                       <CardContent className="space-y-4">
-                        {analytics.categoryBreakdown.map((item, idx) => {
+                        {activeAnalytics.categoryBreakdown.map((item, idx) => {
                           const colors = ["bg-emerald-700", "bg-amber-500", "bg-blue-600"];
                           const barColor = colors[idx % colors.length];
                           return (
@@ -1180,7 +1540,7 @@ function SuperAdminDashboard() {
                       <div className="h-[320px] w-full">
                         <ResponsiveContainer width="100%" height="100%">
                           {kaihChartType === "line" ? (
-                            <LineChart data={analytics.themeAverages} margin={{ top: 15, right: 30, left: 0, bottom: 25 }}>
+                            <LineChart data={activeAnalytics.themeAverages} margin={{ top: 15, right: 30, left: 0, bottom: 25 }}>
                               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
                               <XAxis
                                 dataKey="title"
@@ -1217,7 +1577,7 @@ function SuperAdminDashboard() {
                               />
                             </LineChart>
                           ) : (
-                            <BarChart data={analytics.themeAverages} margin={{ top: 15, right: 30, left: 0, bottom: 25 }}>
+                            <BarChart data={activeAnalytics.themeAverages} margin={{ top: 15, right: 30, left: 0, bottom: 25 }}>
                               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
                               <XAxis
                                 dataKey="title"
@@ -1245,7 +1605,7 @@ function SuperAdminDashboard() {
                                 formatter={(value: any) => [`${value} / 4.0`, "Skor Rata-Rata"]}
                               />
                               <Bar dataKey="average" radius={[6, 6, 0, 0]} maxBarSize={45}>
-                                {analytics.themeAverages.map((entry, index) => (
+                                {activeAnalytics.themeAverages.map((entry, index) => (
                                   <Cell key={`cell-${index}`} fill={THEME_COLORS[index % THEME_COLORS.length]} />
                                 ))}
                               </Bar>
@@ -1280,7 +1640,7 @@ function SuperAdminDashboard() {
                             </tr>
                           </thead>
                           <tbody className="divide-y divide-slate-100 text-slate-700">
-                            {analytics.questionAverages.map((q, idx) => {
+                            {activeAnalytics.questionAverages.map((q, idx) => {
                               const pct = Math.round(((Math.max(1, q.average) - 1) / 3) * 100);
                               return (
                                 <tr key={q.questionId} className="hover:bg-emerald-50/50 transition-colors">
@@ -2101,7 +2461,7 @@ function SuperAdminDashboard() {
                       Filter &amp; Pencarian Data Santri
                     </h3>
                     <p className="text-xs text-slate-500">
-                      Menampilkan {filteredStudents.length} dari total {responses.length} data santri terverifikasi
+                      Menampilkan {filteredStudents.length} dari total {activeResponses.length} data santri terverifikasi (${activeSession.name})
                     </p>
                   </div>
 
@@ -2121,7 +2481,7 @@ function SuperAdminDashboard() {
                       variant="destructive"
                       size="sm"
                       onClick={handleClearAll}
-                      disabled={responses.length === 0}
+                      disabled={activeResponses.length === 0}
                       className="gap-1.5 text-xs font-bold shadow-2xs cursor-pointer hover:bg-red-700"
                     >
                       <Trash2 className="h-3.5 w-3.5" />
@@ -2350,6 +2710,8 @@ function SuperAdminDashboard() {
               </Card>
             </div>
           )}
+            </div>
+          </div>
         </div>
       </div>
     </AuthGuard>
