@@ -1461,28 +1461,24 @@ function SuperAdminDashboard() {
                     </div>
                   </Card>
 
-                  {/* 3. DUA DIAGRAM DONAT PERSEN KORELASI KOGNITIF (GRADASI ELEGAN & FONT PERSEN PROPORSIONAL) */}
-                  <div className="relative overflow-hidden rounded-2xl border border-emerald-500/30 bg-gradient-to-br from-slate-900 via-emerald-950/60 to-slate-900 p-6 sm:p-8 shadow-2xl text-white">
-                    {/* Ambient Glow Lights */}
-                    <div className="absolute -top-24 -left-24 w-80 h-80 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none" />
-                    <div className="absolute -bottom-24 -right-24 w-80 h-80 bg-amber-500/15 rounded-full blur-3xl pointer-events-none" />
-
-                    <div className="relative z-10 text-center max-w-2xl mx-auto mb-7">
-                      <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-amber-300 bg-amber-400/15 px-3 py-1 rounded-full border border-amber-400/30 mb-2 shadow-xs">
-                        <Sparkles className="h-4 w-4 text-amber-300" />
+                  {/* 3. DUA DIAGRAM DONAT PERSEN KORELASI KOGNITIF (DESAIN MODERN SLEEK DARK ELEGAN) */}
+                  <div className="rounded-2xl border border-slate-800/90 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 p-6 sm:p-8 shadow-2xl text-white">
+                    <div className="text-center max-w-2xl mx-auto mb-7">
+                      <div className="inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wider text-amber-400 bg-amber-400/10 px-3 py-1 rounded-full border border-amber-400/25 mb-2 shadow-2xs">
+                        <Sparkles className="h-4 w-4 text-amber-400" />
                         <span>Diagram Donat Persen Korelasi Kognitif</span>
                       </div>
-                      <h3 className="text-lg sm:text-xl font-extrabold text-white tracking-tight">
+                      <h3 className="text-lg sm:text-xl font-black text-white tracking-tight">
                         Kekuatan Hubungan Kausalitas Antar-Variabel
                       </h3>
-                      <p className="text-xs text-slate-300 mt-1">
+                      <p className="text-xs text-slate-400 mt-1">
                         Nilai korelasi Pearson (r) dinyatakan dalam persentase kekuatan transmisi kognitif santri.
                       </p>
                     </div>
 
-                    <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
                       {/* DONAT 1: KONSISTENSI DENGAN FOKUS */}
-                      <div className="flex flex-col items-center text-center p-6 rounded-2xl bg-gradient-to-b from-slate-900/90 via-slate-900/95 to-emerald-950/60 border border-emerald-500/30 shadow-xl hover:border-emerald-400/60 hover:shadow-[0_16px_36px_-6px_rgba(16,185,129,0.25)] hover:-translate-y-1 transition-all duration-300 backdrop-blur-sm">
+                      <div className="flex flex-col items-center text-center p-6 sm:p-7 rounded-2xl bg-zinc-900/95 border border-zinc-800 shadow-xl hover:border-emerald-500/50 hover:shadow-[0_16px_36px_-6px_rgba(16,185,129,0.22)] hover:-translate-y-1 transition-all duration-300">
                         <span className="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 mb-3">
                           Diagram Donat 1: Konsistensi ➔ Fokus
                         </span>
@@ -1490,22 +1486,22 @@ function SuperAdminDashboard() {
                         {/* SVG Donat 1 */}
                         <div className="relative my-3 w-40 h-40">
                           <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                            {/* Subtle Dark Track */}
+                            {/* Dark Base Track */}
                             <circle
                               cx="50"
                               cy="50"
                               r="36"
-                              stroke="#1e293b"
-                              strokeWidth="12"
+                              stroke="#27272a"
+                              strokeWidth="13"
                               fill="transparent"
                             />
-                            {/* Active Emerald Arc with Flat Cut */}
+                            {/* Active Percentage Arc with Crisp Flat Cut (strokeLinecap="butt") */}
                             <circle
                               cx="50"
                               cy="50"
                               r="36"
-                              stroke="#10b981"
-                              strokeWidth="12"
+                              stroke="#34d399"
+                              strokeWidth="13"
                               fill="transparent"
                               strokeDasharray={2 * Math.PI * 36}
                               strokeDashoffset={(2 * Math.PI * 36) * (1 - (cognitivePipelineData.rConsistencyFocus * 100) / 100)}
@@ -1514,32 +1510,32 @@ function SuperAdminDashboard() {
                               className="transition-all duration-1000 ease-out"
                             />
                           </svg>
-                          {/* Center Typography (Proporsional, Tidak Terlalu Besar) */}
+                          {/* Center Typography (Clean, Balanced Sans Font - Tidak Terlalu Besar) */}
                           <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                            <span className="text-2xl sm:text-[26px] font-extrabold text-white font-sans tracking-tight drop-shadow-xs tabular-nums">
+                            <span className="text-2xl sm:text-[26px] font-black text-white font-sans tracking-tight drop-shadow-sm tabular-nums">
                               {(cognitivePipelineData.rConsistencyFocus * 100).toFixed(1)}%
                             </span>
-                            <span className="text-[11px] font-semibold text-slate-300 mt-0.5 font-sans tracking-normal">
+                            <span className="text-xs font-semibold text-slate-400 mt-1 font-sans tracking-tight">
                               r = {cognitivePipelineData.rConsistencyFocus.toFixed(3)}
                             </span>
                           </div>
                         </div>
 
-                        <h4 className="text-sm sm:text-base font-bold text-white mt-1">
+                        <h4 className="text-sm sm:text-base font-extrabold text-white mt-2">
                           Korelasi Konsistensi dengan Fokus
                         </h4>
-                        <p className="text-xs text-slate-300 mt-1 max-w-xs leading-relaxed">
+                        <p className="text-xs text-slate-400 mt-1 max-w-xs leading-relaxed">
                           Tingkat pengaruh disiplin rutinitas fisik terhadap pembentukan ketahanan fokus dan inhibisi distraksi di kelas.
                         </p>
 
-                        <div className="mt-5 pt-3.5 border-t border-slate-700/60 w-full space-y-2 text-xs">
-                          <div className="flex justify-between items-center text-slate-300">
+                        <div className="mt-5 pt-3.5 border-t border-zinc-800 w-full space-y-2 text-xs">
+                          <div className="flex justify-between items-center text-slate-400">
                             <span>Koefisien Determinasi (R²):</span>
                             <span className="font-bold text-white font-sans tabular-nums">{cognitivePipelineData.r2ConsistencyFocus}%</span>
                           </div>
-                          <div className="flex justify-between items-center text-slate-300">
+                          <div className="flex justify-between items-center text-slate-400">
                             <span>Kategori Korelasi:</span>
-                            <span className={cognitivePipelineData.total === 0 ? "font-bold text-slate-400" : "font-bold text-emerald-300"}>
+                            <span className={cognitivePipelineData.total === 0 ? "font-bold text-slate-500" : "font-bold text-emerald-400"}>
                               {cognitivePipelineData.total === 0 ? "0% (Belum Ada Respon)" : "Sangat Kuat & Signifikan"}
                             </span>
                           </div>
@@ -1547,7 +1543,7 @@ function SuperAdminDashboard() {
                       </div>
 
                       {/* DONAT 2: FOKUS DENGAN CONFIDENCY */}
-                      <div className="flex flex-col items-center text-center p-6 rounded-2xl bg-gradient-to-b from-slate-900/90 via-slate-900/95 to-amber-950/60 border border-amber-500/30 shadow-xl hover:border-amber-400/60 hover:shadow-[0_16px_36px_-6px_rgba(245,158,11,0.25)] hover:-translate-y-1 transition-all duration-300 backdrop-blur-sm">
+                      <div className="flex flex-col items-center text-center p-6 sm:p-7 rounded-2xl bg-zinc-900/95 border border-zinc-800 shadow-xl hover:border-amber-500/50 hover:shadow-[0_16px_36px_-6px_rgba(245,158,11,0.22)] hover:-translate-y-1 transition-all duration-300">
                         <span className="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-500/15 text-amber-300 border border-amber-500/30 mb-3">
                           Diagram Donat 2: Fokus ➔ Confidency
                         </span>
@@ -1555,22 +1551,22 @@ function SuperAdminDashboard() {
                         {/* SVG Donat 2 */}
                         <div className="relative my-3 w-40 h-40">
                           <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                            {/* Subtle Dark Track */}
+                            {/* Dark Base Track */}
                             <circle
                               cx="50"
                               cy="50"
                               r="36"
-                              stroke="#1e293b"
-                              strokeWidth="12"
+                              stroke="#27272a"
+                              strokeWidth="13"
                               fill="transparent"
                             />
-                            {/* Active Amber/Gold Arc with Flat Cut */}
+                            {/* Active Percentage Arc with Crisp Flat Cut (strokeLinecap="butt") */}
                             <circle
                               cx="50"
                               cy="50"
                               r="36"
-                              stroke="#f59e0b"
-                              strokeWidth="12"
+                              stroke="#fbbf24"
+                              strokeWidth="13"
                               fill="transparent"
                               strokeDasharray={2 * Math.PI * 36}
                               strokeDashoffset={(2 * Math.PI * 36) * (1 - (cognitivePipelineData.rFocusConfidence * 100) / 100)}
@@ -1579,32 +1575,32 @@ function SuperAdminDashboard() {
                               className="transition-all duration-1000 ease-out"
                             />
                           </svg>
-                          {/* Center Typography (Proporsional, Tidak Terlalu Besar) */}
+                          {/* Center Typography (Clean, Balanced Sans Font - Tidak Terlalu Besar) */}
                           <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                            <span className="text-2xl sm:text-[26px] font-extrabold text-white font-sans tracking-tight drop-shadow-xs tabular-nums">
+                            <span className="text-2xl sm:text-[26px] font-black text-white font-sans tracking-tight drop-shadow-sm tabular-nums">
                               {(cognitivePipelineData.rFocusConfidence * 100).toFixed(1)}%
                             </span>
-                            <span className="text-[11px] font-semibold text-slate-300 mt-0.5 font-sans tracking-normal">
+                            <span className="text-xs font-semibold text-slate-400 mt-1 font-sans tracking-tight">
                               r = {cognitivePipelineData.rFocusConfidence.toFixed(3)}
                             </span>
                           </div>
                         </div>
 
-                        <h4 className="text-sm sm:text-base font-bold text-white mt-1">
+                        <h4 className="text-sm sm:text-base font-extrabold text-white mt-2">
                           Korelasi Fokus dengan Confidency
                         </h4>
-                        <p className="text-xs text-slate-300 mt-1 max-w-xs leading-relaxed">
+                        <p className="text-xs text-slate-400 mt-1 max-w-xs leading-relaxed">
                           Tingkat pengaruh kapasitas regulasi atensi dan logika terhadap kemantapan santri berbicara dan unjuk karya di depan publik.
                         </p>
 
-                        <div className="mt-5 pt-3.5 border-t border-slate-700/60 w-full space-y-2 text-xs">
-                          <div className="flex justify-between items-center text-slate-300">
+                        <div className="mt-5 pt-3.5 border-t border-zinc-800 w-full space-y-2 text-xs">
+                          <div className="flex justify-between items-center text-slate-400">
                             <span>Koefisien Determinasi (R²):</span>
                             <span className="font-bold text-white font-sans tabular-nums">{cognitivePipelineData.r2FocusConfidence}%</span>
                           </div>
-                          <div className="flex justify-between items-center text-slate-300">
+                          <div className="flex justify-between items-center text-slate-400">
                             <span>Kategori Korelasi:</span>
-                            <span className={cognitivePipelineData.total === 0 ? "font-bold text-slate-400" : "font-bold text-amber-300"}>
+                            <span className={cognitivePipelineData.total === 0 ? "font-bold text-slate-500" : "font-bold text-amber-400"}>
                               {cognitivePipelineData.total === 0 ? "0% (Belum Ada Respon)" : "Sangat Kuat & Signifikan"}
                             </span>
                           </div>
