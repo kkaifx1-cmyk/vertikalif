@@ -184,7 +184,7 @@ function HomeInner() {
       {/* Tab Navigation Switcher Bar (Segmented Control yang Elegan dengan Efek Timbul & Cahaya Berpendar) */}
       <div className="sticky top-16 z-40 border-b border-emerald-500/30 bg-white/85 backdrop-blur-xl shadow-[0_10px_30px_-5px_rgba(16,185,129,0.18),0_4px_12px_rgba(0,0,0,0.04)]">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-3">
-          <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center justify-center">
             <div className="flex items-center gap-1.5 sm:gap-2 p-1.5 bg-slate-100/90 backdrop-blur-md rounded-2xl border border-emerald-400/40 w-full sm:w-auto overflow-x-auto shadow-[inset_0_2px_4px_rgba(0,0,0,0.06),0_4px_20px_rgba(16,185,129,0.15)]">
               <button
                 type="button"
@@ -227,18 +227,6 @@ function HomeInner() {
                 <Users2 className="h-4 w-4 text-emerald-500" />
                 <span>Profil Pembuat</span>
               </button>
-            </div>
-
-            {/* Quick Standout Survey CTA dengan Efek Timbul & Cahaya Emas Menyala */}
-            <div className="hidden md:flex items-center">
-              <Link
-                href="/survei"
-                className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 px-5 py-2.5 text-xs font-black text-slate-950 shadow-[0_6px_22px_rgba(245,158,11,0.5),0_0_16px_rgba(251,191,36,0.45)] hover:shadow-[0_12px_32px_rgba(245,158,11,0.75),0_0_24px_rgba(251,191,36,0.6)] hover:-translate-y-1 hover:scale-105 active:scale-95 transition-all duration-300 border border-amber-300 ring-2 ring-amber-300/60 cursor-pointer"
-              >
-                <ClipboardCheck className="h-4 w-4 text-slate-950" />
-                <span>Isi Survei Santri</span>
-                <ArrowRight className="h-3.5 w-3.5 text-slate-950" />
-              </Link>
             </div>
           </div>
         </div>
