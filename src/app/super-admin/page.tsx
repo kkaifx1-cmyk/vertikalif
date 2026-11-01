@@ -410,34 +410,47 @@ function SuperAdminDashboard() {
       const icScore = cCnt > 0 ? cSum / cCnt : r.confidenceScore || r.totalScore || 3.0;
       const icPct = Math.round(((Math.max(1, icScore) - 1) / 3) * 100);
 
-      // 4. Tier 3 (Jam Tidur K6 & Gizi K7)
-      let t3Sum = 0, t3Cnt = 0;
-      for (const i of [6, 7]) {
-        for (let b = 1; b <= 5; b++) {
-          const v = answers['k' + i + '_' + b];
-          if (v !== undefined && !isNaN(Number(v))) {
-            t3Sum += Number(v);
-            t3Cnt++;
-          }
+      // 4. Pilar Al-Qur'an (KAIH 4: Butir 1-5)
+      let quranSum = 0, quranCnt = 0;
+      for (let b = 1; b <= 5; b++) {
+        const v = answers['k4_' + b];
+        if (v !== undefined && !isNaN(Number(v))) {
+          quranSum += Number(v);
+          quranCnt++;
         }
       }
-      const tier3Score = t3Cnt > 0 ? t3Sum / t3Cnt : r.totalScore || 3.0;
-      const tier3Pct = Math.round(((Math.max(1, tier3Score) - 1) / 3) * 100);
+      const quranScore = quranCnt > 0 ? quranSum / quranCnt : r.totalScore || 3.0;
+      const quranPct = Math.round(((Math.max(1, quranScore) - 1) / 3) * 100);
 
-      // Klasifikasi Persona
+      // 5. Tier 3 Jam Tidur & Istirahat (KAIH 6: Butir 1-5)
+      let sleepSum = 0, sleepCnt = 0;
+      for (let b = 1; b <= 5; b++) {
+        const v = answers['k6_' + b];
+        if (v !== undefined && !isNaN(Number(v))) {
+          sleepSum += Number(v);
+          sleepCnt++;
+        }
+      }
+      const sleepScore = sleepCnt > 0 ? sleepSum / sleepCnt : r.totalScore || 3.0;
+      const sleepPct = Math.round(((Math.max(1, sleepScore) - 1) / 3) * 100);
+
+      // Klasifikasi Persona Tepat & Terkalibrasi Ilmiah:
+      // 1. Quiet Hafidz: Fokus Belajar >= 70% atau Hafalan Quran >= 75%, namun Confidency unjuk bicara < 65%
+      // 2. Fragile Performer: Confidency tinggi >= 70%, namun Jam Tidur (KAIH 6) anjlok < 55%
+      // 3. Anchored Leader: Konsistensi >= 70%, Fokus >= 70%, dan Confidency >= 70%
       let persona: "anchored_leader" | "quiet_hafidz" | "fragile_performer" | "developing" = "developing";
       let personaLabel = "🌱 Berkembang";
       let personaBadgeClass = "bg-slate-100 text-slate-700 border-slate-300";
 
-      if (ifPct >= 75 && icPct < 60) {
+      if ((ifPct >= 70 || quranPct >= 75) && icPct < 65) {
         persona = "quiet_hafidz";
         personaLabel = "💎 Quiet Hafidz";
         personaBadgeClass = "bg-blue-100 text-blue-900 border-blue-300 font-bold";
-      } else if (icPct >= 75 && tier3Pct < 50) {
+      } else if (icPct >= 70 && sleepPct < 55) {
         persona = "fragile_performer";
         personaLabel = "⚠️ Fragile Performer";
         personaBadgeClass = "bg-rose-100 text-rose-900 border-rose-300 font-bold";
-      } else if (ikPct >= 75 && ifPct >= 75 && icPct >= 75) {
+      } else if (ikPct >= 70 && ifPct >= 70 && icPct >= 70) {
         persona = "anchored_leader";
         personaLabel = "🌟 Anchored Leader";
         personaBadgeClass = "bg-amber-100 text-amber-950 border-amber-300 font-extrabold";
@@ -462,8 +475,8 @@ function SuperAdminDashboard() {
         ifPct,
         icScore: Number(icScore.toFixed(2)),
         icPct,
-        tier3Score: Number(tier3Score.toFixed(2)),
-        tier3Pct,
+        tier3Score: Number(sleepScore.toFixed(2)),
+        tier3Pct: sleepPct,
         persona,
         personaLabel,
         personaBadgeClass,
@@ -1705,48 +1718,142 @@ function SuperAdminDashboard() {
                   {/* 5. EARLY WARNING BK & MUSYRIF: 2 KARTU DETEKSI PERSONA SANTRI KRITIS */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     {/* Kartu 1: The Quiet Hafidz */}
-                    <Card className="border-amber-200 bg-gradient-to-br from-amber-50/50 via-white to-white p-5 rounded-2xl shadow-xs hover:shadow-md transition-all duration-300 hover:border-amber-400">
+                    <Card className="border-blue-200/90 bg-gradient-to-br from-blue-50/40 via-white to-white p-5 sm:p-6 rounded-2xl shadow-xs hover:shadow-md transition-all duration-300 hover:border-blue-400">
                       <div className="flex items-start gap-3.5">
-                        <div className="p-2.5 rounded-xl bg-amber-100 text-amber-800 shrink-0 shadow-2xs">
+                        <div className="p-2.5 rounded-xl bg-blue-100 text-blue-800 shrink-0 shadow-2xs">
                           <Sparkles className="h-5 w-5" />
                         </div>
-                        <div className="space-y-1.5 flex-1">
-                          <div className="flex items-center justify-between">
-                            <h4 className="text-sm font-bold text-slate-900">The Quiet Hafidz (Potensi Terpendam)</h4>
-                            <Badge className="bg-blue-100 text-blue-900 border border-blue-300 font-bold text-[10px]">
-                              {personaCounts.quietHafidz} Santri
+                        <div className="space-y-2.5 flex-1">
+                          <div className="flex items-center justify-between gap-2">
+                            <div>
+                              <h4 className="text-sm sm:text-base font-extrabold text-slate-900 flex items-center gap-1.5">
+                                <span>💎 The Quiet Hafidz</span>
+                              </h4>
+                              <span className="text-[11px] font-semibold text-blue-700 block">Potensi Emas Terpendam • Butuh Panggung</span>
+                            </div>
+                            <Badge className="bg-blue-600 text-white font-extrabold text-xs px-2.5 py-0.5 shadow-2xs shrink-0">
+                              {personaCounts.quietHafidz} Santri Terdeteksi
                             </Badge>
                           </div>
+
                           <p className="text-xs text-slate-600 leading-relaxed">
-                            Santri memiliki hafalan dan fokus belajar sangat tinggi (≥ 75%), namun skor Confidency rendah (&lt; 60%). Mengalami kecemasan unjuk diri (<em>social performance anxiety</em>).
+                            Santri memiliki hafalan Al-Qur&apos;an dan atensi belajar sangat tinggi (≥ 70%), namun skor Confidency rendah (&lt; 65%). Mengalami kecemasan unjuk diri (<em>social performance anxiety</em>).
                           </p>
-                          <div className="pt-2 border-t border-amber-100 text-[11px] font-semibold text-amber-900 flex items-center gap-1.5">
-                            <CheckCircle2 className="h-3.5 w-3.5 text-amber-700 shrink-0" />
-                            <span>Aksi Musyrif: Berikan latihan panggung bertahap (kultum kamar ➔ halaqah kecil).</span>
+
+                          {/* Daftar Nama Santri Quiet Hafidz yang Terdeteksi */}
+                          {extendedStudents.filter((s) => s.persona === "quiet_hafidz").length > 0 ? (
+                            <div className="p-2.5 rounded-xl bg-blue-50/80 border border-blue-200/90 space-y-1.5">
+                              <div className="flex items-center justify-between text-[11px]">
+                                <span className="font-bold uppercase tracking-wider text-blue-900">
+                                  Daftar Santri Teridentifikasi:
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setSelectedConfidenceCategory("persona_quiet_hafidz");
+                                    setActiveTab("tabel");
+                                  }}
+                                  className="text-[10px] font-extrabold text-blue-700 hover:text-blue-900 underline cursor-pointer"
+                                >
+                                  Buka di Tabel ➔
+                                </button>
+                              </div>
+                              <div className="flex flex-wrap gap-1.5 pt-0.5">
+                                {extendedStudents
+                                  .filter((s) => s.persona === "quiet_hafidz")
+                                  .map((s) => (
+                                    <span
+                                      key={s.id}
+                                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white border border-blue-200 text-xs font-semibold text-slate-800 shadow-2xs"
+                                    >
+                                      <span>{s.nama}</span>
+                                      <span className="text-[10px] text-blue-700 font-mono font-bold">({s.kategori})</span>
+                                    </span>
+                                  ))}
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-500 italic">
+                              {responses.length === 0
+                                ? "Belum ada respon santri yang terekam."
+                                : "Belum ada santri terdeteksi pada profil ini (Tingkat confidency seimbang dengan fokus)."}
+                            </div>
+                          )}
+
+                          <div className="pt-2 border-t border-blue-100 text-[11px] font-semibold text-blue-950 flex items-start gap-1.5">
+                            <CheckCircle2 className="h-3.5 w-3.5 text-blue-700 shrink-0 mt-0.5" />
+                            <span><strong>Rekomendasi Musyrif &amp; BK:</strong> Latih panggung bertahap mulai dari halaqah kecil, kultum kamar, hingga forum angkatan tanpa paksaan.</span>
                           </div>
                         </div>
                       </div>
                     </Card>
 
                     {/* Kartu 2: The Fragile Performer */}
-                    <Card className="border-red-200 bg-gradient-to-br from-red-50/50 via-white to-white p-5 rounded-2xl shadow-xs hover:shadow-md transition-all duration-300 hover:border-red-400">
+                    <Card className="border-red-200/90 bg-gradient-to-br from-red-50/40 via-white to-white p-5 sm:p-6 rounded-2xl shadow-xs hover:shadow-md transition-all duration-300 hover:border-red-400">
                       <div className="flex items-start gap-3.5">
                         <div className="p-2.5 rounded-xl bg-red-100 text-red-700 shrink-0 shadow-2xs">
                           <AlertTriangle className="h-5 w-5" />
                         </div>
-                        <div className="space-y-1.5 flex-1">
-                          <div className="flex items-center justify-between">
-                            <h4 className="text-sm font-bold text-slate-900">The Fragile Performer (Waspada Burnout)</h4>
-                            <Badge className="bg-red-100 text-red-800 border border-red-300 font-bold text-[10px]">
-                              {personaCounts.fragilePerformer} Santri
+                        <div className="space-y-2.5 flex-1">
+                          <div className="flex items-center justify-between gap-2">
+                            <div>
+                              <h4 className="text-sm sm:text-base font-extrabold text-slate-900 flex items-center gap-1.5">
+                                <span>⚠️ The Fragile Performer</span>
+                              </h4>
+                              <span className="text-[11px] font-semibold text-red-700 block">Pede Tinggi • Jam Tidur Kritis • Waspada Burnout</span>
+                            </div>
+                            <Badge className="bg-red-600 text-white font-extrabold text-xs px-2.5 py-0.5 shadow-2xs shrink-0">
+                              {personaCounts.fragilePerformer} Santri Terdeteksi
                             </Badge>
                           </div>
+
                           <p className="text-xs text-slate-600 leading-relaxed">
-                            Percaya diri tinggi dan suka tampil (≥ 75%), namun skor Tier 3 (Jam Tidur &amp; Pola Makan) anjlok di bawah 50%. Gejala sindrom <em>ngalong</em> (begadang asrama) yang memicu kelelahan kortikal.
+                            Percaya diri tinggi dan suka tampil (≥ 70%), namun skor Tier 3 (Jam Tidur K6 &amp; Pemulihan) anjlok di bawah 55%. Gejala sindrom <em>ngalong</em> (begadang asrama) yang memicu kelelahan kortikal.
                           </p>
-                          <div className="pt-2 border-t border-red-100 text-[11px] font-semibold text-red-900 flex items-center gap-1.5">
-                            <AlertCircle className="h-3.5 w-3.5 text-red-600 shrink-0" />
-                            <span>Aksi Musyrif: Restrukturisasi jam tidur malam wajib ditegakkan sebelum menambah beban hafalan.</span>
+
+                          {/* Daftar Nama Santri Fragile Performer yang Terdeteksi */}
+                          {extendedStudents.filter((s) => s.persona === "fragile_performer").length > 0 ? (
+                            <div className="p-2.5 rounded-xl bg-red-50/80 border border-red-200/90 space-y-1.5">
+                              <div className="flex items-center justify-between text-[11px]">
+                                <span className="font-bold uppercase tracking-wider text-red-900">
+                                  Daftar Santri Teridentifikasi:
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setSelectedConfidenceCategory("persona_fragile_performer");
+                                    setActiveTab("tabel");
+                                  }}
+                                  className="text-[10px] font-extrabold text-red-700 hover:text-red-900 underline cursor-pointer"
+                                >
+                                  Buka di Tabel ➔
+                                </button>
+                              </div>
+                              <div className="flex flex-wrap gap-1.5 pt-0.5">
+                                {extendedStudents
+                                  .filter((s) => s.persona === "fragile_performer")
+                                  .map((s) => (
+                                    <span
+                                      key={s.id}
+                                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white border border-red-200 text-xs font-semibold text-slate-800 shadow-2xs"
+                                    >
+                                      <span>{s.nama}</span>
+                                      <span className="text-[10px] text-red-700 font-mono font-bold">({s.kategori})</span>
+                                    </span>
+                                  ))}
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-500 italic">
+                              {responses.length === 0
+                                ? "Belum ada respon santri yang terekam."
+                                : "Belum ada santri terdeteksi pada profil ini (Seluruh santri menjaga kecukupan jam tidur)."}
+                            </div>
+                          )}
+
+                          <div className="pt-2 border-t border-red-100 text-[11px] font-semibold text-red-950 flex items-start gap-1.5">
+                            <AlertCircle className="h-3.5 w-3.5 text-red-600 shrink-0 mt-0.5" />
+                            <span><strong>Rekomendasi Musyrif &amp; BK:</strong> Restrukturisasi jam tidur malam wajib ditegakkan sebelum santri diberi beban hafalan tambahan.</span>
                           </div>
                         </div>
                       </div>
