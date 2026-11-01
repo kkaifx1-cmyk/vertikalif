@@ -6,12 +6,13 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { ClipboardCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ThemeToggle } from "./theme-toggle";
 
 export function Navbar() {
   const pathname = usePathname();
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-emerald-500/30 bg-white/90 backdrop-blur-xl shadow-[0_10px_35px_-5px_rgba(16,185,129,0.18),0_2px_10px_rgba(0,0,0,0.06)]">
+    <header className="sticky top-0 z-50 w-full border-b border-emerald-500/30 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl shadow-[0_10px_35px_-5px_rgba(16,185,129,0.18),0_2px_10px_rgba(0,0,0,0.06)] dark:shadow-[0_10px_35px_-5px_rgba(0,0,0,0.5)] transition-colors duration-300">
       {/* Decorative Glowing Top Ambient Light Strip */}
       <div className="h-[2.5px] w-full bg-gradient-to-r from-emerald-500 via-amber-400 to-teal-500 shadow-[0_0_14px_rgba(34,197,94,0.8)]" />
 
@@ -28,17 +29,19 @@ export function Navbar() {
             />
           </div>
           <div className="flex flex-col">
-            <span className="text-sm font-extrabold tracking-tight text-emerald-950 sm:text-base leading-tight group-hover:text-emerald-700 transition-colors">
+            <span className="text-sm font-extrabold tracking-tight text-emerald-950 dark:text-emerald-300 sm:text-base leading-tight group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors">
               SMAIT IHSANUL FIKRI
             </span>
-            <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+            <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
               Kabupaten Magelang
             </span>
           </div>
         </Link>
 
-        {/* CTA Utama: Mulai Survei dengan Cahaya Emas & Efek Timbul */}
-        <div className="flex items-center">
+        {/* Action Controls: Theme Toggle & Mulai Survei CTA */}
+        <div className="flex items-center gap-2.5 sm:gap-3">
+          <ThemeToggle />
+
           <Link
             href="/survei"
             aria-label="Mulai Survei Sekarang - Kuesioner Evaluasi 7 KAIH"

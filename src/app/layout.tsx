@@ -4,6 +4,7 @@ import "./globals.css";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { AnimatedBackground } from "@/components/animated-background";
+import { ThemeProvider, themeInitScript } from "@/components/theme-provider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -28,13 +29,21 @@ export default function RootLayout({
   return (
     <html
       lang="id"
+      suppressHydrationWarning
       className={`${inter.variable} h-full antialiased`}
     >
-      <body className={`${inter.className} relative min-h-full flex flex-col bg-transparent text-slate-900 selection:bg-emerald-600 selection:text-white`}>
-        <AnimatedBackground />
-        <Navbar />
-        <main className="flex-1">{children}</main>
-        <Footer />
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
+      <body
+        className={`${inter.className} relative min-h-full flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-300 selection:bg-emerald-600 selection:text-white`}
+      >
+        <ThemeProvider>
+          <AnimatedBackground />
+          <Navbar />
+          <main className="flex-1">{children}</main>
+          <Footer />
+        </ThemeProvider>
       </body>
     </html>
   );

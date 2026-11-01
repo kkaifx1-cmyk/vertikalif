@@ -59,6 +59,7 @@ import {
   SessionMetricsSummary,
 } from "@/lib/session-helper";
 import { CalendarDays, Calendar, Clock, Check } from "lucide-react";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 const THEME_COLORS = ["#15803d", "#d97706", "#0284c7", "#7c3aed", "#059669", "#ea580c", "#4f46e5"];
 const LIKERT_COLORS = ["#ef4444", "#f59e0b", "#10b981", "#15803d"];
@@ -830,24 +831,25 @@ function SuperAdminDashboard() {
       pageTitle="Portal Super Admin"
       pageDescription="Pusat Kendali Data & Analisis Hasil Survei Santri"
     >
-      <div className="min-h-screen bg-slate-50/60 pb-16">
+      <div className="min-h-screen bg-slate-50/60 dark:bg-slate-950 pb-16 transition-colors duration-300">
         <div className="mx-auto max-w-[1600px] px-4 sm:px-6 lg:px-8 pt-8 space-y-6">
           {/* Header Dashboard */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-slate-200/90">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-slate-200/90 dark:border-slate-800">
             <div>
               <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-100/60 px-3 py-1 text-xs font-bold text-emerald-800 mb-2">
                 <ShieldCheck className="h-3.5 w-3.5 text-emerald-700" />
                 <span>Dashboard Super Admin VERTIKAL IF • SMAIT Ihsanul Fikri</span>
               </div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
                 Pusat Kendali Data &amp; Arsitektur Kognitif Santri
               </h1>
-              <p className="text-xs sm:text-sm text-slate-500 mt-1">
+              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
                 Visualisasi Indeks Komposit Vertikal (IKV), Mediasi Kognitif 7 KAIH, dan Basis Data Terverifikasi.
               </p>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2.5">
+              <ThemeToggle variant="dropdown" />
               <Button
                 variant="outline"
                 size="sm"
@@ -879,7 +881,7 @@ function SuperAdminDashboard() {
             {/* ======================================================================= */}
             <aside className="lg:col-span-4 xl:col-span-3 space-y-4 lg:sticky lg:top-4 z-10">
               {/* Card Navigasi Sesi */}
-              <Card className="border-slate-200/90 bg-white shadow-md rounded-2xl overflow-hidden hover:border-emerald-500 transition-all">
+              <Card className="border-slate-200/90 bg-white dark:bg-slate-900 shadow-md rounded-2xl overflow-hidden border-slate-200/90 dark:border-slate-800 hover:border-emerald-500 transition-all">
                 <CardHeader className="p-4 pb-3.5 bg-gradient-to-r from-emerald-800 via-emerald-900 to-slate-900 text-white">
                   <div className="flex items-center justify-between">
                     <span className="inline-flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-wider text-amber-300 bg-amber-400/20 px-2 py-0.5 rounded-full border border-amber-400/30">
@@ -909,7 +911,7 @@ function SuperAdminDashboard() {
                         className={`p-3.5 rounded-xl border transition-all duration-200 cursor-pointer ${
                           isSelected
                             ? "bg-gradient-to-br from-emerald-900 via-emerald-950 to-slate-950 text-white border-emerald-500 shadow-md ring-2 ring-emerald-500/40 -translate-y-0.5"
-                            : "bg-emerald-50/50 hover:bg-emerald-50 border-emerald-200/80 text-slate-900 hover:border-emerald-400 hover:shadow-2xs"
+                            : "bg-emerald-50/50 dark:bg-emerald-950/25 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 border-emerald-200/80 dark:border-emerald-800/60 text-slate-900 dark:text-slate-100 hover:border-emerald-400 hover:shadow-2xs"
                         }`}
                       >
                         <div className="flex items-center justify-between mb-1.5">
@@ -997,7 +999,7 @@ function SuperAdminDashboard() {
                             className={`p-3 rounded-xl border transition-all duration-200 cursor-pointer ${
                               isSelected
                                 ? "bg-slate-900 text-white border-emerald-500 shadow-md ring-2 ring-emerald-500/30 -translate-y-0.5"
-                                : "bg-white hover:bg-slate-50/80 border-slate-200 text-slate-800 hover:border-slate-300 hover:shadow-2xs"
+                                : "bg-white dark:bg-slate-900/80 hover:bg-slate-50/80 dark:hover:bg-slate-800/80 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 hover:border-slate-300 hover:shadow-2xs"
                             }`}
                           >
                             <div className="flex items-center justify-between mb-1">
@@ -1090,8 +1092,8 @@ function SuperAdminDashboard() {
 
               {/* 4. TABEL MATRIKS KOMPARASI 4 SESI (MINI MATRIX) */}
               <Card className="border-slate-200 bg-white shadow-xs rounded-2xl overflow-hidden">
-                <CardHeader className="p-3.5 pb-2 border-b border-slate-100 bg-slate-50/70">
-                  <CardTitle className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                <CardHeader className="p-3.5 pb-2 border-b border-slate-100 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/70">
+                  <CardTitle className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
                     <Activity className="h-3.5 w-3.5 text-emerald-700" />
                     <span>Matriks Komparasi 4 Hari</span>
                   </CardTitle>
@@ -1101,7 +1103,7 @@ function SuperAdminDashboard() {
                 </CardHeader>
                 <div className="overflow-x-auto">
                   <table className="w-full text-[10px] text-left">
-                    <thead className="bg-slate-100/70 text-slate-600 font-bold uppercase tracking-wider text-[9px] border-b border-slate-200/80">
+                    <thead className="bg-slate-100/70 dark:bg-slate-800/70 text-slate-600 dark:text-slate-300 font-bold uppercase tracking-wider text-[9px] border-b border-slate-200/80 dark:border-slate-800">
                       <tr>
                         <th className="py-1.5 px-2.5">Sesi</th>
                         <th className="py-1.5 px-2 text-center">N</th>
@@ -1157,7 +1159,7 @@ function SuperAdminDashboard() {
             {/* ======================================================================= */}
             <div className="lg:col-span-8 xl:col-span-9 space-y-6 min-w-0">
               {/* Banner Status Sesi Aktif */}
-              <div className="rounded-2xl border border-emerald-300/80 bg-gradient-to-r from-emerald-50 via-teal-50/40 to-white p-4 sm:p-5 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="rounded-2xl border border-emerald-300/80 dark:border-emerald-800/80 bg-gradient-to-r from-emerald-50 via-teal-50/40 to-white dark:from-emerald-950/40 dark:via-teal-950/30 dark:to-slate-900 p-4 sm:p-5 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors">
                 <div className="flex items-start sm:items-center gap-3.5">
                   <div className={`h-11 w-11 rounded-xl flex items-center justify-center font-black text-sm shadow-xs shrink-0 ${activeSession.badgeColor}`}>
                     {activeSession.badge}
@@ -1167,11 +1169,11 @@ function SuperAdminDashboard() {
                       <span className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-800 bg-emerald-100/70 px-2 py-0.5 rounded-md">
                         {activeSession.id === "all" ? "Kompilasi Agregat 4 Sesi" : "Filter Sesi Harian"}
                       </span>
-                      <h2 className="text-base sm:text-lg font-black text-slate-900 tracking-tight">
+                      <h2 className="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight">
                         {activeSession.name}
                       </h2>
                     </div>
-                    <p className="text-xs text-slate-600 mt-0.5">
+                    <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
                       {activeSession.description} • Terverifikasi: <strong className="text-emerald-800 font-mono font-bold">{activeResponses.length} santri</strong>
                     </p>
                   </div>
@@ -1191,14 +1193,14 @@ function SuperAdminDashboard() {
               </div>
 
               {/* Super Admin 3 Tab Navigation (Elegan & Timbul 3D) */}
-          <div className="flex flex-wrap items-center gap-2 border-b border-slate-200/90 pb-1">
+          <div className="flex flex-wrap items-center gap-2 border-b border-slate-200/90 dark:border-slate-800 pb-1">
             <button
               type="button"
               onClick={() => setActiveTab("analisis")}
               className={`flex items-center gap-2 px-4 py-2.5 text-xs sm:text-sm font-bold rounded-xl transition-all duration-300 cursor-pointer ${
                 activeTab === "analisis"
                   ? "bg-emerald-700 text-white shadow-[0_8px_20px_-4px_rgba(21,128,61,0.4),0_0_12px_1px_rgba(34,197,94,0.2)] -translate-y-1 ring-1 ring-emerald-500"
-                  : "text-slate-600 hover:text-slate-900 hover:bg-white hover:-translate-y-0.5 hover:shadow-xs"
+                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800 hover:-translate-y-0.5 hover:shadow-xs"
               }`}
             >
               <TrendingUp className="h-4 w-4" />
@@ -1211,7 +1213,7 @@ function SuperAdminDashboard() {
               className={`flex items-center gap-2 px-4 py-2.5 text-xs sm:text-sm font-bold rounded-xl transition-all duration-300 cursor-pointer ${
                 activeTab === "pengaruh_pede"
                   ? "bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 text-white shadow-[0_8px_20px_-4px_rgba(245,158,11,0.45),0_0_14px_1px_rgba(251,191,36,0.3)] -translate-y-1 ring-1 ring-amber-400 font-extrabold"
-                  : "text-slate-600 hover:text-slate-900 hover:bg-white hover:-translate-y-0.5 hover:shadow-xs"
+                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800 hover:-translate-y-0.5 hover:shadow-xs"
               }`}
             >
               <Sparkles className="h-4 w-4 text-amber-300" />
@@ -1227,7 +1229,7 @@ function SuperAdminDashboard() {
               className={`flex items-center gap-2 px-4 py-2.5 text-xs sm:text-sm font-bold rounded-xl transition-all duration-300 cursor-pointer ${
                 activeTab === "tabel"
                   ? "bg-emerald-700 text-white shadow-[0_8px_20px_-4px_rgba(21,128,61,0.4),0_0_12px_1px_rgba(34,197,94,0.2)] -translate-y-1 ring-1 ring-emerald-500"
-                  : "text-slate-600 hover:text-slate-900 hover:bg-white hover:-translate-y-0.5 hover:shadow-xs"
+                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800 hover:-translate-y-0.5 hover:shadow-xs"
               }`}
             >
               <Database className="h-4 w-4" />
@@ -2500,7 +2502,7 @@ function SuperAdminDashboard() {
                       placeholder="Cari nama, NIS, atau saran santri..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full rounded-lg border border-slate-300 bg-white pl-9 pr-3 py-2 text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 transition-all duration-200 hover:border-emerald-500 focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-600/20"
+                      className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 pl-9 pr-3 py-2 text-xs sm:text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 transition-all duration-200 hover:border-emerald-500 focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-600/20"
                     />
                   </div>
 
