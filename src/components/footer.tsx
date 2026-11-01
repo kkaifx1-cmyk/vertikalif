@@ -6,13 +6,13 @@ import { CheckCircle2, Heart, ShieldCheck } from "lucide-react";
 
 export function Footer() {
   return (
-    <footer className="border-t border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-950/90 backdrop-blur-xs text-slate-600 dark:text-slate-400 transition-colors duration-300">
+    <footer className="border-t border-slate-200 dark:border-emerald-500/40 bg-white/90 dark:bg-black/95 backdrop-blur-xs text-slate-600 dark:text-slate-400 transition-colors duration-300">
       <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
           {/* Brand Info */}
           <div className="space-y-3">
             <div className="flex items-center gap-3">
-              <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full border border-emerald-600 bg-emerald-50 dark:bg-slate-900 p-0.5">
+              <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full border border-emerald-600 bg-emerald-50 dark:bg-black p-0.5 shadow-sm dark:shadow-[0_0_12px_rgba(16,185,129,0.3)]">
                 <Image
                   src="/logo-ihsanul-fikri.png"
                   alt="SMAIT Ihsanul Fikri"
@@ -37,27 +37,27 @@ export function Footer() {
             </h4>
             <ul className="space-y-2 text-xs">
               <li>
-                <Link href="/?tab=beranda" className="hover:text-emerald-700 dark:hover:text-emerald-400 transition-colors">
+                <Link href="/?tab=beranda" className="hover:text-emerald-700 dark:hover:text-amber-400 transition-colors">
                   Beranda &amp; Visi Sekolah
                 </Link>
               </li>
               <li>
-                <Link href="/?tab=kaih" className="hover:text-emerald-700 dark:hover:text-emerald-400 transition-colors">
+                <Link href="/?tab=kaih" className="hover:text-emerald-700 dark:hover:text-amber-400 transition-colors">
                   7 Karakter Utama (KAIH 1 s.d. 7)
                 </Link>
               </li>
               <li>
-                <Link href="/?tab=profil" className="hover:text-emerald-700 dark:hover:text-emerald-400 transition-colors">
+                <Link href="/?tab=profil" className="hover:text-emerald-700 dark:hover:text-amber-400 transition-colors">
                   Profil Tim Pembuat &amp; Pembimbing
                 </Link>
               </li>
               <li>
-                <Link href="/analisis" className="hover:text-emerald-700 dark:hover:text-emerald-400 transition-colors">
+                <Link href="/analisis" className="hover:text-emerald-700 dark:hover:text-amber-400 transition-colors">
                   Portal Analitik &amp; Visualisasi
                 </Link>
               </li>
               <li>
-                <Link href="/super-admin" className="hover:text-emerald-700 dark:hover:text-emerald-400 transition-colors">
+                <Link href="/super-admin" className="hover:text-emerald-700 dark:hover:text-amber-400 transition-colors">
                   Portal Super Admin (Restricted)
                 </Link>
               </li>
@@ -80,7 +80,7 @@ export function Footer() {
               </div>
             </div>
             <div className="pt-2">
-              <span className="inline-block rounded-md bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-1 text-[11px] font-medium text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+              <span className="inline-block rounded-md bg-emerald-50 dark:bg-black px-2.5 py-1 text-[11px] font-medium text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/50 dark:shadow-[0_0_10px_rgba(16,185,129,0.25)]">
                 Tahun Ajaran 2026/2027 • Siklus Evaluasi
               </span>
             </div>
@@ -88,7 +88,7 @@ export function Footer() {
         </div>
 
         {/* Copyright */}
-        <div className="mt-8 border-t border-slate-100 dark:border-slate-800 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-400 dark:text-slate-500">
+        <div className="mt-8 border-t border-slate-100 dark:border-emerald-500/20 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-400 dark:text-slate-500">
           <p>© 2026 SMAIT Ihsanul Fikri Kabupaten Magelang. Hak Cipta Dilindungi.</p>
           <p className="flex items-center gap-1">
             <span>Dikembangkan dengan</span>

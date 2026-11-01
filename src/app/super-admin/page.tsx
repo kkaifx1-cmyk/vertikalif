@@ -831,10 +831,10 @@ function SuperAdminDashboard() {
       pageTitle="Portal Super Admin"
       pageDescription="Pusat Kendali Data & Analisis Hasil Survei Santri"
     >
-      <div className="min-h-screen bg-slate-50/60 dark:bg-slate-950 pb-16 transition-colors duration-300">
+      <div className="min-h-screen bg-slate-50/60 dark:bg-black pb-16 transition-colors duration-300">
         <div className="mx-auto max-w-[1600px] px-4 sm:px-6 lg:px-8 pt-8 space-y-6">
           {/* Header Dashboard */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-slate-200/90 dark:border-slate-800">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-slate-200/90 dark:border-emerald-500/40">
             <div>
               <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-100/60 px-3 py-1 text-xs font-bold text-emerald-800 mb-2">
                 <ShieldCheck className="h-3.5 w-3.5 text-emerald-700" />
@@ -881,7 +881,7 @@ function SuperAdminDashboard() {
             {/* ======================================================================= */}
             <aside className="lg:col-span-4 xl:col-span-3 space-y-4 lg:sticky lg:top-4 z-10">
               {/* Card Navigasi Sesi */}
-              <Card className="border-slate-200/90 bg-white dark:bg-slate-900 shadow-md rounded-2xl overflow-hidden border-slate-200/90 dark:border-slate-800 hover:border-emerald-500 transition-all">
+              <Card className="border-slate-200/90 bg-white dark:bg-black/95 shadow-md rounded-2xl overflow-hidden border-slate-200/90 dark:border-emerald-500/40 hover:border-emerald-500 transition-all">
                 <CardHeader className="p-4 pb-3.5 bg-gradient-to-r from-emerald-800 via-emerald-900 to-slate-900 text-white">
                   <div className="flex items-center justify-between">
                     <span className="inline-flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-wider text-amber-300 bg-amber-400/20 px-2 py-0.5 rounded-full border border-amber-400/30">
@@ -999,7 +999,7 @@ function SuperAdminDashboard() {
                             className={`p-3 rounded-xl border transition-all duration-200 cursor-pointer ${
                               isSelected
                                 ? "bg-slate-900 text-white border-emerald-500 shadow-md ring-2 ring-emerald-500/30 -translate-y-0.5"
-                                : "bg-white dark:bg-slate-900/80 hover:bg-slate-50/80 dark:hover:bg-slate-800/80 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 hover:border-slate-300 hover:shadow-2xs"
+                                : "bg-white dark:bg-black/90 hover:bg-slate-50/80 dark:hover:bg-emerald-950/40 border-slate-200 dark:border-emerald-500/40 text-slate-800 dark:text-slate-200 hover:border-slate-300 hover:shadow-2xs"
                             }`}
                           >
                             <div className="flex items-center justify-between mb-1">
@@ -1092,7 +1092,7 @@ function SuperAdminDashboard() {
 
               {/* 4. TABEL MATRIKS KOMPARASI 4 SESI (MINI MATRIX) */}
               <Card className="border-slate-200 bg-white shadow-xs rounded-2xl overflow-hidden">
-                <CardHeader className="p-3.5 pb-2 border-b border-slate-100 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/70">
+                <CardHeader className="p-3.5 pb-2 border-b border-slate-100 dark:border-emerald-500/40 bg-slate-50/70 dark:bg-black/80">
                   <CardTitle className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
                     <Activity className="h-3.5 w-3.5 text-emerald-700" />
                     <span>Matriks Komparasi 4 Hari</span>
@@ -1103,7 +1103,7 @@ function SuperAdminDashboard() {
                 </CardHeader>
                 <div className="overflow-x-auto">
                   <table className="w-full text-[10px] text-left">
-                    <thead className="bg-slate-100/70 dark:bg-slate-800/70 text-slate-600 dark:text-slate-300 font-bold uppercase tracking-wider text-[9px] border-b border-slate-200/80 dark:border-slate-800">
+                    <thead className="bg-slate-100/70 dark:bg-black/80 text-slate-600 dark:text-slate-300 font-bold uppercase tracking-wider text-[9px] border-b border-slate-200/80 dark:border-emerald-500/40">
                       <tr>
                         <th className="py-1.5 px-2.5">Sesi</th>
                         <th className="py-1.5 px-2 text-center">N</th>
@@ -1193,7 +1193,7 @@ function SuperAdminDashboard() {
               </div>
 
               {/* Super Admin 3 Tab Navigation (Elegan & Timbul 3D) */}
-          <div className="flex flex-wrap items-center gap-2 border-b border-slate-200/90 dark:border-slate-800 pb-1">
+          <div className="flex flex-wrap items-center gap-2 border-b border-slate-200/90 dark:border-emerald-500/40 pb-1">
             <button
               type="button"
               onClick={() => setActiveTab("analisis")}
@@ -2502,7 +2502,7 @@ function SuperAdminDashboard() {
                       placeholder="Cari nama, NIS, atau saran santri..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 pl-9 pr-3 py-2 text-xs sm:text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 transition-all duration-200 hover:border-emerald-500 focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-600/20"
+                      className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-black/90 pl-9 pr-3 py-2 text-xs sm:text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 transition-all duration-200 hover:border-emerald-500 focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-600/20"
                     />
                   </div>
 

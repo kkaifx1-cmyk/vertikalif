@@ -12,14 +12,14 @@ export function Navbar() {
   const pathname = usePathname();
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-emerald-500/30 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl shadow-[0_10px_35px_-5px_rgba(16,185,129,0.18),0_2px_10px_rgba(0,0,0,0.06)] dark:shadow-[0_10px_35px_-5px_rgba(0,0,0,0.5)] transition-colors duration-300">
+    <header className="sticky top-0 z-50 w-full border-b border-emerald-500/30 dark:border-emerald-500/50 bg-white/90 dark:bg-black/95 backdrop-blur-xl shadow-[0_10px_35px_-5px_rgba(16,185,129,0.18),0_2px_10px_rgba(0,0,0,0.06)] dark:shadow-[0_10px_35px_-5px_rgba(0,0,0,0.8),0_0_20px_rgba(16,185,129,0.2)] transition-colors duration-300">
       {/* Decorative Glowing Top Ambient Light Strip */}
       <div className="h-[2.5px] w-full bg-gradient-to-r from-emerald-500 via-amber-400 to-teal-500 shadow-[0_0_14px_rgba(34,197,94,0.8)]" />
 
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Brand / Logo dengan Efek Timbul & Cahaya Berpendar */}
         <Link href="/" className="flex items-center gap-3 group">
-          <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-full border-2 border-emerald-500 bg-white p-0.5 shadow-[0_0_14px_rgba(16,185,129,0.35)] transition-all duration-300 group-hover:scale-110 group-hover:border-amber-400 group-hover:shadow-[0_0_24px_rgba(245,158,11,0.65)]">
+          <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-full border-2 border-emerald-500 bg-white dark:bg-black p-0.5 shadow-[0_0_14px_rgba(16,185,129,0.35)] transition-all duration-300 group-hover:scale-110 group-hover:border-amber-400 group-hover:shadow-[0_0_24px_rgba(245,158,11,0.65)]">
             <Image
               src="/logo-ihsanul-fikri.png"
               alt="Logo SMAIT Ihsanul Fikri Magelang"
@@ -29,7 +29,7 @@ export function Navbar() {
             />
           </div>
           <div className="flex flex-col">
-            <span className="text-sm font-extrabold tracking-tight text-emerald-950 dark:text-emerald-300 sm:text-base leading-tight group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors">
+            <span className="text-sm font-extrabold tracking-tight text-emerald-950 dark:text-emerald-400 sm:text-base leading-tight group-hover:text-emerald-700 dark:group-hover:text-amber-400 transition-colors">
               SMAIT IHSANUL FIKRI
             </span>
             <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
