@@ -33,72 +33,72 @@ const KAIH_SHOWCASE = [
     num: 1,
     title: "Gemar Membaca & Literasi Riset",
     focus: "Membangun tradisi membaca mendalam, literasi digital beretika, penulisan karya ilmiah, dan daya argumentasi kritis berbasis data.",
-    category: "Literasi & Riset",
+    category: "Literasi & Akademik",
     tier: "Tier 1 (Bobot ×3)",
-    impact: "21.4% Porsi Mutu",
+    impact: "18% Bobot Pengaruh",
     color: "from-emerald-600 to-teal-700",
     badgeBg: "bg-emerald-50 text-emerald-800 border-emerald-200",
     icon: BookOpen,
     indicators: [
-      "Membaca buku referensi dan teks pelajaran secara rutin mandiri",
-      "Kritis dalam memverifikasi rujukan informasi dan analisis data",
-      "Pemanfaatan sesi muthala'ah untuk literatur bermutu",
-      "Kemampuan menyusun alur logika argumen sebelum berbicara/menulis",
-      "Keberanian mempresentasikan gagasan ilmiah di hadapan forum",
+      "Membaca buku non-pelajaran secara rutin setiap pekan",
+      "Kritis dalam memverifikasi informasi dan rujukan data",
+      "Pemanfaatan perpustakaan dan sudut baca asrama",
+      "Kemampuan merumuskan ide dalam bentuk tulisan/karya ilmiah",
+      "Etika riset dan penghargaan terhadap hak cipta/sitasi",
     ],
   },
   {
     num: 2,
     title: "Bermasyarakat, Ukhuwah & Adab Sosial",
-    focus: "Penanaman jiwa kepemimpinan santri, kerukunan antarkamar asrama, dan etika interaksi islami yang luwes.",
-    category: "Sosial & Kepemimpinan",
-    tier: "Tier 1 (Bobot ×3)",
-    impact: "21.4% Porsi Mutu",
-    color: "from-teal-600 to-emerald-700",
-    badgeBg: "bg-teal-50 text-teal-800 border-teal-200",
+    focus: "Menjaga kebersihan asrama, kepedulian sosial, serta adab santun dalam interaksi sesama santri, ustadz, dan masyarakat luas.",
+    category: "Sosial & Lingkungan",
+    tier: "Tier 3 (Bobot ×1)",
+    impact: "11% Bobot Pengaruh",
+    color: "from-sky-600 to-cyan-700",
+    badgeBg: "bg-sky-50 text-sky-800 border-sky-200",
     icon: Users,
     indicators: [
-      "Aktif mengambil peran dalam organisasi dan kepanitiaan asrama",
-      "Menyimak sesama santri dan musyrif dengan adab tulus tanpa minder",
-      "Empati sosial membaca dinamika kebutuhan teman sekamar",
-      "Meredakan perselisihan dan mengarahkan musyawarah yang solutif",
-      "Percaya diri memimpin musyawarah atau berbicara di depan umum",
+      "Menjaga kerukunan dan ukhuwah islamiyah sesama santri",
+      "Partisipasi aktif dalam kegiatan gotong royong asrama",
+      "Adab sopan santun kepada bapak/ibu guru dan asatidz",
+      "Kepedulian terhadap lingkungan dan fasilitas bersama",
+      "Kesiapan membantu teman yang sedang menghadapi kesulitan",
     ],
   },
   {
     num: 3,
     title: "Kesiapan & Kekhusyukan Ibadah",
-    focus: "Kedisiplinan qiyamullail, ketepatan waktu shalat berjamaah subuh di masjid, dan kesegaran fisik sejak pagi.",
-    category: "Spiritual & Ritme Pagi",
+    focus: "Disiplin bangun pagi, kemantapan salat berjamaah tepat waktu di masjid, zikir ma'tsurat, dan keistiqamahan halaqah subuh.",
+    category: "Spiritual & Disiplin",
     tier: "Tier 2 (Bobot ×2)",
-    impact: "14.3% Porsi Mutu",
+    impact: "14% Bobot Pengaruh",
     color: "from-amber-500 to-amber-700",
     badgeBg: "bg-amber-50 text-amber-900 border-amber-200",
     icon: Compass,
     indicators: [
-      "Bangun mandiri sebelum azan subuh untuk qiyamul lail",
-      "Fokus halaqah subuh dan melawan kantuk dengan penuh kesiagaan",
-      "Peka terhadap instruksi musyrif dan agenda harian sekolah",
-      "Kemandirian manajemen persiapan pagi tanpa ditegur pembina",
-      "Ketenangan mental memasuki kelas tanpa rasa panik",
+      "Bangun pagi sebelum azan subuh berkumandang",
+      "Salat fardhu berjamaah di masjid tepat pada shaf pertama",
+      "Istiqamah mengamalkan zikir pagi dan petang (Al-Ma'tsurat)",
+      "Melaksanakan salat sunnah rawatib dan qiyamul lail",
+      "Kekhusyukan dan adab selama berada di dalam masjid",
     ],
   },
   {
     num: 4,
-    title: "Memuliakan Al-Qur'an (Tilawah & Halaqah)",
-    focus: "Kelancaran tilawah mutqin, setoran hafalan halaqah Qur'an, dzikir Al-Ma'tsurat, dan penyeimbang beban akademik.",
-    category: "Pilar Qur'ani & Jiwa",
-    tier: "Tier 2 (Bobot ×2)",
-    impact: "14.3% Porsi Mutu",
+    title: "Memuliakan Al-Qur'an (Tilawah & Tahfizh)",
+    focus: "Kelancaran tilawah mutqin, setoran hafalan halaqah Qur'an, tadabbur makna ayat, dan internalisasi akhlak mulia dalam keseharian.",
+    category: "Pilar Utama Qur'ani",
+    tier: "Tier 1 (Bobot ×3)",
+    impact: "20% Bobot Pengaruh",
     color: "from-purple-600 to-indigo-700",
     badgeBg: "bg-purple-50 text-purple-900 border-purple-200",
     icon: BookMarked,
     indicators: [
-      "Istiqamah shalat berjamaah di shaf awal dan wirid yaumiyah",
-      "Kekhusyukan mengunci fokus saat sesi Time Qur'an ba'da Maghrib",
-      "Lapang dada menerima koreksi tajwid dan evaluasi hafalan",
-      "Resiliensi menyeimbangkan target hafalan dan mapel sekolah",
-      "Keyakinan tauhid bahwa keberhasilan diraih dari ikhtiar & tawakal",
+      "Target tilawah harian (one day one juz) tercapai konsisten",
+      "Disiplin menyetorkan hafalan baru pada halaqah tahfizh",
+      "Muraja'ah mandiri secara teratur untuk menjaga kelancaran",
+      "Memperhatikan kaidah tajwid dan makharijul huruf yang fasih",
+      "Berupaya mengamalkan isi kandungan ayat Al-Qur'an",
     ],
   },
   {
@@ -107,52 +107,52 @@ const KAIH_SHOWCASE = [
     focus: "Menjaga kebugaran jasmani, stamina prima, serta pembiasaan olahraga sunnah, senam santri, dan ketangkasan motorik santri.",
     category: "Jasmani & Kebugaran",
     tier: "Tier 2 (Bobot ×2)",
-    impact: "14.3% Porsi Mutu",
+    impact: "16% Bobot Pengaruh",
     color: "from-emerald-500 to-green-700",
     badgeBg: "bg-emerald-50 text-emerald-900 border-emerald-200",
     icon: HeartPulse,
     indicators: [
-      "Inisiatif mandiri meluangkan waktu berolahraga atau bela diri",
-      "Ketahanan stamina menopang fokus hingga sesi muthala'ah malam",
-      "Ketangkasan koordinasi motorik dalam aktivitas lapangan luar ruang",
-      "Regulasi ketahanan fisik dan tidak mudah menyerah saat letih",
-      "Postur tegap yang memancarkan wibawa dan kedisiplinan santri",
+      "Rutin mengikuti agenda olahraga atau senam santri sepekan",
+      "Menjaga daya tahan tubuh dan stamina dalam aktivitas harian",
+      "Minat pada olahraga sunnah (memanah, renang, bela diri, lari)",
+      "Menjaga postur tubuh yang tegap dan kebiasaan gerak aktif",
+      "Semangat sportivitas dan kerjasama dalam kegiatan beregu",
     ],
   },
   {
     num: 6,
     title: "Istirahat Teratur & Disiplin Asrama",
-    focus: "Kepatuhan jam malam tidur asrama (tathfi'ul anwar), pemulihan energi otak optimal, dan kesiapan penuh untuk fokus belajar esok hari.",
-    category: "Fondasi Biologis & Jam Tidur",
+    focus: "Kepatuhan jam malam tidur asrama, pemulihan energi otak optimal, dan kesiapan penuh untuk fokus belajar esok hari.",
+    category: "Manajemen Diri",
     tier: "Tier 3 (Bobot ×1)",
-    impact: "7.1% Porsi Mutu",
+    impact: "12% Bobot Pengaruh",
     color: "from-indigo-600 to-blue-800",
     badgeBg: "bg-indigo-50 text-indigo-900 border-indigo-200",
     icon: Moon,
     indicators: [
-      "Tidur tepat waktu saat tata tertib jam malam asrama tiba",
-      "Menjaga kesiagaan menyimak guru di kelas tanpa mengantuk",
-      "Kelenturan kognitif otak segar memproses materi rumit",
-      "Kestabilan emosional santri agar tidak mudah tersinggung",
-      "Kesiapan mental menjawab spontan tanpa blank saat ditunjuk guru",
+      "Tidur tepat waktu sesuai batas jam malam asrama",
+      "Menghindari begadang yang tidak ada maslahat akademiknya",
+      "Menjaga kerapian ranjang dan lemari pribadi di kamar",
+      "Kesiapan bangun segar tanpa merasa mengantuk di kelas",
+      "Mematuhi tata tertib keasramaan secara sadar dan mandiri",
     ],
   },
   {
     num: 7,
     title: "Makan Bergizi & Menjaga Adab Makan",
-    focus: "Keteraturan pola konsumsi dapur asrama, hidrasi air putih cukup, serta pengendalian impuls konsumsi junk food.",
-    category: "Fondasi Biologis & Gizi",
+    focus: "Memilih makanan halal, thayyib dan bergizi, mencukupi hidrasi, serta mengamalkan sunnah adab makan Islami tanpa mubazir.",
+    category: "Kesehatan & Adab",
     tier: "Tier 3 (Bobot ×1)",
-    impact: "7.1% Porsi Mutu",
+    impact: "9% Bobot Pengaruh",
     color: "from-orange-500 to-rose-600",
     badgeBg: "bg-orange-50 text-orange-900 border-orange-200",
     icon: Apple,
     indicators: [
-      "Makan tepat waktu di ruang makan asrama dan rutin minum air putih",
-      "Stabilitas nutrisi yang menyokong stamina belajar hingga sore",
-      "Kesadaran peka terhadap sinyal fisik diri sebelum jatuh sakit",
-      "Disiplin mengendalikan jajan berlebih di kantin sekolah",
-      "Vitalitas tubuh prima untuk aktif berbicara dan berkontribusi",
+      "Makan dengan tangan kanan dan sambil duduk tertib",
+      "Membaca doa sebelum dan sesudah menyantap makanan",
+      "Mengambil porsi secukupnya dan tidak menyisakan makanan (mubazir)",
+      "Mencukupi kebutuhan minum air putih minimal 2 liter per hari",
+      "Mengutamakan asupan makanan yang halal, bersih, dan thayyib",
     ],
   },
 ];
@@ -443,50 +443,50 @@ function HomeInner() {
               </p>
             </div>
 
-            {/* Tier & Bobot Overview Cards dengan Efek Timbul (Versi 2.0) */}
+            {/* Tier & Bobot Overview Cards dengan Efek Timbul */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
               <div className="rounded-xl border border-emerald-200/80 bg-white/90 backdrop-blur-xs p-4 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-emerald-900 uppercase">Tier 1: Modal Utama</span>
+                  <span className="text-xs font-bold text-emerald-900 uppercase">Tier 1: Pilar Inti</span>
                   <Badge variant="outline" className="border-emerald-300 text-emerald-800 text-[10px] font-bold">
-                    Bobot ×3 (42.86%)
+                    Bobot ×3
                   </Badge>
                 </div>
                 <div className="mt-2 text-sm font-bold text-slate-900">
-                  KAIH 1 (Literasi & Riset) &amp; KAIH 2 (Bermasyarakat & Adab)
+                  KAIH 1 (Literasi & Riset) &amp; KAIH 4 (Al-Qur&apos;an)
                 </div>
                 <p className="text-xs text-slate-500 mt-1">
-                  Daya ungkit langsung terhadap penguasaan nalar kritis, wawasan literasi, dan kepemimpinan publik santri.
+                  Kontribusi pengaruh tertinggi (38% gabungan) sebagai pilar spiritual & daya nalar utama.
                 </p>
               </div>
 
               <div className="rounded-xl border border-amber-200/80 bg-white/90 backdrop-blur-xs p-4 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-amber-900 uppercase">Tier 2: Pengendali Diri</span>
+                  <span className="text-xs font-bold text-amber-900 uppercase">Tier 2: Pilar Penunjang</span>
                   <Badge variant="outline" className="border-amber-300 text-amber-800 text-[10px] font-bold">
-                    Bobot ×2 (42.86%)
+                    Bobot ×2
                   </Badge>
                 </div>
                 <div className="mt-2 text-sm font-bold text-slate-900">
-                  KAIH 3 (Ibadah Pagi), KAIH 4 (Al-Qur&apos;an), KAIH 5 (Kebugaran)
+                  KAIH 3 (Kesiapan Ibadah) &amp; KAIH 5 (Kebugaran Fisik)
                 </div>
                 <p className="text-xs text-slate-500 mt-1">
-                  Penstabil ritme biologis sirkadian, penempa ketahanan mental, dan jangkar spiritual di bawah tekanan.
+                  Kontribusi pengaruh 30% gabungan untuk kedisiplinan spiritual harian dan ketahanan jasmani.
                 </p>
               </div>
 
               <div className="rounded-xl border border-sky-200/80 bg-white/90 backdrop-blur-xs p-4 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-sky-900 uppercase">Tier 3: Fondasi Biologis</span>
+                  <span className="text-xs font-bold text-sky-900 uppercase">Tier 3: Pilar Adab & Disiplin</span>
                   <Badge variant="outline" className="border-sky-300 text-sky-800 text-[10px] font-bold">
-                    Bobot ×1 (14.28%)
+                    Bobot ×1
                   </Badge>
                 </div>
                 <div className="mt-2 text-sm font-bold text-slate-900">
-                  KAIH 6 (Istirahat Asrama) &amp; KAIH 7 (Gizi Seimbang)
+                  KAIH 2 (Ukhuwah), KAIH 6 (Istirahat), KAIH 7 (Adab Makan)
                 </div>
                 <p className="text-xs text-slate-500 mt-1">
-                  Fondasi bahan bakar fisiologis otak; prasyarat agar fungsi korteks prefrontal tidak kelelahan metabolik.
+                  Kontribusi pengaruh 32% gabungan untuk pembentukan akhlak sosial dan manajemen diri asrama.
                 </p>
               </div>
             </div>
