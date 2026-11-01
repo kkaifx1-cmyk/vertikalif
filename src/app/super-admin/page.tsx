@@ -332,57 +332,60 @@ function SuperAdminDashboard() {
 
   // Komputasi Rantai Kausalitas & Korelasi (Konsistensi -> Fokus -> Confidency)
   const cognitivePipelineData = useMemo(() => {
+    const kLabels = [
+      "K1.1 Muthala'ah Mandiri",
+      "K2.1 Gotong Royong Asrama",
+      "K3.1 Qiyamul Lail Mandiri",
+      "K4.1 Shalat Awal & Mutaba'ah",
+      "K5.1 Inisiatif Berolahraga",
+      "K6.1 Disiplin Tidur Asrama",
+      "K7.1 Jadwal Makan & Hidrasi",
+    ];
+    const cLabels = [
+      "K1.5 Nalar Riset Forum",
+      "K2.5 Percaya Diri Memimpin",
+      "K3.5 Ketenangan Masuk Kelas",
+      "K4.5 Keyakinan Diri & Tawakal",
+      "K5.5 Wibawa Postur Tubuh",
+      "K6.5 Sigap Menjawab Spontan",
+      "K7.5 Vitalitas Energi Bicara",
+    ];
+
     if (!responses || responses.length === 0) {
       return {
         total: 0,
-        avgConsistency: 3.32,
-        consistencyPct: 77.3,
-        avgFocus: 3.28,
-        focusPct: 76.0,
-        avgConfidence: 3.35,
-        confidencePct: 78.3,
-        rConsistencyFocus: 0.864,
-        rFocusConfidence: 0.882,
-        r2ConsistencyFocus: 74.6,
-        r2FocusConfidence: 77.8,
-        consistencyItems: [
-          { name: "K1.1 Muthala'ah Mandiri", val: 3.4, pct: 80 },
-          { name: "K2.1 Gotong Royong Asrama", val: 3.3, pct: 77 },
-          { name: "K3.1 Qiyamul Lail Mandiri", val: 3.3, pct: 77 },
-          { name: "K4.1 Shalat Awal & Mutaba'ah", val: 3.5, pct: 83 },
-          { name: "K5.1 Inisiatif Olahraga", val: 3.2, pct: 73 },
-          { name: "K6.1 Disiplin Tidur Asrama", val: 3.1, pct: 70 },
-          { name: "K7.1 Jadwal Makan & Hidrasi", val: 3.3, pct: 77 },
-        ],
+        avgConsistency: 0,
+        consistencyPct: 0,
+        avgFocus: 0,
+        focusPct: 0,
+        avgConfidence: 0,
+        confidencePct: 0,
+        rConsistencyFocus: 0,
+        rFocusConfidence: 0,
+        r2ConsistencyFocus: 0,
+        r2FocusConfidence: 0,
+        consistencyItems: kLabels.map((name) => ({ name, val: 0, pct: 0 })),
         focusDimensions: [
           {
             name: "Atensi Selektif (Inhibisi Gangguan)",
-            score: 3.24,
-            pct: 75,
+            score: 0,
+            pct: 0,
             desc: "Kapasitas menyaring distraksi obrolan dan melawan kantuk saat KBM/halaqah (7 Butir #2).",
           },
           {
             name: "Atensi Terbuka (Kepekaan Situasi & Wawasan)",
-            score: 3.29,
-            pct: 76,
+            score: 0,
+            pct: 0,
             desc: "Kesiagaan mental menyerap ragam sudut pandang dan empati sesama santri (7 Butir #3).",
           },
           {
             name: "Atensi Eksekutif (Regulasi Logika & Emosi)",
-            score: 3.32,
-            pct: 77,
+            score: 0,
+            pct: 0,
             desc: "Pengendalian emosi di bawah tekanan dan penataan alur argumen logis (7 Butir #4).",
           },
         ],
-        confidenceItems: [
-          { name: "K1.5 Nalar Riset Forum", val: 3.4, pct: 80 },
-          { name: "K2.5 Percaya Diri Memimpin", val: 3.3, pct: 77 },
-          { name: "K3.5 Ketenangan Masuk Kelas", val: 3.3, pct: 77 },
-          { name: "K4.5 Keyakinan Diri & Tawakal", val: 3.5, pct: 83 },
-          { name: "K5.5 Wibawa Postur Tubuh", val: 3.4, pct: 80 },
-          { name: "K6.5 Sigap Menjawab Spontan", val: 3.2, pct: 73 },
-          { name: "K7.5 Vitalitas Energi Bicara", val: 3.3, pct: 77 },
-        ],
+        confidenceItems: cLabels.map((name) => ({ name, val: 0, pct: 0 })),
       };
     }
 
@@ -456,9 +459,9 @@ function SuperAdminDashboard() {
       cList.push(cCnt > 0 ? cSum / cCnt : r.confidenceScore || r.totalScore || 3.0);
     });
 
-    const avgK = kList.reduce((a, b) => a + b, 0) / total;
-    const avgF = fList.reduce((a, b) => a + b, 0) / total;
-    const avgC = cList.reduce((a, b) => a + b, 0) / total;
+    const avgK = kList.length > 0 ? kList.reduce((a, b) => a + b, 0) / kList.length : 0;
+    const avgF = fList.length > 0 ? fList.reduce((a, b) => a + b, 0) / fList.length : 0;
+    const avgC = cList.length > 0 ? cList.reduce((a, b) => a + b, 0) / cList.length : 0;
 
     const calcPearson = (xs: number[], ys: number[], meanX: number, meanY: number) => {
       let cov = 0, varX = 0, varY = 0;
@@ -470,81 +473,62 @@ function SuperAdminDashboard() {
         varY += dy * dy;
       }
       const denom = Math.sqrt(varX * varY);
-      if (denom <= 0.0001) return 0.85;
-      return Math.max(0.3, Math.min(0.98, cov / denom));
+      if (denom <= 0.0001) return 0;
+      return Math.max(0, Math.min(1.0, cov / denom));
     };
 
-    const rKF = total >= 3 ? calcPearson(kList, fList, avgK, avgF) : 0.864;
-    const rFC = total >= 3 ? calcPearson(fList, cList, avgF, avgC) : 0.882;
+    const rKF = total >= 2 ? calcPearson(kList, fList, avgK, avgF) : 0;
+    const rFC = total >= 2 ? calcPearson(fList, cList, avgF, avgC) : 0;
 
     const rConsistencyFocus = Number(rKF.toFixed(3));
     const rFocusConfidence = Number(rFC.toFixed(3));
 
-    const kLabels = [
-      "K1.1 Muthala'ah Mandiri",
-      "K2.1 Gotong Royong Asrama",
-      "K3.1 Qiyamul Lail Mandiri",
-      "K4.1 Shalat Awal & Mutaba'ah",
-      "K5.1 Inisiatif Berolahraga",
-      "K6.1 Disiplin Tidur Asrama",
-      "K7.1 Jadwal Makan & Hidrasi",
-    ];
-    const cLabels = [
-      "K1.5 Nalar Riset Forum",
-      "K2.5 Percaya Diri Memimpin",
-      "K3.5 Ketenangan Masuk Kelas",
-      "K4.5 Keyakinan Diri & Tawakal",
-      "K5.5 Wibawa Postur Tubuh",
-      "K6.5 Sigap Menjawab Spontan",
-      "K7.5 Vitalitas Energi Bicara",
-    ];
-
     return {
       total,
       avgConsistency: Number(avgK.toFixed(2)),
-      consistencyPct: Math.round(((Math.max(1, avgK) - 1) / 3) * 100),
+      consistencyPct: avgK > 0 ? Math.round(((Math.max(1, avgK) - 1) / 3) * 100) : 0,
       avgFocus: Number(avgF.toFixed(2)),
-      focusPct: Math.round(((Math.max(1, avgF) - 1) / 3) * 100),
+      focusPct: avgF > 0 ? Math.round(((Math.max(1, avgF) - 1) / 3) * 100) : 0,
       avgConfidence: Number(avgC.toFixed(2)),
-      confidencePct: Math.round(((Math.max(1, avgC) - 1) / 3) * 100),
+      confidencePct: avgC > 0 ? Math.round(((Math.max(1, avgC) - 1) / 3) * 100) : 0,
       rConsistencyFocus,
       rFocusConfidence,
       r2ConsistencyFocus: Number((rConsistencyFocus * rConsistencyFocus * 100).toFixed(1)),
       r2FocusConfidence: Number((rFocusConfidence * rFocusConfidence * 100).toFixed(1)),
       consistencyItems: kLabels.map((name, i) => {
-        const val = itemConsCnt[i] > 0 ? Number((itemConsSum[i] / itemConsCnt[i]).toFixed(2)) : 3.2;
+        const val = itemConsCnt[i] > 0 ? Number((itemConsSum[i] / itemConsCnt[i]).toFixed(2)) : 0;
         return {
           name,
           val,
-          pct: Math.round(((Math.max(1, val) - 1) / 3) * 100),
+          pct: val > 0 ? Math.round(((Math.max(1, val) - 1) / 3) * 100) : 0,
         };
       }),
       focusDimensions: [
         {
           name: "Atensi Selektif (Inhibisi Gangguan)",
-          score: countSelective > 0 ? Number((sumSelective / countSelective).toFixed(2)) : 3.24,
-          pct: countSelective > 0 ? Math.round(((Math.max(1, sumSelective / countSelective) - 1) / 3) * 100) : 75,
+          score: countSelective > 0 ? Number((sumSelective / countSelective).toFixed(2)) : 0,
+          pct: countSelective > 0 ? Math.round(((Math.max(1, sumSelective / countSelective) - 1) / 3) * 100) : 0,
           desc: "Kapasitas menyaring distraksi obrolan dan melawan kantuk saat KBM/halaqah (7 Butir #2).",
         },
         {
           name: "Atensi Terbuka (Kepekaan Situasi & Wawasan)",
-          score: countOpen > 0 ? Number((sumOpen / countOpen).toFixed(2)) : 3.29,
-          pct: countOpen > 0 ? Math.round(((Math.max(1, sumOpen / countOpen) - 1) / 3) * 100) : 76,
+          score: countOpen > 0 ? Number((sumOpen / countOpen).toFixed(2)) : 0,
+          pct: countOpen > 0 ? Math.round(((Math.max(1, sumOpen / countOpen) - 1) / 3) * 100) : 0,
           desc: "Kesiagaan mental menyerap ragam sudut pandang dan empati sesama santri (7 Butir #3).",
         },
         {
           name: "Atensi Eksekutif (Regulasi Logika & Emosi)",
-          score: countExecutive > 0 ? Number((sumExecutive / countExecutive).toFixed(2)) : 3.32,
-          pct: countExecutive > 0 ? Math.round(((Math.max(1, sumExecutive / countExecutive) - 1) / 3) * 100) : 77,
+          score: countExecutive > 0 ? Number((sumExecutive / countExecutive).toFixed(2)) : 0,
+          pct: countExecutive > 0 ? Math.round(((Math.max(1, sumExecutive / countExecutive) - 1) / 3) * 100) : 0,
           desc: "Pengendalian emosi di bawah tekanan dan penataan alur argumen logis (7 Butir #4).",
         },
       ],
       confidenceItems: cLabels.map((name, i) => {
-        const val = itemConfCnt[i] > 0 ? Number((itemConfSum[i] / itemConfCnt[i]).toFixed(2)) : 3.3;
+        const val = itemConfCnt[i] > 0 ? Number((itemConfSum[i] / itemConfCnt[i]).toFixed(2)) : 0;
         return {
           name,
           val,
-          pct: Math.round(((Math.max(1, val) - 1) / 3) * 100),
+          pct: val > 0 ? Math.round(((Math.max(1, val) - 1) / 3) * 100) : 0,
         };
       }),
     };
@@ -1265,6 +1249,7 @@ function SuperAdminDashboard() {
                                   strokeDasharray={2 * Math.PI * 38}
                                   strokeDashoffset={(2 * Math.PI * 38) * (1 - (cognitivePipelineData.rConsistencyFocus * 100) / 100)}
                                   strokeLinecap="round"
+                                  strokeOpacity={cognitivePipelineData.rConsistencyFocus > 0 ? 1 : 0}
                                   className="transition-all duration-1000 ease-out"
                                 />
                               </svg>
@@ -1273,7 +1258,7 @@ function SuperAdminDashboard() {
                                   {(cognitivePipelineData.rConsistencyFocus * 100).toFixed(1)}%
                                 </span>
                                 <span className="text-[11px] font-extrabold text-emerald-700 font-mono">
-                                  r = {cognitivePipelineData.rConsistencyFocus}
+                                  r = {cognitivePipelineData.rConsistencyFocus.toFixed(3)}
                                 </span>
                               </div>
                             </div>
@@ -1292,7 +1277,9 @@ function SuperAdminDashboard() {
                               </div>
                               <div className="flex justify-between items-center text-slate-600">
                                 <span>Kategori Korelasi:</span>
-                                <span className="font-bold text-emerald-800">Sangat Kuat &amp; Signifikan</span>
+                                <span className={cognitivePipelineData.total === 0 ? "font-bold text-slate-400" : "font-bold text-emerald-800"}>
+                                  {cognitivePipelineData.total === 0 ? "0% (Belum Ada Respon)" : "Sangat Kuat & Signifikan"}
+                                </span>
                               </div>
                             </div>
                           </div>
@@ -1317,6 +1304,7 @@ function SuperAdminDashboard() {
                                   strokeDasharray={2 * Math.PI * 38}
                                   strokeDashoffset={(2 * Math.PI * 38) * (1 - (cognitivePipelineData.rFocusConfidence * 100) / 100)}
                                   strokeLinecap="round"
+                                  strokeOpacity={cognitivePipelineData.rFocusConfidence > 0 ? 1 : 0}
                                   className="transition-all duration-1000 ease-out"
                                 />
                               </svg>
@@ -1325,7 +1313,7 @@ function SuperAdminDashboard() {
                                   {(cognitivePipelineData.rFocusConfidence * 100).toFixed(1)}%
                                 </span>
                                 <span className="text-[11px] font-extrabold text-amber-700 font-mono">
-                                  r = {cognitivePipelineData.rFocusConfidence}
+                                  r = {cognitivePipelineData.rFocusConfidence.toFixed(3)}
                                 </span>
                               </div>
                             </div>
@@ -1344,7 +1332,9 @@ function SuperAdminDashboard() {
                               </div>
                               <div className="flex justify-between items-center text-slate-600">
                                 <span>Kategori Korelasi:</span>
-                                <span className="font-bold text-amber-800">Sangat Kuat &amp; Signifikan</span>
+                                <span className={cognitivePipelineData.total === 0 ? "font-bold text-slate-400" : "font-bold text-amber-800"}>
+                                  {cognitivePipelineData.total === 0 ? "0% (Belum Ada Respon)" : "Sangat Kuat & Signifikan"}
+                                </span>
                               </div>
                             </div>
                           </div>
