@@ -29,6 +29,48 @@ export function ThemeToggle({ variant = "icon", className = "" }: ThemeTogglePro
     };
   }, [isOpen]);
 
+  // Segmented Pill Variant (Perfect for Home tab bar & Hero)
+  if (variant === "pill") {
+    return (
+      <div
+        className={`inline-flex items-center p-1 rounded-2xl border border-emerald-400/40 dark:border-slate-700/80 bg-white/90 dark:bg-slate-900/90 shadow-[0_4px_16px_rgba(16,185,129,0.12)] dark:shadow-[0_0_20px_rgba(0,0,0,0.6)] backdrop-blur-md transition-all duration-300 ${className}`}
+        role="group"
+        aria-label="Pilihan Mode Tampilan Terang atau Gelap"
+      >
+        <button
+          type="button"
+          onClick={() => setTheme("light")}
+          aria-label="Aktifkan Mode Terang (Light Mode)"
+          title="Mode Terang"
+          className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-black transition-all duration-300 cursor-pointer active:scale-95 ${
+            resolvedTheme === "light"
+              ? "bg-gradient-to-r from-amber-400 via-amber-400 to-amber-500 text-slate-950 shadow-[0_4px_16px_rgba(245,158,11,0.5),0_0_12px_rgba(251,191,36,0.35)] ring-1 ring-amber-300 -translate-y-0.5 scale-102"
+              : "text-slate-600 dark:text-slate-400 hover:text-slate-950 dark:hover:text-white hover:bg-slate-100/60 dark:hover:bg-slate-800/60"
+          }`}
+        >
+          <Sun className={`h-3.5 w-3.5 ${resolvedTheme === "light" ? "text-slate-950 fill-amber-500/40" : "text-amber-500"}`} />
+          <span>Terang</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setTheme("dark")}
+          aria-label="Aktifkan Mode Gelap (Dark Mode)"
+          title="Mode Gelap"
+          className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-black transition-all duration-300 cursor-pointer active:scale-95 ${
+            resolvedTheme === "dark"
+              ? "bg-gradient-to-r from-emerald-600 via-emerald-700 to-teal-800 text-white shadow-[0_0_20px_rgba(16,185,129,0.55),0_0_10px_rgba(34,197,94,0.4)] ring-1 ring-emerald-400 -translate-y-0.5 scale-102"
+              : "text-slate-600 dark:text-slate-400 hover:text-slate-950 dark:hover:text-white hover:bg-slate-100/60 dark:hover:bg-slate-800/60"
+          }`}
+        >
+          <Moon className={`h-3.5 w-3.5 ${resolvedTheme === "dark" ? "text-amber-300 fill-amber-300/40" : "text-slate-400"}`} />
+          <span>Gelap</span>
+        </button>
+      </div>
+    );
+  }
+
+  // Dropdown Variant
   if (variant === "dropdown") {
     return (
       <div className={`relative inline-block text-left ${className}`} ref={dropdownRef}>
@@ -36,7 +78,7 @@ export function ThemeToggle({ variant = "icon", className = "" }: ThemeTogglePro
           type="button"
           onClick={() => setIsOpen(!isOpen)}
           aria-label="Pilih Tema Tampilan"
-          className="inline-flex items-center gap-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white/90 dark:bg-slate-800/90 px-3 py-1.5 text-xs font-bold text-slate-700 dark:text-slate-200 shadow-xs hover:border-emerald-500 dark:hover:border-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-400 transition-all duration-200 cursor-pointer active:scale-95"
+          className="inline-flex items-center gap-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white/90 dark:bg-slate-800/90 px-3 py-1.5 text-xs font-bold text-slate-700 dark:text-slate-200 shadow-xs hover:border-emerald-500 dark:hover:border-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-400 dark:hover:shadow-[0_0_15px_rgba(16,185,129,0.3)] transition-all duration-200 cursor-pointer active:scale-95"
         >
           {resolvedTheme === "dark" ? (
             <Moon className="h-3.5 w-3.5 text-amber-400 fill-amber-400/20" />
@@ -104,14 +146,14 @@ export function ThemeToggle({ variant = "icon", className = "" }: ThemeTogglePro
     );
   }
 
-  // Default Icon Button with Smooth Animation
+  // Default Icon Button with Smooth 3D Hover & Glow
   return (
     <button
       type="button"
       onClick={toggleTheme}
       aria-label={resolvedTheme === "dark" ? "Ganti ke Mode Terang (Light Theme)" : "Ganti ke Mode Gelap (Dark Theme)"}
       title={resolvedTheme === "dark" ? "Ganti ke Mode Terang" : "Ganti ke Mode Gelap"}
-      className={`relative inline-flex items-center justify-center h-9 w-9 rounded-xl border border-slate-200 dark:border-slate-700/80 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md text-slate-700 dark:text-slate-200 shadow-xs hover:border-emerald-500 dark:hover:border-emerald-400 hover:shadow-md hover:-translate-y-0.5 active:scale-95 transition-all duration-300 cursor-pointer overflow-hidden ${className}`}
+      className={`relative inline-flex items-center justify-center h-9 w-9 rounded-xl border border-slate-200 dark:border-slate-700/80 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md text-slate-700 dark:text-slate-200 shadow-xs hover:border-emerald-500 dark:hover:border-emerald-400 hover:shadow-md dark:hover:shadow-[0_0_15px_rgba(16,185,129,0.35)] hover:-translate-y-0.5 active:scale-95 transition-all duration-300 cursor-pointer overflow-hidden ${className}`}
     >
       <Sun
         className={`h-4 w-4 text-amber-500 transition-all duration-300 transform ${
