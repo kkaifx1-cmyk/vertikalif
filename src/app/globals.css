@@ -47,16 +47,50 @@ body {
   background: #94a3b8;
 }
 
+/* Dynamic Moving Background Keyframes */
+@keyframes gradient-flow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-gradient-flow {
+  background-size: 240% 240%;
+  animation: gradient-flow 12s ease-in-out infinite;
+}
+
+@keyframes wave-drift {
+  0% {
+    transform: translate(0px, 0px) scale(1) rotate(0deg);
+  }
+  50% {
+    transform: translate(50px, -40px) scale(1.1) rotate(180deg);
+  }
+  100% {
+    transform: translate(0px, 0px) scale(1) rotate(360deg);
+  }
+}
+
+.animate-wave-drift {
+  animation: wave-drift 30s linear infinite;
+}
+
 /* Floating Ambient Orbs Keyframes with visible smooth fluid drift */
 @keyframes float-fluid-1 {
   0% {
     transform: translate(0px, 0px) scale(1) rotate(0deg);
   }
   33% {
-    transform: translate(90px, -65px) scale(1.15) rotate(5deg);
+    transform: translate(110px, -80px) scale(1.2) rotate(8deg);
   }
   66% {
-    transform: translate(-70px, 75px) scale(0.92) rotate(-4deg);
+    transform: translate(-90px, 95px) scale(0.9) rotate(-6deg);
   }
   100% {
     transform: translate(0px, 0px) scale(1) rotate(0deg);
@@ -68,10 +102,10 @@ body {
     transform: translate(0px, 0px) scale(1) rotate(0deg);
   }
   33% {
-    transform: translate(-85px, 80px) scale(1.18) rotate(-6deg);
+    transform: translate(-105px, 100px) scale(1.22) rotate(-8deg);
   }
   66% {
-    transform: translate(75px, -60px) scale(0.9) rotate(5deg);
+    transform: translate(95px, -75px) scale(0.88) rotate(7deg);
   }
   100% {
     transform: translate(0px, 0px) scale(1) rotate(0deg);
@@ -83,7 +117,7 @@ body {
     transform: translate(0px, 0px) scale(1);
   }
   50% {
-    transform: translate(80px, 90px) scale(1.14);
+    transform: translate(100px, 110px) scale(1.2);
   }
   100% {
     transform: translate(0px, 0px) scale(1);
@@ -95,28 +129,44 @@ body {
     transform: translate(0px, 0px) scale(1) rotate(0deg);
   }
   40% {
-    transform: translate(-70px, -75px) scale(1.15) rotate(4deg);
+    transform: translate(-90px, -95px) scale(1.2) rotate(6deg);
   }
   80% {
-    transform: translate(60px, 50px) scale(0.92) rotate(-3deg);
+    transform: translate(80px, 70px) scale(0.9) rotate(-5deg);
   }
   100% {
     transform: translate(0px, 0px) scale(1) rotate(0deg);
   }
 }
 
+@keyframes float-fluid-5 {
+  0% {
+    transform: translate(0px, 0px) scale(0.95);
+  }
+  50% {
+    transform: translate(-70px, 60px) scale(1.25);
+  }
+  100% {
+    transform: translate(0px, 0px) scale(0.95);
+  }
+}
+
 .animate-float-1 {
-  animation: float-fluid-1 9s ease-in-out infinite;
+  animation: float-fluid-1 10s ease-in-out infinite;
 }
 
 .animate-float-2 {
-  animation: float-fluid-2 11s ease-in-out infinite;
+  animation: float-fluid-2 12s ease-in-out infinite;
 }
 
 .animate-float-3 {
-  animation: float-fluid-3 13s ease-in-out infinite;
+  animation: float-fluid-3 14s ease-in-out infinite;
 }
 
 .animate-float-4 {
-  animation: float-fluid-4 10s ease-in-out infinite;
+  animation: float-fluid-4 11s ease-in-out infinite;
+}
+
+.animate-float-5 {
+  animation: float-fluid-5 13s ease-in-out infinite;
 }

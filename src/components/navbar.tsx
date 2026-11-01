@@ -41,10 +41,10 @@ function NavbarContent() {
           <Link
             href="/?tab=beranda"
             className={cn(
-              "flex items-center gap-1.5 rounded-lg px-2.5 sm:px-3 py-2 text-xs sm:text-sm font-semibold transition-all duration-200",
+              "flex items-center gap-1.5 rounded-lg px-2.5 sm:px-3 py-2 text-xs sm:text-sm font-semibold transition-all duration-200 cursor-pointer hover:-translate-y-0.5 active:scale-95",
               pathname === "/" && currentTab === "beranda"
                 ? "bg-emerald-700 text-white shadow-xs font-bold"
-                : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 hover:shadow-2xs"
             )}
           >
             <Home className="h-4 w-4" />
@@ -54,10 +54,10 @@ function NavbarContent() {
           <Link
             href="/?tab=kaih"
             className={cn(
-              "flex items-center gap-1.5 rounded-lg px-2.5 sm:px-3 py-2 text-xs sm:text-sm font-semibold transition-all duration-200",
+              "flex items-center gap-1.5 rounded-lg px-2.5 sm:px-3 py-2 text-xs sm:text-sm font-semibold transition-all duration-200 cursor-pointer hover:-translate-y-0.5 active:scale-95",
               pathname === "/" && currentTab === "kaih"
                 ? "bg-emerald-700 text-white shadow-xs font-bold"
-                : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 hover:shadow-2xs"
             )}
           >
             <Sparkles className="h-4 w-4 text-amber-500" />
@@ -67,10 +67,10 @@ function NavbarContent() {
           <Link
             href="/?tab=profil"
             className={cn(
-              "flex items-center gap-1.5 rounded-lg px-2.5 sm:px-3 py-2 text-xs sm:text-sm font-semibold transition-all duration-200",
+              "flex items-center gap-1.5 rounded-lg px-2.5 sm:px-3 py-2 text-xs sm:text-sm font-semibold transition-all duration-200 cursor-pointer hover:-translate-y-0.5 active:scale-95",
               pathname === "/" && currentTab === "profil"
                 ? "bg-emerald-700 text-white shadow-xs font-bold"
-                : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 hover:shadow-2xs"
             )}
           >
             <Users className="h-4 w-4 text-emerald-600" />
@@ -83,7 +83,7 @@ function NavbarContent() {
             aria-label="Mulai Survei Sekarang - Kuesioner Evaluasi 7 KAIH"
             title="Mulai Survei Sekarang"
             className={cn(
-              "inline-flex items-center gap-1.5 sm:gap-2 rounded-xl px-3 sm:px-4.5 py-2 sm:py-2.5 text-xs sm:text-sm font-extrabold transition-all duration-300 shadow-sm cursor-pointer border",
+              "inline-flex items-center gap-1.5 sm:gap-2 rounded-xl px-3 sm:px-4.5 py-2 sm:py-2.5 text-xs sm:text-sm font-extrabold transition-all duration-300 shadow-sm cursor-pointer border active:scale-95",
               pathname === "/survei"
                 ? "bg-gradient-to-r from-amber-400 via-amber-400 to-amber-500 text-slate-950 border-amber-500 shadow-[0_6px_18px_rgba(245,158,11,0.45)] ring-2 ring-amber-300 -translate-y-0.5 scale-102"
                 : "bg-emerald-700 hover:bg-emerald-800 text-white border-emerald-600 shadow-[0_4px_14px_rgba(21,128,61,0.35)] hover:shadow-[0_8px_20px_rgba(21,128,61,0.45)] hover:-translate-y-0.5 active:translate-y-0"

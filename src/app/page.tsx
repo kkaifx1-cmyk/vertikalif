@@ -21,10 +21,6 @@ import {
   Award,
   ChevronRight,
   Home,
-  Calculator,
-  Target,
-  FileCheck2,
-  Info,
 } from "lucide-react";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -184,19 +180,19 @@ function HomeInner() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50/60">
-      {/* Tab Navigation Switcher Bar (Segmented Control yang Elegan) */}
-      <div className="sticky top-16 z-40 border-b border-slate-200/90 bg-white/95 backdrop-blur-md shadow-2xs">
+    <div className="flex flex-col min-h-screen bg-transparent">
+      {/* Tab Navigation Switcher Bar (Segmented Control yang Elegan dengan Efek Timbul) */}
+      <div className="sticky top-16 z-40 border-b border-slate-200/70 bg-white/80 backdrop-blur-md shadow-xs">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-3">
           <div className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-1.5 sm:gap-2 p-1 bg-slate-100/90 rounded-2xl border border-slate-200/80 w-full sm:w-auto overflow-x-auto">
+            <div className="flex items-center gap-1.5 sm:gap-2 p-1 bg-slate-100/80 backdrop-blur-xs rounded-2xl border border-slate-200/80 w-full sm:w-auto overflow-x-auto shadow-inner">
               <button
                 type="button"
                 onClick={() => switchTab("beranda")}
-                className={`flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-3.5 sm:px-5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 cursor-pointer whitespace-nowrap ${
+                className={`flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-3.5 sm:px-5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all duration-300 cursor-pointer whitespace-nowrap active:translate-y-0 active:scale-95 ${
                   activeTab === "beranda"
-                    ? "bg-emerald-700 text-white shadow-sm ring-1 ring-emerald-800"
-                    : "text-slate-600 hover:text-slate-900 hover:bg-white/80"
+                    ? "bg-emerald-700 text-white shadow-md ring-1 ring-emerald-800 -translate-y-0.5"
+                    : "text-slate-600 hover:text-slate-900 hover:bg-white hover:shadow-md hover:-translate-y-0.5"
                 }`}
               >
                 <Home className="h-4 w-4" />
@@ -206,10 +202,10 @@ function HomeInner() {
               <button
                 type="button"
                 onClick={() => switchTab("kaih")}
-                className={`flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-3.5 sm:px-5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 cursor-pointer whitespace-nowrap ${
+                className={`flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-3.5 sm:px-5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all duration-300 cursor-pointer whitespace-nowrap active:translate-y-0 active:scale-95 ${
                   activeTab === "kaih"
-                    ? "bg-emerald-700 text-white shadow-sm ring-1 ring-emerald-800"
-                    : "text-slate-600 hover:text-slate-900 hover:bg-white/80"
+                    ? "bg-emerald-700 text-white shadow-md ring-1 ring-emerald-800 -translate-y-0.5"
+                    : "text-slate-600 hover:text-slate-900 hover:bg-white hover:shadow-md hover:-translate-y-0.5"
                 }`}
               >
                 <Sparkles className="h-4 w-4 text-amber-400" />
@@ -222,22 +218,22 @@ function HomeInner() {
               <button
                 type="button"
                 onClick={() => switchTab("profil")}
-                className={`flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-3.5 sm:px-5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 cursor-pointer whitespace-nowrap ${
+                className={`flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-3.5 sm:px-5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all duration-300 cursor-pointer whitespace-nowrap active:translate-y-0 active:scale-95 ${
                   activeTab === "profil"
-                    ? "bg-emerald-700 text-white shadow-sm ring-1 ring-emerald-800"
-                    : "text-slate-600 hover:text-slate-900 hover:bg-white/80"
+                    ? "bg-emerald-700 text-white shadow-md ring-1 ring-emerald-800 -translate-y-0.5"
+                    : "text-slate-600 hover:text-slate-900 hover:bg-white hover:shadow-md hover:-translate-y-0.5"
                 }`}
               >
-                <Users2 className="h-4 w-4 text-emerald-400" />
+                <Users2 className="h-4 w-4 text-emerald-500" />
                 <span>Profil Pembuat</span>
               </button>
             </div>
 
-            {/* Quick Standout Survey CTA */}
+            {/* Quick Standout Survey CTA dengan Efek Timbul */}
             <div className="hidden md:flex items-center">
               <Link
                 href="/survei"
-                className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-amber-400 via-amber-400 to-amber-500 px-4 py-2 text-xs font-extrabold text-slate-950 shadow-xs hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 border border-amber-500/60"
+                className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-amber-400 via-amber-400 to-amber-500 px-4 py-2 text-xs font-extrabold text-slate-950 shadow-md hover:shadow-lg hover:-translate-y-1 active:translate-y-0 active:scale-95 transition-all duration-300 border border-amber-500/60 cursor-pointer"
               >
                 <ClipboardCheck className="h-4 w-4 text-slate-950" />
                 <span>Isi Survei Santri</span>
@@ -253,13 +249,13 @@ function HomeInner() {
       {/* ========================================================================= */}
       {activeTab === "beranda" && (
         <main className="flex-1">
-          {/* Hero Section */}
-          <section className="relative overflow-hidden border-b border-slate-200/80 bg-gradient-to-b from-emerald-50/50 via-white to-white py-14 sm:py-20">
+          {/* Hero Section dengan Background Semi-Transparan agar Animasi Mengalir Tembus */}
+          <section className="relative overflow-hidden border-b border-slate-200/70 bg-white/60 backdrop-blur-xs py-14 sm:py-20">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
               <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-12">
                 {/* Left Content */}
                 <div className="space-y-6 lg:col-span-7">
-                  <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-100/70 px-3.5 py-1 text-xs font-semibold text-emerald-900 shadow-2xs">
+                  <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-100/80 px-3.5 py-1 text-xs font-semibold text-emerald-900 shadow-xs">
                     <Sparkles className="h-3.5 w-3.5 text-amber-600" />
                     <span>Inisiatif Proyek Evaluasi Karakter Santri 2026/2027</span>
                   </div>
@@ -273,7 +269,7 @@ function HomeInner() {
                     </p>
                   </div>
 
-                  {/* Action Buttons */}
+                  {/* Action Buttons dengan Efek Timbul Hover Mantap */}
                   <div className="flex flex-wrap items-center gap-3 pt-2">
                     <Link
                       href="/survei"
@@ -289,7 +285,7 @@ function HomeInner() {
                     <button
                       type="button"
                       onClick={() => switchTab("kaih")}
-                      className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-5 py-3.5 text-sm font-bold text-slate-700 shadow-xs hover:bg-slate-50 hover:text-emerald-800 transition-all duration-200 cursor-pointer"
+                      className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-300/90 bg-white/90 backdrop-blur-xs px-5 py-3.5 text-sm font-bold text-slate-700 shadow-sm hover:bg-white hover:border-emerald-500 hover:text-emerald-800 hover:shadow-md hover:-translate-y-1 active:translate-y-0 active:scale-95 transition-all duration-300 cursor-pointer"
                     >
                       <Sparkles className="h-4 w-4 text-amber-500" />
                       <span>Pelajari 7 Karakter KAIH</span>
@@ -298,15 +294,15 @@ function HomeInner() {
 
                   {/* Quick Stat Pill */}
                   <div className="pt-4 grid grid-cols-3 gap-3 border-t border-slate-200/80 max-w-lg">
-                    <div>
+                    <div className="p-2 rounded-xl bg-white/50 backdrop-blur-xs border border-slate-200/60">
                       <div className="text-xl font-bold text-slate-900">7 KAIH</div>
                       <div className="text-xs text-slate-500">Pilar Karakter</div>
                     </div>
-                    <div>
+                    <div className="p-2 rounded-xl bg-white/50 backdrop-blur-xs border border-slate-200/60">
                       <div className="text-xl font-bold text-emerald-700">35 Butir</div>
                       <div className="text-xs text-slate-500">Refleksi Terukur</div>
                     </div>
-                    <div>
+                    <div className="p-2 rounded-xl bg-white/50 backdrop-blur-xs border border-slate-200/60">
                       <div className="text-xl font-bold text-amber-700">1–4</div>
                       <div className="text-xs text-slate-500">Skala Likert</div>
                     </div>
@@ -315,8 +311,8 @@ function HomeInner() {
 
                 {/* Right Emblem Card */}
                 <div className="lg:col-span-5 flex justify-center">
-                  <div className="relative w-full max-w-md rounded-2xl border-2 border-emerald-600/30 bg-white p-6 shadow-md shadow-emerald-950/5">
-                    <div className="absolute -top-3 -right-3 rounded-full bg-amber-400 px-3 py-1 text-[11px] font-bold text-slate-950 shadow-xs uppercase tracking-wider">
+                  <div className="relative w-full max-w-md rounded-2xl border-2 border-emerald-600/30 bg-white/90 backdrop-blur-md p-6 shadow-xl shadow-emerald-950/5 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:border-emerald-500">
+                    <div className="absolute -top-3 -right-3 rounded-full bg-amber-400 px-3 py-1 text-[11px] font-bold text-slate-950 shadow-md uppercase tracking-wider">
                       Resmi & Terverifikasi
                     </div>
 
@@ -362,53 +358,8 @@ function HomeInner() {
             </div>
           </section>
 
-          {/* Section: Formula Penilaian Persentase & Standar Likert */}
-          <section className="py-12 bg-white border-b border-slate-200/80">
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-              <div className="rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-50/60 via-white to-amber-50/40 p-6 sm:p-8 shadow-xs">
-                <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-                  <div className="space-y-2 max-w-2xl">
-                    <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-emerald-800">
-                      <Calculator className="h-4 w-4 text-emerald-700" />
-                      <span>Transparansi Penilaian Berbasis Persentase</span>
-                    </div>
-                    <h3 className="text-xl font-extrabold text-slate-900">
-                      Sistem Penilaian Persentase & Standar Likert 1–4
-                    </h3>
-                    <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                      Setiap butir diukur dengan skala Likert 1 s.d. 4 murni dan dikonversi ke indeks persentase capaian secara ilmiah: % Capaian = ((Skor - 1) / 3) × 100%. Bobot pengaruh 7 KAIH dirancang proporsional sehingga akumulasinya tepat berjumlah 100%.
-                    </p>
-                  </div>
-
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 w-full md:w-auto shrink-0">
-                    <div className="p-3 rounded-xl bg-white border border-emerald-300 shadow-2xs text-center">
-                      <div className="text-[11px] font-bold text-slate-500">Skala 4 (SS)</div>
-                      <div className="text-lg font-black text-emerald-700">100%</div>
-                      <div className="text-[10px] text-emerald-600 font-semibold">Skor 4.00</div>
-                    </div>
-                    <div className="p-3 rounded-xl bg-white border border-slate-200 shadow-2xs text-center">
-                      <div className="text-[11px] font-bold text-slate-500">Skala 3 (S)</div>
-                      <div className="text-lg font-black text-slate-800">67%</div>
-                      <div className="text-[10px] text-slate-500 font-semibold">Skor 3.00</div>
-                    </div>
-                    <div className="p-3 rounded-xl bg-white border border-slate-200 shadow-2xs text-center">
-                      <div className="text-[11px] font-bold text-slate-500">Skala 2 (KS)</div>
-                      <div className="text-lg font-black text-slate-800">33%</div>
-                      <div className="text-[10px] text-slate-500 font-semibold">Skor 2.00</div>
-                    </div>
-                    <div className="p-3 rounded-xl bg-white border border-slate-200 shadow-2xs text-center">
-                      <div className="text-[11px] font-bold text-slate-500">Skala 1 (STS)</div>
-                      <div className="text-lg font-black text-rose-700">0%</div>
-                      <div className="text-[10px] text-rose-600 font-semibold">Skor 1.00</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* Section: Panduan & Visi Sekolah */}
-          <section className="py-14 sm:py-16 bg-slate-50/50">
+          {/* Section: Panduan Pengisian Survei Santri */}
+          <section className="py-14 sm:py-16 bg-white/40 backdrop-blur-xs">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
               <div className="text-center max-w-2xl mx-auto space-y-2 mb-10">
                 <h2 className="text-2xl font-bold text-slate-900 sm:text-3xl">
@@ -420,9 +371,9 @@ function HomeInner() {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <Card className="border-slate-200 bg-white shadow-2xs hover:shadow-md transition-shadow">
+                <Card className="border-slate-200/80 bg-white/90 backdrop-blur-xs shadow-sm hover:shadow-xl hover:border-emerald-400 hover:-translate-y-1.5 transition-all duration-300">
                   <CardContent className="p-6 space-y-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-100 text-emerald-800 font-bold">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-100 text-emerald-800 font-bold shadow-xs">
                       1
                     </div>
                     <CardTitle className="text-base font-bold text-slate-900">
@@ -434,9 +385,9 @@ function HomeInner() {
                   </CardContent>
                 </Card>
 
-                <Card className="border-slate-200 bg-white shadow-2xs hover:shadow-md transition-shadow">
+                <Card className="border-slate-200/80 bg-white/90 backdrop-blur-xs shadow-sm hover:shadow-xl hover:border-emerald-400 hover:-translate-y-1.5 transition-all duration-300">
                   <CardContent className="p-6 space-y-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-100 text-emerald-800 font-bold">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-100 text-emerald-800 font-bold shadow-xs">
                       2
                     </div>
                     <CardTitle className="text-base font-bold text-slate-900">
@@ -448,9 +399,9 @@ function HomeInner() {
                   </CardContent>
                 </Card>
 
-                <Card className="border-slate-200 bg-white shadow-2xs hover:shadow-md transition-shadow">
+                <Card className="border-slate-200/80 bg-white/90 backdrop-blur-xs shadow-sm hover:shadow-xl hover:border-emerald-400 hover:-translate-y-1.5 transition-all duration-300">
                   <CardContent className="p-6 space-y-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-100 text-emerald-800 font-bold">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-100 text-emerald-800 font-bold shadow-xs">
                       3
                     </div>
                     <CardTitle className="text-base font-bold text-slate-900">
@@ -463,8 +414,8 @@ function HomeInner() {
                 </Card>
               </div>
 
-              {/* Bottom Card CTA */}
-              <div className="mt-10 rounded-2xl bg-gradient-to-r from-emerald-800 to-emerald-950 p-6 sm:p-8 text-white shadow-md flex flex-col sm:flex-row items-center justify-between gap-6">
+              {/* Bottom Card CTA dengan Efek Timbul */}
+              <div className="mt-10 rounded-2xl bg-gradient-to-r from-emerald-800 via-emerald-800 to-emerald-950 p-6 sm:p-8 text-white shadow-xl flex flex-col sm:flex-row items-center justify-between gap-6">
                 <div className="space-y-1.5 text-center sm:text-left">
                   <h3 className="text-lg font-bold">Siap mengisi refleksi mandiri Anda?</h3>
                   <p className="text-xs text-emerald-100/80 max-w-xl">
@@ -473,7 +424,7 @@ function HomeInner() {
                 </div>
                 <Link
                   href="/survei"
-                  className="shrink-0 inline-flex items-center gap-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 px-6 py-3 font-extrabold text-sm transition-all duration-200 shadow-md hover:-translate-y-0.5"
+                  className="shrink-0 inline-flex items-center gap-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 px-6 py-3 font-extrabold text-sm transition-all duration-300 shadow-md hover:shadow-xl hover:-translate-y-1 active:scale-95 cursor-pointer"
                 >
                   <ClipboardCheck className="h-4 w-4 text-slate-950" />
                   <span>Buka Lembar Survei</span>
@@ -488,11 +439,11 @@ function HomeInner() {
       {/* TAB 2: 7 KARAKTER KAIH                                                    */}
       {/* ========================================================================= */}
       {activeTab === "kaih" && (
-        <main className="flex-1 py-12 sm:py-16">
+        <main className="flex-1 py-12 sm:py-16 bg-white/40 backdrop-blur-xs">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             {/* Tab Header */}
             <div className="text-center max-w-3xl mx-auto space-y-3 mb-10">
-              <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-100/70 px-3.5 py-1 text-xs font-semibold text-emerald-900 shadow-2xs">
+              <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-100/80 px-3.5 py-1 text-xs font-semibold text-emerald-900 shadow-xs">
                 <Sparkles className="h-3.5 w-3.5 text-amber-600" />
                 <span>Instrumen Resmi KAIH SMAIT Ihsanul Fikri</span>
               </div>
@@ -504,9 +455,9 @@ function HomeInner() {
               </p>
             </div>
 
-            {/* Tier & Bobot Overview Cards */}
+            {/* Tier & Bobot Overview Cards dengan Efek Timbul */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
-              <div className="rounded-xl border border-emerald-200 bg-emerald-50/60 p-4">
+              <div className="rounded-xl border border-emerald-200/80 bg-white/90 backdrop-blur-xs p-4 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-emerald-900 uppercase">Tier 1: Pilar Inti</span>
                   <Badge variant="outline" className="border-emerald-300 text-emerald-800 text-[10px] font-bold">
@@ -521,7 +472,7 @@ function HomeInner() {
                 </p>
               </div>
 
-              <div className="rounded-xl border border-amber-200 bg-amber-50/60 p-4">
+              <div className="rounded-xl border border-amber-200/80 bg-white/90 backdrop-blur-xs p-4 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-amber-900 uppercase">Tier 2: Pilar Penunjang</span>
                   <Badge variant="outline" className="border-amber-300 text-amber-800 text-[10px] font-bold">
@@ -536,7 +487,7 @@ function HomeInner() {
                 </p>
               </div>
 
-              <div className="rounded-xl border border-sky-200 bg-sky-50/60 p-4">
+              <div className="rounded-xl border border-sky-200/80 bg-white/90 backdrop-blur-xs p-4 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-sky-900 uppercase">Tier 3: Pilar Adab & Disiplin</span>
                   <Badge variant="outline" className="border-sky-300 text-sky-800 text-[10px] font-bold">
@@ -552,15 +503,15 @@ function HomeInner() {
               </div>
             </div>
 
-            {/* Cards Grid KAIH 1 s.d. 7 */}
+            {/* Cards Grid KAIH 1 s.d. 7 dengan Efek Timbul Mantap */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
               {KAIH_SHOWCASE.map((k) => {
                 const IconComp = k.icon;
                 return (
                   <div
                     key={k.num}
-                    className={`group relative rounded-2xl border border-slate-200/90 bg-white p-5 shadow-xs transition-all duration-300 hover:-translate-y-1.5 hover:border-emerald-500 hover:shadow-[0_12px_28px_-6px_rgba(21,128,61,0.22),0_0_15px_1px_rgba(34,197,94,0.12)] flex flex-col justify-between ${
-                      k.num === 4 ? "md:col-span-2 lg:col-span-1 ring-1 ring-purple-300/60 bg-gradient-to-b from-purple-50/20 via-white to-white" : ""
+                    className={`group relative rounded-2xl border border-slate-200/90 bg-white/95 backdrop-blur-xs p-5 shadow-xs transition-all duration-300 hover:-translate-y-2 hover:border-emerald-500 hover:shadow-[0_16px_32px_-6px_rgba(21,128,61,0.25),0_0_15px_1px_rgba(34,197,94,0.12)] flex flex-col justify-between ${
+                      k.num === 4 ? "md:col-span-2 lg:col-span-1 ring-1 ring-purple-300/60 bg-gradient-to-b from-purple-50/30 via-white to-white" : ""
                     }`}
                   >
                     <div className="space-y-3.5">
@@ -628,8 +579,8 @@ function HomeInner() {
                 );
               })}
 
-              {/* Final Highlight Card: Total Akumulasi & CTA */}
-              <div className="rounded-2xl border-2 border-dashed border-amber-300 bg-gradient-to-br from-amber-50/80 via-white to-emerald-50/50 p-5 flex flex-col justify-between shadow-xs">
+              {/* Final Highlight Card: Total Akumulasi & CTA dengan Efek Timbul */}
+              <div className="rounded-2xl border-2 border-dashed border-amber-300 bg-gradient-to-br from-amber-50/90 via-white to-emerald-50/70 p-5 flex flex-col justify-between shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
                 <div className="space-y-3">
                   <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-amber-900">
                     <Award className="h-4 w-4 text-amber-600" />
@@ -647,7 +598,7 @@ function HomeInner() {
 
                 <Link
                   href="/survei"
-                  className="mt-4 inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-700 via-emerald-800 to-emerald-900 px-4 py-2.5 text-xs font-bold text-white shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
+                  className="mt-4 inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-700 via-emerald-800 to-emerald-900 px-4 py-2.5 text-xs font-bold text-white shadow-md hover:shadow-xl hover:-translate-y-1 active:scale-95 transition-all duration-300 cursor-pointer"
                 >
                   <span>Mulai Isi KAIH 1</span>
                   <ChevronRight className="h-3.5 w-3.5 text-amber-300" />
@@ -662,11 +613,11 @@ function HomeInner() {
       {/* TAB 3: PROFIL PEMBUAT                                                     */}
       {/* ========================================================================= */}
       {activeTab === "profil" && (
-        <main className="flex-1 py-12 sm:py-16">
+        <main className="flex-1 py-12 sm:py-16 bg-white/40 backdrop-blur-xs">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             {/* Tab Header */}
             <div className="text-center max-w-3xl mx-auto space-y-3 mb-12">
-              <div className="inline-flex items-center gap-2 rounded-full border border-slate-300 bg-white px-3.5 py-1 text-xs font-semibold text-slate-700 shadow-2xs">
+              <div className="inline-flex items-center gap-2 rounded-full border border-slate-300 bg-white/90 px-3.5 py-1 text-xs font-semibold text-slate-700 shadow-xs">
                 <Users2 className="h-3.5 w-3.5 text-emerald-700" />
                 <span>Tim Pengembang & Pembimbing VERTIKALIF</span>
               </div>
@@ -678,16 +629,16 @@ function HomeInner() {
               </p>
             </div>
 
-            {/* Members Grid (Susunan Terpusat & Pas Foto 3x4 Formal) */}
+            {/* Members Grid (Susunan Terpusat & Pas Foto 3x4 Formal dengan Efek Timbul) */}
             <div className="flex flex-wrap justify-center gap-6">
               {WHITELIST_MEMBERS.map((member) => (
                 <Card
                   key={member.nis}
-                  className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(25%-18px)] max-w-sm border-slate-200 bg-white flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 hover:border-emerald-500 hover:shadow-[0_12px_30px_-8px_rgba(21,128,61,0.25),0_0_15px_1px_rgba(34,197,94,0.18)]"
+                  className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(25%-18px)] max-w-sm border-slate-200/90 bg-white/95 backdrop-blur-xs flex flex-col justify-between transition-all duration-300 hover:-translate-y-2 hover:border-emerald-500 hover:shadow-[0_16px_32px_-8px_rgba(21,128,61,0.28),0_0_15px_1px_rgba(34,197,94,0.18)]"
                 >
                   <div className="pt-6 pb-2 text-center flex flex-col items-center">
                     {/* Pas Foto Formal 3x4 / 4x3 */}
-                    <div className="relative w-24 h-32 shrink-0 overflow-hidden rounded-xl border-2 border-emerald-600 bg-slate-100 shadow-sm mb-3.5">
+                    <div className="relative w-24 h-32 shrink-0 overflow-hidden rounded-xl border-2 border-emerald-600 bg-slate-100 shadow-md mb-3.5">
                       <Image
                         src={member.avatar}
                         alt={member.nama}
@@ -702,7 +653,7 @@ function HomeInner() {
                         {member.nama}
                       </CardTitle>
                       <div>
-                        <Badge variant="gold" className="text-[10px] px-2.5 py-0.5 font-semibold">
+                        <Badge variant="gold" className="text-[10px] px-2.5 py-0.5 font-semibold shadow-xs">
                           {member.peran}
                         </Badge>
                       </div>
@@ -727,8 +678,8 @@ function HomeInner() {
               ))}
             </div>
 
-            {/* Latar Belakang & Pernyataan Proyek */}
-            <div className="mt-12 rounded-2xl border border-emerald-200 bg-emerald-50/70 p-6 sm:p-8 shadow-xs">
+            {/* Latar Belakang & Pernyataan Proyek dengan Efek Timbul */}
+            <div className="mt-12 rounded-2xl border border-emerald-200/90 bg-emerald-50/80 backdrop-blur-xs p-6 sm:p-8 shadow-md hover:shadow-xl transition-all duration-300">
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
                 <div className="lg:col-span-8 space-y-2">
                   <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-emerald-900">
@@ -747,7 +698,7 @@ function HomeInner() {
                     href="/survei"
                     aria-label="Mulai Survei Sekarang - Kuesioner Evaluasi 7 KAIH Santri"
                     title="Mulai Survei Sekarang"
-                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 rounded-xl bg-gradient-to-r from-amber-400 via-amber-400 to-amber-500 px-7 py-3.5 text-sm sm:text-base font-extrabold text-slate-950 shadow-[0_10px_24px_-4px_rgba(245,158,11,0.5),0_0_16px_2px_rgba(251,191,36,0.35)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_14px_30px_-4px_rgba(245,158,11,0.6),0_0_20px_3px_rgba(251,191,36,0.45)] active:translate-y-0 active:scale-95 border border-amber-300/80 group cursor-pointer"
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 rounded-xl bg-gradient-to-r from-amber-400 via-amber-400 to-amber-500 px-7 py-3.5 text-sm sm:text-base font-extrabold text-slate-950 shadow-[0_10px_24px_-4px_rgba(245,158,11,0.5),0_0_16px_2px_rgba(251,191,36,0.35)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_16px_32px_-4px_rgba(245,158,11,0.6),0_0_22px_3px_rgba(251,191,36,0.45)] active:translate-y-0 active:scale-95 border border-amber-300/80 group cursor-pointer"
                   >
                     <ClipboardCheck className="h-5 w-5 text-slate-950" />
                     <span>Mulai Survei Sekarang</span>
@@ -767,7 +718,7 @@ export default function HomePage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <div className="min-h-screen flex items-center justify-center bg-transparent">
           <div className="flex flex-col items-center gap-3">
             <div className="h-10 w-10 animate-spin rounded-full border-3 border-emerald-600 border-t-transparent" />
             <span className="text-xs font-semibold text-slate-500">Memuat Platform VERTIKALIF...</span>

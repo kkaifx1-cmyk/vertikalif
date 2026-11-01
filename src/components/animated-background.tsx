@@ -6,24 +6,27 @@ export function AnimatedBackground() {
   return (
     <div
       aria-hidden="true"
-      className="fixed inset-0 -z-10 pointer-events-none overflow-hidden bg-gradient-to-b from-white via-emerald-50/30 to-amber-50/20"
+      className="fixed inset-0 -z-10 pointer-events-none overflow-hidden bg-gradient-to-tr from-emerald-100/50 via-amber-50/60 to-teal-100/40 animate-gradient-flow"
     >
       {/* Dynamic Animated Ambient Orbs with visible smooth fluid motion & Ihsanul Fikri colors */}
       {/* Orb 1: Forest Green (Top Left) */}
-      <div className="absolute -top-[10%] -left-[5%] h-[520px] w-[520px] sm:h-[680px] sm:w-[680px] rounded-full bg-gradient-to-br from-emerald-500/40 via-emerald-600/30 to-teal-700/15 blur-[75px] animate-float-1 will-change-transform" />
+      <div className="absolute -top-[12%] -left-[8%] h-[560px] w-[560px] sm:h-[720px] sm:w-[720px] rounded-full bg-gradient-to-br from-emerald-500/45 via-emerald-600/35 to-teal-700/20 blur-[80px] animate-float-1 will-change-transform" />
 
       {/* Orb 2: School Gold / Warm Yellow (Top Right) */}
-      <div className="absolute top-[3%] -right-[5%] h-[480px] w-[480px] sm:h-[640px] sm:w-[640px] rounded-full bg-gradient-to-bl from-amber-400/45 via-yellow-500/35 to-amber-600/20 blur-[80px] animate-float-2 will-change-transform" />
+      <div className="absolute top-[2%] -right-[8%] h-[520px] w-[520px] sm:h-[680px] sm:w-[680px] rounded-full bg-gradient-to-bl from-amber-400/50 via-yellow-500/40 to-amber-600/25 blur-[85px] animate-float-2 will-change-transform" />
 
       {/* Orb 3: Fresh Emerald / Mint (Center / Bottom Left) */}
-      <div className="absolute top-[40%] -left-[8%] h-[460px] w-[460px] sm:h-[600px] sm:w-[600px] rounded-full bg-gradient-to-tr from-emerald-600/35 via-teal-500/25 to-transparent blur-[70px] animate-float-3 will-change-transform" />
+      <div className="absolute top-[35%] -left-[10%] h-[500px] w-[500px] sm:h-[640px] sm:w-[640px] rounded-full bg-gradient-to-tr from-emerald-500/40 via-teal-400/30 to-emerald-700/15 blur-[75px] animate-float-3 will-change-transform" />
 
       {/* Orb 4: Golden Glow (Bottom Right) */}
-      <div className="absolute bottom-[2%] right-[5%] h-[500px] w-[500px] sm:h-[640px] sm:w-[640px] rounded-full bg-gradient-to-tl from-amber-400/40 via-yellow-400/30 to-emerald-600/15 blur-[85px] animate-float-4 will-change-transform" />
+      <div className="absolute bottom-[0%] right-[3%] h-[540px] w-[540px] sm:h-[700px] sm:w-[700px] rounded-full bg-gradient-to-tl from-amber-400/45 via-yellow-400/35 to-emerald-600/20 blur-[90px] animate-float-4 will-change-transform" />
 
-      {/* Subtle Islamic Lattice Pattern Overlay (Geometric Motif) */}
+      {/* Orb 5: Center Ambient Pulse (Tengah Mengalir) */}
+      <div className="absolute top-[25%] left-[25%] h-[400px] w-[400px] sm:h-[550px] sm:w-[550px] rounded-full bg-gradient-to-r from-emerald-400/25 via-amber-300/25 to-teal-300/20 blur-[100px] animate-float-5 will-change-transform" />
+
+      {/* Subtle Islamic Lattice Pattern Overlay (Geometric Motif) with gentle drift */}
       <svg
-        className="absolute inset-0 h-full w-full opacity-[0.045] mix-blend-multiply"
+        className="absolute inset-0 h-full w-full opacity-[0.055] mix-blend-multiply animate-wave-drift"
         xmlns="http://www.w3.org/2000/svg"
       >
         <defs>
