@@ -1040,20 +1040,53 @@ function SuperAdminDashboard() {
                           Profil santri yang terbukti memiliki kemantapan mental, keberanian tampil, dan keyakinan diri tinggi hasil pembiasaan KAIH
                         </p>
                       </div>
-                      <Badge
-                        variant="gold"
-                        className="text-xs font-extrabold px-3 py-1 bg-amber-400 text-slate-950 self-start sm:self-auto"
-                      >
-                        🌟 Total {analytics.confidenceAnalytics.highConfidenceStudents.length} Santri Terpilih
-                      </Badge>
+                      <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={handleClearAll}
+                          disabled={!analytics || analytics.confidenceAnalytics.highConfidenceStudents.length === 0}
+                          className="gap-1.5 font-bold text-red-700 border-red-200 hover:bg-red-50 hover:text-red-800 transition-all cursor-pointer text-xs"
+                        >
+                          <Trash2 className="h-3.5 w-3.5 text-red-600" />
+                          Kosongkan Leaderboard
+                        </Button>
+                        <Badge
+                          variant="gold"
+                          className="text-xs font-extrabold px-3 py-1 bg-amber-400 text-slate-950"
+                        >
+                          🌟 Total {analytics.confidenceAnalytics.highConfidenceStudents.length} Santri Terpilih
+                        </Badge>
+                      </div>
                     </div>
 
                     {analytics.confidenceAnalytics.highConfidenceStudents.length === 0 ? (
-                      <Card className="p-8 text-center bg-white border-slate-200 rounded-xl">
-                        <p className="text-sm font-semibold text-slate-700">Belum ada santri terdata.</p>
-                        <p className="text-xs text-slate-400 mt-1">
-                          Data santri berkepercayaan diri tinggi akan otomatis tersusun setelah survei diisi.
-                        </p>
+                      <Card className="p-10 text-center bg-white border-2 border-dashed border-amber-200 rounded-xl space-y-3">
+                        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-amber-100 text-amber-800">
+                          <Star className="h-6 w-6 fill-amber-500 text-amber-500" />
+                        </div>
+                        <div className="space-y-1">
+                          <p className="text-base font-extrabold text-slate-900">
+                            Papan Leaderboard Masih Kosong / Telah Dikosongkan
+                          </p>
+                          <p className="text-xs text-slate-500 max-w-md mx-auto leading-relaxed">
+                            Seluruh data santri pada leaderboard telah dibersihkan. Santri yang baru menyelesaikan kuesioner 7 KAIH akan otomatis dihitung skor kepercayaandirinya dan tampil di papan peringkat ini.
+                          </p>
+                        </div>
+                        <div className="pt-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              fetchAnalytics();
+                              fetchResponses();
+                            }}
+                            className="gap-1.5 text-xs font-bold text-emerald-800 border-emerald-300 hover:bg-emerald-50 cursor-pointer"
+                          >
+                            <RefreshCw className="h-3.5 w-3.5 text-emerald-600" />
+                            Segarkan Papan Leaderboard
+                          </Button>
+                        </div>
                       </Card>
                     ) : (
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -1063,10 +1096,20 @@ function SuperAdminDashboard() {
                           return (
                             <Card
                               key={student.id}
-                              className="relative overflow-hidden border-2 border-amber-200/90 bg-gradient-to-b from-white to-amber-50/30 p-5 shadow-xs rounded-xl transition-all duration-300 hover:border-amber-400 hover:shadow-[0_14px_30px_-6px_rgba(245,158,11,0.3),0_0_15px_1px_rgba(251,191,36,0.2)] hover:-translate-y-1.5"
+                              className="relative overflow-hidden border-2 border-amber-200/90 bg-gradient-to-b from-white to-amber-50/30 p-5 shadow-xs rounded-xl transition-all duration-300 hover:border-amber-400 hover:shadow-[0_14px_30px_-6px_rgba(245,158,11,0.3),0_0_15px_1px_rgba(251,191,36,0.2)] hover:-translate-y-1.5 group"
                             >
-                              <div className="absolute top-0 right-0 bg-gradient-to-l from-amber-400 to-amber-300 px-3 py-0.5 rounded-bl-lg font-mono text-[10px] font-black text-slate-950 shadow-xs">
-                                Rank #{idx + 1}
+                              <div className="absolute top-0 right-0 flex items-center">
+                                <button
+                                  type="button"
+                                  onClick={() => handleDeleteResponse(student.id, student.nama)}
+                                  title={`Hapus ${student.nama} dari Leaderboard & Reset Limit`}
+                                  className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-bl-lg transition-colors cursor-pointer"
+                                >
+                                  <Trash2 className="h-3.5 w-3.5 text-red-500" />
+                                </button>
+                                <div className="bg-gradient-to-l from-amber-400 to-amber-300 px-3 py-0.5 rounded-bl-lg font-mono text-[10px] font-black text-slate-950 shadow-xs">
+                                  Rank #{idx + 1}
+                                </div>
                               </div>
 
                               <div className="flex items-start gap-3 mt-1">
