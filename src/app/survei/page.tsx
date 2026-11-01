@@ -150,6 +150,30 @@ export default function SurveyPage() {
     return "X";
   };
 
+  // Helper pembagian gender rombel resmi SMAIT Ihsanul Fikri:
+  // - Kelas XI: 1–6 Ikhwan • 7–10 Akhwat
+  // - Kelas XII: 1–4 Ikhwan • 5–9 Akhwat
+  // - Kelas X: 1–5 Ikhwan • 6–10 Akhwat
+  const getRombelGender = (gradeValue: string, rombelNum: number): "Ikhwan" | "Akhwat" => {
+    if (gradeValue.includes("XI") && !gradeValue.includes("XII")) {
+      return rombelNum <= 6 ? "Ikhwan" : "Akhwat";
+    }
+    if (gradeValue.includes("XII")) {
+      return rombelNum <= 4 ? "Ikhwan" : "Akhwat";
+    }
+    return rombelNum <= 5 ? "Ikhwan" : "Akhwat";
+  };
+
+  const getRombelGenderLabel = (gradeValue: string): string => {
+    if (gradeValue.includes("XI") && !gradeValue.includes("XII")) {
+      return "1–6: Ikhwan • 7–10: Akhwat";
+    }
+    if (gradeValue.includes("XII")) {
+      return "1–4: Ikhwan • 5–9: Akhwat";
+    }
+    return "1–5: Ikhwan • 6–10: Akhwat";
+  };
+
   const currentPrefix = getGradePrefix(identity.kategori || "Siswa Kelas X");
   const maxRombelNumber = identity.kategori === "Siswa Kelas XII" ? 9 : 10;
   const rombelNumbers = Array.from({ length: maxRombelNumber }, (_, i) => i + 1);
@@ -170,6 +194,8 @@ export default function SurveyPage() {
       const maxNum = gradeValue === "Siswa Kelas XII" ? 9 : 10;
       if (rombelNum && Number(rombelNum) <= maxNum) {
         setSelectedRombel(`${newPrefix}-${rombelNum}`);
+        const detectedGender = getRombelGender(gradeValue, Number(rombelNum));
+        setIdentity((prev) => ({ ...prev, jenisKelamin: detectedGender }));
       } else {
         setSelectedRombel("");
       }
@@ -187,6 +213,15 @@ export default function SurveyPage() {
     setSearchQuery("");
     setIsManualName(false);
     setValidationError("");
+
+    if (newRombel) {
+      const parts = newRombel.split("-");
+      const num = parts.length > 1 ? Number(parts[1]) : 0;
+      if (num > 0) {
+        const detectedGender = getRombelGender(identity.kategori || "Siswa Kelas X", num);
+        setIdentity((prev) => ({ ...prev, jenisKelamin: detectedGender }));
+      }
+    }
   };
 
   // Ambil daftar santri yang sudah pernah mengisi survei (limit kuota 1x)
@@ -869,13 +904,13 @@ export default function SurveyPage() {
 
                 {/* Nomor Rombel: 1 - 10 Interaktif */}
                 <div className="space-y-1.5">
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-wrap items-center justify-between gap-1.5">
                     <div className="text-[11px] font-bold text-slate-600 uppercase tracking-wider">
                       Nomor Kelas / Rombel {identity.kategori ? `(${identity.kategori.replace("Siswa ", "")})` : ""}:
                     </div>
                     {identity.kategori && (
-                      <span className="text-[10px] text-slate-500 font-medium">
-                        1–5: Ikhwan • 6–{maxRombelNumber}: Akhwat
+                      <span className="text-[10px] text-slate-600 font-bold bg-slate-100 px-2 py-0.5 rounded-full border border-slate-200">
+                        {getRombelGenderLabel(identity.kategori)}
                       </span>
                     )}
                   </div>
@@ -884,6 +919,8 @@ export default function SurveyPage() {
                     {rombelNumbers.map((num) => {
                       const rombelCode = `${currentPrefix}-${num}`;
                       const isRombelSelected = selectedRombel === rombelCode;
+                      const rombelGender = getRombelGender(identity.kategori || "Siswa Kelas X", num);
+                      const isIkhwan = rombelGender === "Ikhwan";
 
                       return (
                         <button
@@ -895,10 +932,10 @@ export default function SurveyPage() {
                             }
                             handleRombelSelect(rombelCode);
                           }}
-                          className={`group relative flex flex-col items-center justify-center py-2 sm:py-2.5 rounded-lg border transition-all duration-200 cursor-pointer ${
+                          className={`group relative flex flex-col items-center justify-center py-1.5 sm:py-2 px-1 rounded-lg border transition-all duration-200 cursor-pointer ${
                             isRombelSelected
                               ? "-translate-y-1 bg-gradient-to-b from-amber-400 via-amber-400 to-amber-500 text-slate-950 border-amber-500 shadow-[0_10px_22px_-3px_rgba(245,158,11,0.5),0_0_14px_2px_rgba(251,191,36,0.35)] font-black ring-2 ring-amber-300 scale-105"
-                              : "bg-white text-slate-800 border-slate-200 shadow-xs hover:-translate-y-1.5 hover:border-emerald-500 hover:bg-emerald-50 hover:text-emerald-900 hover:shadow-[0_10px_20px_-3px_rgba(21,128,61,0.35),0_0_14px_2px_rgba(34,197,94,0.25)] active:translate-y-0 active:scale-95"
+                              : "bg-white text-slate-800 border-slate-200 shadow-xs hover:-translate-y-1 hover:border-emerald-500 hover:bg-emerald-50 hover:text-emerald-900 hover:shadow-[0_10px_20px_-3px_rgba(21,128,61,0.25),0_0_14px_2px_rgba(34,197,94,0.18)] active:translate-y-0 active:scale-95"
                           }`}
                         >
                           <span className="text-sm sm:text-base font-extrabold leading-tight">
@@ -910,6 +947,17 @@ export default function SurveyPage() {
                             }`}
                           >
                             {rombelCode}
+                          </span>
+                          <span
+                            className={`text-[8px] font-extrabold px-1 rounded-xs mt-1 leading-tight tracking-tight uppercase ${
+                              isRombelSelected
+                                ? "bg-slate-950/20 text-slate-950 font-black"
+                                : isIkhwan
+                                ? "bg-emerald-100/90 text-emerald-800 border border-emerald-200/80 group-hover:bg-emerald-200/80"
+                                : "bg-purple-100/90 text-purple-800 border border-purple-200/80 group-hover:bg-purple-200/80"
+                            }`}
+                          >
+                            {isIkhwan ? "Ikhwan" : "Akhwat"}
                           </span>
                         </button>
                       );
