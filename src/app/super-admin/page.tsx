@@ -3,6 +3,8 @@
 import React, { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import {
+  LineChart,
+  Line,
   BarChart,
   Bar,
   XAxis,
@@ -68,6 +70,10 @@ function SuperAdminDashboard() {
   const [selectedClass, setSelectedClass] = useState("Semua");
   const [selectedGender, setSelectedGender] = useState("Semua");
   const [selectedConfidenceCategory, setSelectedConfidenceCategory] = useState("Semua");
+
+  // Chart View States (Default Diagram Garis)
+  const [kaihChartType, setKaihChartType] = useState<"line" | "bar">("line");
+  const [impactChartType, setImpactChartType] = useState<"line" | "bar">("line");
 
   const fetchAnalytics = async () => {
     setLoadingAnalytics(true);
@@ -333,7 +339,7 @@ function SuperAdminDashboard() {
                   : "text-slate-600 hover:text-slate-900 hover:bg-white hover:-translate-y-0.5 hover:shadow-xs"
               }`}
             >
-              <BarChart3 className="h-4 w-4" />
+              <TrendingUp className="h-4 w-4" />
               <span>1. Analisis Karakter 7 KAIH</span>
             </button>
 
@@ -556,42 +562,121 @@ function SuperAdminDashboard() {
                     {/* Chart 1: Rata-rata per KAIH (7 Cols) */}
                     <Card className="lg:col-span-7 border-slate-200 bg-white shadow-xs rounded-xl transition-all duration-300 hover:-translate-y-1 hover:border-emerald-500 hover:shadow-[0_12px_28px_-6px_rgba(21,128,61,0.2),0_0_15px_1px_rgba(34,197,94,0.12)]">
                       <CardHeader>
-                        <CardTitle className="text-base font-bold text-slate-900">
-                          Rata-rata Skor per KAIH (7 Karakter Utama Santri)
-                        </CardTitle>
-                        <CardDescription className="text-xs text-slate-500">
-                          Perbandingan performa santri pada 7 Karakter Utama Ihsanul Fikri (KAIH 1 s.d. KAIH 7)
-                        </CardDescription>
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                          <div>
+                            <CardTitle className="text-base font-bold text-slate-900">
+                              Tren Skor Rata-rata per KAIH (7 Karakter Santri)
+                            </CardTitle>
+                            <CardDescription className="text-xs text-slate-500">
+                              Grafik garis fluktuasi performa santri pada 7 Karakter Utama (KAIH 1 s.d. KAIH 7)
+                            </CardDescription>
+                          </div>
+                          <div className="flex items-center gap-1 bg-slate-100 p-0.5 rounded-lg border border-slate-200 self-start sm:self-auto shrink-0">
+                            <button
+                              type="button"
+                              onClick={() => setKaihChartType("line")}
+                              className={`px-2.5 py-1 text-xs font-bold rounded-md transition-all cursor-pointer ${
+                                kaihChartType === "line"
+                                  ? "bg-emerald-700 text-white shadow-xs"
+                                  : "text-slate-600 hover:text-slate-900"
+                              }`}
+                            >
+                              Diagram Garis
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setKaihChartType("bar")}
+                              className={`px-2.5 py-1 text-xs font-bold rounded-md transition-all cursor-pointer ${
+                                kaihChartType === "bar"
+                                  ? "bg-emerald-700 text-white shadow-xs"
+                                  : "text-slate-600 hover:text-slate-900"
+                              }`}
+                            >
+                              Batang
+                            </button>
+                          </div>
+                        </div>
                       </CardHeader>
                       <CardContent className="h-72">
                         <ResponsiveContainer width="100%" height="100%">
-                          <BarChart
-                            data={analytics.themeAverages.map((t) => ({
-                              ...t,
-                              shortTitle: t.title.split(":")[0]?.trim() || t.title,
-                            }))}
-                            margin={{ top: 20, right: 20, left: -20, bottom: 20 }}
-                          >
-                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                            <XAxis
-                              dataKey="shortTitle"
-                              tick={{ fontSize: 11, fill: "#475569", fontWeight: 600 }}
-                              interval={0}
-                            />
-                            <YAxis domain={[0, 4]} ticks={[0, 1, 2, 3, 4]} tick={{ fontSize: 11 }} />
-                            <Tooltip
-                              formatter={(value: any, _name: any, item: any) => [
-                                `${value} / 4.0`,
-                                item?.payload?.title || "Skor Rata-rata",
-                              ]}
-                              contentStyle={{ borderRadius: 8, fontSize: 12, border: "1px solid #e2e8f0" }}
-                            />
-                            <Bar dataKey="average" radius={[6, 6, 0, 0]}>
-                              {analytics.themeAverages.map((entry, index) => (
-                                <Cell key={`cell-${index}`} fill={THEME_COLORS[index % THEME_COLORS.length]} />
-                              ))}
-                            </Bar>
-                          </BarChart>
+                          {kaihChartType === "line" ? (
+                            <LineChart
+                              data={analytics.themeAverages.map((t) => ({
+                                ...t,
+                                shortTitle: t.title.split(":")[0]?.trim() || t.title,
+                              }))}
+                              margin={{ top: 20, right: 25, left: -15, bottom: 20 }}
+                            >
+                              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                              <XAxis
+                                dataKey="shortTitle"
+                                tick={{ fontSize: 11, fill: "#475569", fontWeight: 700 }}
+                                interval={0}
+                              />
+                              <YAxis domain={[0, 4]} ticks={[0, 1, 2, 3, 4]} tick={{ fontSize: 11, fill: "#64748b" }} />
+                              <Tooltip
+                                formatter={(value: any, _name: any, item: any) => [
+                                  `${value} / 4.0`,
+                                  item?.payload?.title || "Skor Rata-rata",
+                                ]}
+                                contentStyle={{
+                                  backgroundColor: "#0f172a",
+                                  borderRadius: 10,
+                                  fontSize: 12,
+                                  border: "none",
+                                  color: "#ffffff",
+                                  boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.3)",
+                                }}
+                              />
+                              <Line
+                                type="monotone"
+                                dataKey="average"
+                                name="Rata-rata Skor"
+                                stroke="#059669"
+                                strokeWidth={3.5}
+                                dot={{
+                                  r: 5,
+                                  fill: "#10b981",
+                                  stroke: "#ffffff",
+                                  strokeWidth: 2.5,
+                                }}
+                                activeDot={{
+                                  r: 8,
+                                  fill: "#047857",
+                                  stroke: "#ffffff",
+                                  strokeWidth: 3,
+                                }}
+                              />
+                            </LineChart>
+                          ) : (
+                            <BarChart
+                              data={analytics.themeAverages.map((t) => ({
+                                ...t,
+                                shortTitle: t.title.split(":")[0]?.trim() || t.title,
+                              }))}
+                              margin={{ top: 20, right: 20, left: -20, bottom: 20 }}
+                            >
+                              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                              <XAxis
+                                dataKey="shortTitle"
+                                tick={{ fontSize: 11, fill: "#475569", fontWeight: 600 }}
+                                interval={0}
+                              />
+                              <YAxis domain={[0, 4]} ticks={[0, 1, 2, 3, 4]} tick={{ fontSize: 11 }} />
+                              <Tooltip
+                                formatter={(value: any, _name: any, item: any) => [
+                                  `${value} / 4.0`,
+                                  item?.payload?.title || "Skor Rata-rata",
+                                ]}
+                                contentStyle={{ borderRadius: 8, fontSize: 12, border: "1px solid #e2e8f0" }}
+                              />
+                              <Bar dataKey="average" radius={[6, 6, 0, 0]}>
+                                {analytics.themeAverages.map((entry, index) => (
+                                  <Cell key={`cell-${index}`} fill={THEME_COLORS[index % THEME_COLORS.length]} />
+                                ))}
+                              </Bar>
+                            </BarChart>
+                          )}
                         </ResponsiveContainer>
                       </CardContent>
                     </Card>
@@ -854,64 +939,140 @@ function SuperAdminDashboard() {
                     </Card>
                   </div>
 
-                  {/* Visualisasi Bar Chart & Formula Perhitungan (2 Kolom) */}
+                  {/* Visualisasi Diagram Garis & Formula Perhitungan (2 Kolom) */}
                   <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-                    {/* Bar Chart Kontribusi 7 KAIH (7 Kolom) */}
+                    {/* Diagram Garis Kontribusi 7 KAIH (7 Kolom) */}
                     <Card className="lg:col-span-7 border-slate-200 bg-white shadow-xs rounded-xl transition-all duration-300 hover:border-emerald-500 hover:shadow-[0_12px_28px_-6px_rgba(21,128,61,0.2),0_0_15px_1px_rgba(34,197,94,0.12)]">
                       <CardHeader>
-                        <div className="flex items-center justify-between">
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                           <div>
                             <CardTitle className="text-base font-bold text-slate-900">
                               Proporsi Kontribusi Relatif 7 KAIH terhadap Kepercayaan Diri
                             </CardTitle>
                             <CardDescription className="text-xs text-slate-500">
-                              Persentase pengaruh (Wi%) dihitung dari korelasi Pearson (r) dikalikan rata-rata pembiasaan santri
+                              Grafik pengaruh (Wi%) dihitung dari korelasi Pearson (r) dikalikan rata-rata pembiasaan santri
                             </CardDescription>
                           </div>
-                          <Badge variant="gold" className="text-[10px] font-bold">
-                            Total 100%
-                          </Badge>
+                          <div className="flex items-center gap-2 self-start sm:self-auto shrink-0">
+                            <div className="flex items-center gap-1 bg-slate-100 p-0.5 rounded-lg border border-slate-200">
+                              <button
+                                type="button"
+                                onClick={() => setImpactChartType("line")}
+                                className={`px-2.5 py-1 text-xs font-bold rounded-md transition-all cursor-pointer ${
+                                  impactChartType === "line"
+                                    ? "bg-amber-600 text-white shadow-xs"
+                                    : "text-slate-600 hover:text-slate-900"
+                                }`}
+                              >
+                                Garis
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setImpactChartType("bar")}
+                                className={`px-2.5 py-1 text-xs font-bold rounded-md transition-all cursor-pointer ${
+                                  impactChartType === "bar"
+                                    ? "bg-amber-600 text-white shadow-xs"
+                                    : "text-slate-600 hover:text-slate-900"
+                                }`}
+                              >
+                                Batang
+                              </button>
+                            </div>
+                            <Badge variant="gold" className="text-[10px] font-bold">
+                              Total 100%
+                            </Badge>
+                          </div>
                         </div>
                       </CardHeader>
                       <CardContent>
                         <div className="h-72 w-full">
                           <ResponsiveContainer width="100%" height="100%">
-                            <BarChart
-                              data={analytics.confidenceAnalytics.kaihImpactScheme}
-                              margin={{ top: 10, right: 15, left: -10, bottom: 25 }}
-                            >
-                              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                              <XAxis
-                                dataKey="shortTitle"
-                                tick={{ fontSize: 11, fill: "#475569" }}
-                                angle={-15}
-                                textAnchor="end"
-                                interval={0}
-                              />
-                              <YAxis tick={{ fontSize: 11, fill: "#475569" }} unit="%" domain={[0, "auto"]} />
-                              <Tooltip
-                                contentStyle={{
-                                  backgroundColor: "#0f172a",
-                                  border: "none",
-                                  borderRadius: "10px",
-                                  color: "#fff",
-                                  fontSize: "12px",
-                                  boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.3)",
-                                }}
-                                formatter={(value: any, _name: any, item: any) => [
-                                  `${value}% Pengaruh (r = ${item.payload.correlationR})`,
-                                  item.payload.kaihTitle,
-                                ]}
-                              />
-                              <Bar dataKey="impactPercentage" radius={[6, 6, 0, 0]} name="Kontribusi (%)">
-                                {analytics.confidenceAnalytics.kaihImpactScheme.map((_, index) => (
-                                  <Cell
-                                    key={`cell-impact-${index}`}
-                                    fill={CONFIDENCE_BAR_COLORS[index % CONFIDENCE_BAR_COLORS.length]}
-                                  />
-                                ))}
-                              </Bar>
-                            </BarChart>
+                            {impactChartType === "line" ? (
+                              <LineChart
+                                data={analytics.confidenceAnalytics.kaihImpactScheme}
+                                margin={{ top: 15, right: 25, left: -10, bottom: 25 }}
+                              >
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                                <XAxis
+                                  dataKey="shortTitle"
+                                  tick={{ fontSize: 11, fill: "#475569", fontWeight: 700 }}
+                                  angle={-15}
+                                  textAnchor="end"
+                                  interval={0}
+                                />
+                                <YAxis tick={{ fontSize: 11, fill: "#475569" }} unit="%" domain={[0, "auto"]} />
+                                <Tooltip
+                                  contentStyle={{
+                                    backgroundColor: "#0f172a",
+                                    border: "none",
+                                    borderRadius: "10px",
+                                    color: "#fff",
+                                    fontSize: "12px",
+                                    boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.3)",
+                                  }}
+                                  formatter={(value: any, _name: any, item: any) => [
+                                    `${value}% Pengaruh (r = ${item.payload.correlationR})`,
+                                    item.payload.kaihTitle,
+                                  ]}
+                                />
+                                <Line
+                                  type="monotone"
+                                  dataKey="impactPercentage"
+                                  name="Kontribusi (%)"
+                                  stroke="#d97706"
+                                  strokeWidth={3.5}
+                                  dot={{
+                                    r: 5,
+                                    fill: "#f59e0b",
+                                    stroke: "#ffffff",
+                                    strokeWidth: 2.5,
+                                  }}
+                                  activeDot={{
+                                    r: 8,
+                                    fill: "#b45309",
+                                    stroke: "#ffffff",
+                                    strokeWidth: 3,
+                                  }}
+                                />
+                              </LineChart>
+                            ) : (
+                              <BarChart
+                                data={analytics.confidenceAnalytics.kaihImpactScheme}
+                                margin={{ top: 10, right: 15, left: -10, bottom: 25 }}
+                              >
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                                <XAxis
+                                  dataKey="shortTitle"
+                                  tick={{ fontSize: 11, fill: "#475569" }}
+                                  angle={-15}
+                                  textAnchor="end"
+                                  interval={0}
+                                />
+                                <YAxis tick={{ fontSize: 11, fill: "#475569" }} unit="%" domain={[0, "auto"]} />
+                                <Tooltip
+                                  contentStyle={{
+                                    backgroundColor: "#0f172a",
+                                    border: "none",
+                                    borderRadius: "10px",
+                                    color: "#fff",
+                                    fontSize: "12px",
+                                    boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.3)",
+                                  }}
+                                  formatter={(value: any, _name: any, item: any) => [
+                                    `${value}% Pengaruh (r = ${item.payload.correlationR})`,
+                                    item.payload.kaihTitle,
+                                  ]}
+                                />
+                                <Bar dataKey="impactPercentage" radius={[6, 6, 0, 0]} name="Kontribusi (%)">
+                                  {analytics.confidenceAnalytics.kaihImpactScheme.map((_, index) => (
+                                    <Cell
+                                      key={`cell-impact-${index}`}
+                                      fill={CONFIDENCE_BAR_COLORS[index % CONFIDENCE_BAR_COLORS.length]}
+                                    />
+                                  ))}
+                                </Bar>
+                              </BarChart>
+                            )}
                           </ResponsiveContainer>
                         </div>
                       </CardContent>
