@@ -111,6 +111,7 @@ export async function DELETE(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
+    const name = searchParams.get("name") || undefined;
     const clearAll = searchParams.get("all") === "true";
 
     if (clearAll) {
@@ -128,7 +129,7 @@ export async function DELETE(request: Request) {
       );
     }
 
-    await deleteResponse(id);
+    await deleteResponse(id, name);
     return NextResponse.json({
       success: true,
       message: `Data respon ${id} berhasil dihapus.`,

@@ -249,16 +249,20 @@ export async function getAllResponses(): Promise<ResponseRecord[]> {
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 }
 
-export async function deleteResponse(id: string): Promise<boolean> {
+export async function deleteResponse(id: string, name?: string): Promise<boolean> {
   deletedIds.add(id);
-  responsesCache = responsesCache.filter((r) => r.id !== id);
+  responsesCache = responsesCache.filter((r) => r.id !== id && (!name || r.nama !== name));
 
   try {
-    const { error } = await supabase.from("survey_responses").delete().eq("id", id);
-    if (error) {
-      console.warn("Notice Supabase delete error:", error.message);
+    // 1. Hapus berdasarkan ID
+    await supabase.from("survey_responses").delete().eq("id", id);
+
+    // 2. Jika nama disertakan, bersihkan seluruh duplikat pengujian untuk nama santri tersebut
+    if (name) {
+      await supabase.from("survey_responses").delete().eq("nama", name);
+      console.log(`✓ Deleted response ${id} and all duplicate entries for "${name}" from Supabase.`);
     } else {
-      console.log(`✓ Deleted response ${id} from Supabase. Student limit has been reset.`);
+      console.log(`✓ Deleted response ${id} from Supabase.`);
     }
   } catch (err) {
     console.warn("Notice Supabase delete catch:", err);

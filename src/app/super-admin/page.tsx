@@ -167,51 +167,94 @@ function SuperAdminDashboard() {
     document.body.removeChild(link);
   };
 
-  // Handler Hapus 1 Respon
+  // Handler Hapus 1 Respon (Sekali Pencet Langsung Terhapus & Optimistic Update 0ms)
   const handleDeleteResponse = async (id: string, name: string) => {
-    if (
-      !confirm(
-        `Apakah Anda yakin ingin menghapus respon survei dari "${name}"?\n\nLimit pengisian santri ini akan otomatis direset, sehingga santri ini langsung dapat mengisi survei kembali.`
-      )
-    ) {
-      return;
+    // 1. Optimistic Update Seketika (0 ms): Langsung lenyapkan santri dari UI tanpa delay
+    setResponses((prev) => prev.filter((r) => r.id !== id && r.nama !== name));
+    if (analytics) {
+      setAnalytics((prev) => {
+        if (!prev) return prev;
+        const remainingStudents = prev.confidenceAnalytics.highConfidenceStudents.filter(
+          (s) => s.id !== id && s.nama !== name
+        );
+        return {
+          ...prev,
+          totalResponses: Math.max(0, prev.totalResponses - 1),
+          confidenceAnalytics: {
+            ...prev.confidenceAnalytics,
+            totalEvaluated: Math.max(0, prev.confidenceAnalytics.totalEvaluated - 1),
+            highConfidenceStudents: remainingStudents,
+            highConfidenceCount: remainingStudents.filter((s) => s.confidenceScore >= 2.75).length,
+          },
+        };
+      });
     }
+
+    // 2. Eksekusi request DELETE ke server di background (menghapus ID dan seluruh duplikat nama santri)
     try {
-      const res = await fetch(`/api/survey?id=${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/survey?id=${id}&name=${encodeURIComponent(name)}`, {
+        method: "DELETE",
+      });
       const json = await res.json();
       if (json.success) {
-        alert(`Respon santri "${name}" berhasil dihapus dari database. Limit pengisian santri tersebut telah otomatis direset dan siap mengisi survei kembali.`);
+        // Sinkronisasi data latar belakang tanpa popup alert yang mengganggu
         fetchResponses();
         fetchAnalytics();
-      } else {
-        alert(json.message || "Gagal menghapus data");
       }
     } catch {
-      alert("Gagal menghubungi server untuk menghapus data");
+      // Jika terjadi kesalahan koneksi, refresh data asli
+      fetchResponses();
+      fetchAnalytics();
     }
   };
 
-  // Handler Hapus / Reset Semua Respon
+  // Handler Hapus / Reset Semua Respon (Sekali Konfirmasi Langsung Bersih Seketika)
   const handleClearAll = async () => {
     if (
       !confirm(
-        "PERINGATAN KOSONGKAN SEMUA:\nApakah Anda yakin ingin MENGHAPUS SEMUA data respon survei?\n\nSeluruh basis data survei akan dibersihkan, dan limit kuota seluruh santri akan otomatis direset menjadi 0, sehingga seluruh santri langsung dapat mengisi survei kembali."
+        "Apakah Anda yakin ingin MENGOSONGKAN SELURUH data survei & leaderboard? Seluruh data santri akan dibersihkan dan limit pengisian akan otomatis direset."
       )
     ) {
       return;
     }
+
+    // Optimistic UI Update seketika: langsung kosongkan UI
+    setResponses([]);
+    if (analytics) {
+      setAnalytics((prev) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          totalResponses: 0,
+          averageScoreOverall: 0,
+          confidenceAnalytics: {
+            ...prev.confidenceAnalytics,
+            averageConfidenceScore: 0,
+            averageConfidencePercentage: 0,
+            totalEvaluated: 0,
+            highConfidenceCount: 0,
+            highConfidenceStudents: [],
+            categoryDistribution: [
+              { category: "Sangat Percaya Diri", count: 0, percentage: 0, color: "#15803d" },
+              { category: "Percaya Diri", count: 0, percentage: 0, color: "#10b981" },
+              { category: "Cukup Percaya Diri", count: 0, percentage: 0, color: "#f59e0b" },
+              { category: "Perlu Bimbingan", count: 0, percentage: 0, color: "#ef4444" },
+            ],
+          },
+        };
+      });
+    }
+
     try {
       const res = await fetch("/api/survey?all=true", { method: "DELETE" });
       const json = await res.json();
       if (json.success) {
-        alert("Semua data respon survei berhasil dikosongkan dari database! Seluruh limit santri telah otomatis direset dan dapat mengisi kembali.");
         fetchResponses();
         fetchAnalytics();
-      } else {
-        alert(json.message || "Gagal membersihkan data");
       }
     } catch {
-      alert("Gagal menghubungi server");
+      fetchResponses();
+      fetchAnalytics();
     }
   };
 
@@ -1098,14 +1141,18 @@ function SuperAdminDashboard() {
                               key={student.id}
                               className="relative overflow-hidden border-2 border-amber-200/90 bg-gradient-to-b from-white to-amber-50/30 p-5 shadow-xs rounded-xl transition-all duration-300 hover:border-amber-400 hover:shadow-[0_14px_30px_-6px_rgba(245,158,11,0.3),0_0_15px_1px_rgba(251,191,36,0.2)] hover:-translate-y-1.5 group"
                             >
-                              <div className="absolute top-0 right-0 flex items-center">
+                              <div className="absolute top-0 right-0 z-20 flex items-center">
                                 <button
                                   type="button"
-                                  onClick={() => handleDeleteResponse(student.id, student.nama)}
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    handleDeleteResponse(student.id, student.nama);
+                                  }}
                                   title={`Hapus ${student.nama} dari Leaderboard & Reset Limit`}
-                                  className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-bl-lg transition-colors cursor-pointer"
+                                  className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-bl-lg transition-all duration-200 cursor-pointer active:scale-90"
                                 >
-                                  <Trash2 className="h-3.5 w-3.5 text-red-500" />
+                                  <Trash2 className="h-4 w-4 text-red-500 hover:text-red-700" />
                                 </button>
                                 <div className="bg-gradient-to-l from-amber-400 to-amber-300 px-3 py-0.5 rounded-bl-lg font-mono text-[10px] font-black text-slate-950 shadow-xs">
                                   Rank #{idx + 1}
@@ -1419,11 +1466,15 @@ function SuperAdminDashboard() {
                                 <td className="px-4 py-3.5 text-center whitespace-nowrap">
                                   <button
                                     type="button"
-                                    onClick={() => handleDeleteResponse(item.id, item.nama)}
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      handleDeleteResponse(item.id, item.nama);
+                                    }}
                                     title={`Hapus respon ${item.nama}`}
-                                    className="inline-flex items-center justify-center p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
+                                    className="inline-flex items-center justify-center p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-all duration-200 cursor-pointer active:scale-90"
                                   >
-                                    <Trash2 className="h-4 w-4" />
+                                    <Trash2 className="h-4 w-4 text-red-500" />
                                   </button>
                                 </td>
                               </tr>
