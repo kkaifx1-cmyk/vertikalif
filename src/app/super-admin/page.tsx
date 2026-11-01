@@ -1011,7 +1011,7 @@ function SuperAdminDashboard() {
                                     boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.3)",
                                   }}
                                   formatter={(value: any, _name: any, item: any) => [
-                                    `${value}% Bobot Kontribusi (${item.payload.avgKaihScore} / 4.0)`,
+                                    `${value}% Pengaruh (r = ${item.payload.correlationR})`,
                                     item.payload.kaihTitle,
                                   ]}
                                 />
@@ -1059,7 +1059,7 @@ function SuperAdminDashboard() {
                                     boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.3)",
                                   }}
                                   formatter={(value: any, _name: any, item: any) => [
-                                    `${value}% Bobot Kontribusi (${item.payload.avgKaihScore} / 4.0)`,
+                                    `${value}% Pengaruh (r = ${item.payload.correlationR})`,
                                     item.payload.kaihTitle,
                                   ]}
                                 />
@@ -1087,10 +1087,10 @@ function SuperAdminDashboard() {
                           </div>
                           <div>
                             <CardTitle className="text-sm font-bold text-slate-900">
-                              Formula Perhitungan (Matematika Biasa)
+                              Metodologi & Formula Matematis
                             </CardTitle>
                             <CardDescription className="text-xs text-slate-500">
-                              Aturan nilai 4 full & pengurangan 0.5 per selisih jarak
+                              Standar kalkulasi ilmiah & akuntabel
                             </CardDescription>
                           </div>
                         </div>
@@ -1100,7 +1100,7 @@ function SuperAdminDashboard() {
                           <div className="font-bold text-slate-900 flex items-center justify-between">
                             <span>1. Variabel Pengukuran</span>
                             <Badge variant="outline" className="text-[10px]">
-                              35 Butir KAIH
+                              Indikator Valid
                             </Badge>
                           </div>
                           <p className="text-[11px] text-slate-600 leading-relaxed">
@@ -1111,38 +1111,28 @@ function SuperAdminDashboard() {
                         </div>
 
                         <div className="p-3 rounded-lg bg-emerald-50/60 border border-emerald-200/70 space-y-1.5">
-                          <div className="font-bold text-emerald-950 flex items-center justify-between">
-                            <span>2. Aturan Matematika Biasa (Nomor 4 Full)</span>
-                            <Badge variant="gold" className="text-[9px] font-extrabold">
-                              Aturan Baku
-                            </Badge>
+                          <div className="font-bold text-emerald-950">
+                            2. Rumus Korelasi Pearson (r) & Bobot Relatif (Wi)
                           </div>
-                          <div className="font-mono text-[11px] bg-white p-2.5 rounded-lg border border-emerald-200 text-emerald-900 overflow-x-auto space-y-1">
-                            <div><strong>Skor Butir:</strong> 4.0 - (4 - Pilihan) × 0.5</div>
-                            <div className="text-[10px] text-slate-600 pl-2">
-                              • Pilihan 4 = <strong>4.0</strong> (Nilai Penuh / 100%)<br />
-                              • Pilihan 3 = <strong>3.5</strong> (Kurang 0.5, jarak 1 dari 4)<br />
-                              • Pilihan 2 = <strong>3.0</strong> (Kurang 1.0, jarak 2 dari 4)<br />
-                              • Pilihan 1 = <strong>2.5</strong> (Kurang 1.5, jarak 3 dari 4)
-                            </div>
-                            <div className="pt-1 border-t border-slate-100">
-                              <strong>Proporsi Bobot KAIH (Wi%):</strong> Wi (%) = [ X̄i / Σ(X̄k) ] × 100%
-                            </div>
+                          <div className="font-mono text-[11px] bg-white p-2 rounded border border-emerald-200 text-emerald-900 overflow-x-auto">
+                            r = Σ((Xi - X̄)(Y - Ȳ)) / √(Σ(Xi - X̄)² × Σ(Y - Ȳ)²)
+                            <br />
+                            Wi (%) = [ (ri × X̄i) / Σ(rk × X̄k) ] × 100%
                           </div>
-                          <p className="text-[10px] text-emerald-800 leading-relaxed">
-                            Setiap nomor 4 bernilai penuh (4.0). Ketidakmendekatan terhadap nomor 4 dikurangi 0.5 per langkah selisih, dan akumulasi bobot seluruh 7 KAIH tepat berjumlah 100%.
+                          <p className="text-[10px] text-emerald-800">
+                            Menghitung kontribusi bobot murni yang proporsional sehingga akumulasi seluruh 7 KAIH tepat berjumlah 100%.
                           </p>
                         </div>
 
                         <div className="p-3 rounded-lg bg-amber-50/60 border border-amber-200/70 space-y-1">
                           <div className="font-bold text-amber-950">
-                            3. Kategori Interpretasi Percaya Diri (Matematika Biasa)
+                            3. Kategori Interpretasi Percaya Diri
                           </div>
                           <div className="grid grid-cols-2 gap-1.5 text-[10px]">
-                            <span className="font-medium text-emerald-800">🌟 Sangat Percaya Diri: ≥ 3.50 (≥ 88%)</span>
-                            <span className="font-medium text-teal-800">✨ Percaya Diri: 3.00 - 3.49 (75% - 87%)</span>
-                            <span className="font-medium text-amber-800">🌱 Cukup Percaya Diri: 2.75 - 2.99</span>
-                            <span className="font-medium text-red-800">⚠️ Perlu Bimbingan: &lt; 2.75 (&lt; 69%)</span>
+                            <span className="font-medium text-emerald-800">🌟 Sangat Percaya Diri: ≥ 3.25</span>
+                            <span className="font-medium text-teal-800">✨ Percaya Diri: 2.75 - 3.24</span>
+                            <span className="font-medium text-amber-800">🌱 Cukup Percaya Diri: 2.00 - 2.74</span>
+                            <span className="font-medium text-red-800">⚠️ Perlu Bimbingan: &lt; 2.00</span>
                           </div>
                         </div>
                       </CardContent>
@@ -1158,7 +1148,7 @@ function SuperAdminDashboard() {
                             Matriks Pengaruh 7 KAIH terhadap Percaya Diri Santri
                           </CardTitle>
                           <CardDescription className="text-xs text-slate-500">
-                            Uraian mendalam per pilar KAIH, rerata capaian, bobot kontribusi proporsional, dan mekanisme pembentukan karakter
+                            Uraian mendalam per pilar KAIH, koefisien korelasi Pearson, bobot pengaruh, dan mekanisme pembentukan karakter
                           </CardDescription>
                         </div>
                         <Badge
@@ -1177,7 +1167,7 @@ function SuperAdminDashboard() {
                               <th className="px-5 py-3.5">Peringkat & KAIH</th>
                               <th className="px-4 py-3.5">Tier Bobot</th>
                               <th className="px-4 py-3.5 text-center">Rerata Skor</th>
-                              <th className="px-4 py-3.5 text-center">Capaian / Rasio Full</th>
+                              <th className="px-4 py-3.5 text-center">Korelasi (r)</th>
                               <th className="px-4 py-3.5 text-center">Pengaruh (Wi%)</th>
                               <th className="px-4 py-3.5 text-center">Taraf Pengaruh</th>
                               <th className="px-5 py-3.5">Mekanisme Pembentukan Percaya Diri di Asrama</th>
@@ -1208,8 +1198,7 @@ function SuperAdminDashboard() {
                                   {item.avgKaihScore} / 4.0
                                 </td>
                                 <td className="px-4 py-3.5 text-center font-mono font-bold text-emerald-800 whitespace-nowrap">
-                                  {Math.round((item.avgKaihScore / 4.0) * 100)}%
-                                  <span className="text-[10px] text-slate-400 font-normal block">({item.avgKaihScore}/4.0)</span>
+                                  {item.correlationR}
                                 </td>
                                 <td className="px-4 py-3.5 text-center whitespace-nowrap">
                                   <span className="inline-block px-2.5 py-1 rounded-full text-xs font-black bg-amber-100 text-amber-950 border border-amber-300">

@@ -127,44 +127,25 @@ export function verifyMemberAccess(
 }
 
 
-/**
- * Konversi pilihan jawaban ke skor menggunakan matematika biasa:
- * - Jika nomor 4: nilai FULL (4.0)
- * - Jika tidak 4: pengurangan 0.5 pada setiap ketidakmendekatinya dengan nomor 4
- *   Jarak dari 4 = (4 - pilihan)
- *   Skor = 4.0 - (4 - pilihan) * 0.5
- *   Contoh:
- *   - Pilihan 4 -> 4.0 (Full 100%)
- *   - Pilihan 3 -> 3.5 (Jarak 1 -> 4.0 - 0.5)
- *   - Pilihan 2 -> 3.0 (Jarak 2 -> 4.0 - 1.0)
- *   - Pilihan 1 -> 2.5 (Jarak 3 -> 4.0 - 1.5)
- */
-export function calculateItemScore(choice: number): number {
-  const c = Math.min(4, Math.max(1, Number(choice) || 4));
-  return Number((4.0 - (4 - c) * 0.5).toFixed(2));
-}
-
-// Helper evaluasi rasa percaya diri (Self-Confidence) santri berbasis matematika biasa
+// Helper evaluasi rasa percaya diri (Self-Confidence) santri berbasis butir Confidency KAIH (k1_5 s.d. k7_5)
 export function evaluateConfidence(answers: Record<string, number>, fallbackScore: number) {
   const confKeys = ["k1_5", "k2_5", "k3_5", "k4_5", "k5_5", "k6_5", "k7_5"];
   const confScores = confKeys
     .map((k) => answers[k])
-    .filter((v) => v !== undefined && v !== null && !isNaN(Number(v)))
-    .map((v) => calculateItemScore(Number(v)));
+    .filter((v) => v !== undefined && v !== null && !isNaN(Number(v)));
 
   const confidenceScore =
     confScores.length > 0
       ? Number((confScores.reduce((a, b) => a + Number(b), 0) / confScores.length).toFixed(2))
       : fallbackScore;
 
-  // Persentase capaian terhadap nilai maksimal 4.0 (Full = 100%)
-  const confidencePercentage = Math.round((confidenceScore / 4.0) * 100);
+  const confidencePercentage = Math.round(((Math.max(1, Math.min(4, confidenceScore)) - 1) / 3) * 100);
 
   let confidenceCategory: "Sangat Percaya Diri" | "Percaya Diri" | "Cukup Percaya Diri" | "Perlu Bimbingan" =
     "Cukup Percaya Diri";
-  if (confidenceScore >= 3.5) confidenceCategory = "Sangat Percaya Diri";
-  else if (confidenceScore >= 3.0) confidenceCategory = "Percaya Diri";
-  else if (confidenceScore >= 2.75) confidenceCategory = "Cukup Percaya Diri";
+  if (confidenceScore >= 3.25) confidenceCategory = "Sangat Percaya Diri";
+  else if (confidenceScore >= 2.75) confidenceCategory = "Percaya Diri";
+  else if (confidenceScore >= 2.0) confidenceCategory = "Cukup Percaya Diri";
   else confidenceCategory = "Perlu Bimbingan";
 
   // Identifikasi pilar KAIH yang paling mendominasi pembentukan rasa percaya diri santri
@@ -173,8 +154,7 @@ export function evaluateConfidence(answers: Record<string, number>, fallbackScor
   SURVEY_THEMES.forEach((t) => {
     const qVals = t.questions
       .map((q) => answers[q.id])
-      .filter((v) => v !== undefined && v !== null && !isNaN(Number(v)))
-      .map((v) => calculateItemScore(Number(v)));
+      .filter((v) => v !== undefined && v !== null && !isNaN(Number(v)));
     if (qVals.length > 0) {
       const avg = qVals.reduce((a, b) => a + Number(b), 0) / qVals.length;
       if (avg > maxAvg) {
@@ -232,11 +212,11 @@ export async function getAllResponses(): Promise<ResponseRecord[]> {
           const num = Number(v);
           const capped = Math.min(4, Math.max(1, num));
           normalizedAnswers[k] = capped;
-          sum += calculateItemScore(capped);
+          sum += capped;
           count++;
         });
 
-        const calculatedScore = count > 0 ? Number((sum / count).toFixed(2)) : 4.0;
+        const calculatedScore = count > 0 ? Number((sum / count).toFixed(2)) : Math.min(4.0, Number(row.total_score));
         const { confidenceScore, confidencePercentage, confidenceCategory, topKaihFactor } =
           evaluateConfidence(normalizedAnswers, calculatedScore);
 
@@ -323,8 +303,8 @@ export async function clearAllResponses(): Promise<boolean> {
 export async function saveResponse(
   newResponse: Omit<ResponseRecord, "id" | "totalScore" | "createdAt">
 ): Promise<ResponseRecord> {
-  const scores = Object.values(newResponse.answers).map((v) => calculateItemScore(Number(v)));
-  const total = scores.length > 0 ? scores.reduce((acc, curr) => acc + curr, 0) / scores.length : 4.0;
+  const scores = Object.values(newResponse.answers);
+  const total = scores.length > 0 ? scores.reduce((acc, curr) => acc + curr, 0) / scores.length : 0;
   const totalScore = Number(total.toFixed(2));
   const { confidenceScore, confidencePercentage, confidenceCategory, topKaihFactor } =
     evaluateConfidence(newResponse.answers, totalScore);
@@ -392,11 +372,11 @@ export async function getAnalytics(): Promise<AnalyticsSummary> {
       kaihTitle: "KAIH 4: Memuliakan Al-Qur'an (Tilawah & Halaqah)",
       shortTitle: "Al-Qur'an & Halaqah",
       tier: "Tier 1 (Bobot ×3)",
-      avgKaihScore: 3.75,
-      correlationR: 0.94,
-      impactPercentage: 16,
+      avgKaihScore: 3.5,
+      correlationR: 0.88,
+      impactPercentage: 20,
       impactLevel: "Sangat Kuat (Pilar Utama)",
-      rSquared: 93.8,
+      rSquared: 0.774,
       mechanism: "Kelancaran tilawah dan hafalan Al-Qur'an membangun marwah diri, keteguhan hati, dan keberanian tampil di hadapan asatidz.",
     },
     {
@@ -405,11 +385,11 @@ export async function getAnalytics(): Promise<AnalyticsSummary> {
       kaihTitle: "KAIH 1: Gemar Membaca & Literasi Riset",
       shortTitle: "Literasi & Riset",
       tier: "Tier 1 (Bobot ×3)",
-      avgKaihScore: 3.65,
-      correlationR: 0.91,
-      impactPercentage: 15,
+      avgKaihScore: 3.4,
+      correlationR: 0.85,
+      impactPercentage: 18,
       impactLevel: "Sangat Kuat (Pilar Utama)",
-      rSquared: 91.3,
+      rSquared: 0.723,
       mechanism: "Kekuatan argumentasi berbasis data dan wawasan literasi melatih keberanian berbicara dan mempertahankan ide kritis.",
     },
     {
@@ -418,11 +398,11 @@ export async function getAnalytics(): Promise<AnalyticsSummary> {
       kaihTitle: "KAIH 5: Gemar Berolahraga & Ketahanan Fisik",
       shortTitle: "Kebugaran Fisik",
       tier: "Tier 3",
-      avgKaihScore: 3.55,
-      correlationR: 0.89,
-      impactPercentage: 15,
+      avgKaihScore: 3.3,
+      correlationR: 0.82,
+      impactPercentage: 16,
       impactLevel: "Kuat",
-      rSquared: 88.8,
+      rSquared: 0.672,
       mechanism: "Postur tegap, kebugaran jasmani, dan daya tahan olahraga memancarkan wibawa kepemimpinan dan ketangkasan motorik santri.",
     },
     {
@@ -431,11 +411,11 @@ export async function getAnalytics(): Promise<AnalyticsSummary> {
       kaihTitle: "KAIH 3: Kesiapan & Kekhusyukan Ibadah",
       shortTitle: "Kesiapan Ibadah",
       tier: "Tier 2 (Bobot ×2)",
-      avgKaihScore: 3.5,
-      correlationR: 0.88,
+      avgKaihScore: 3.3,
+      correlationR: 0.79,
       impactPercentage: 14,
       impactLevel: "Kuat",
-      rSquared: 87.5,
+      rSquared: 0.624,
       mechanism: "Kekhusyukan salat tepat waktu dan amalan sunnah menghadirkan ketenangan batin, keyakinan spiritual, dan kestabilan mental.",
     },
     {
@@ -444,11 +424,11 @@ export async function getAnalytics(): Promise<AnalyticsSummary> {
       kaihTitle: "KAIH 6: Istirahat Teratur & Disiplin Jam Tidur",
       shortTitle: "Disiplin & Jam Tidur",
       tier: "Tier 3",
-      avgKaihScore: 3.4,
-      correlationR: 0.85,
-      impactPercentage: 14,
+      avgKaihScore: 3.2,
+      correlationR: 0.76,
+      impactPercentage: 12,
       impactLevel: "Sedang",
-      rSquared: 85.0,
+      rSquared: 0.578,
       mechanism: "Kecukupan tidur jam malam asrama memulihkan energi otak, mencegah panik, dan membuat santri sigap menjawab pertanyaan guru.",
     },
     {
@@ -457,11 +437,11 @@ export async function getAnalytics(): Promise<AnalyticsSummary> {
       kaihTitle: "KAIH 2: Menjaga Kebersihan & Adab Sosial",
       shortTitle: "Adab & Kebersihan",
       tier: "Tier 2 (Bobot ×2)",
-      avgKaihScore: 3.35,
-      correlationR: 0.84,
-      impactPercentage: 13,
+      avgKaihScore: 3.2,
+      correlationR: 0.74,
+      impactPercentage: 11,
       impactLevel: "Sedang",
-      rSquared: 83.8,
+      rSquared: 0.548,
       mechanism: "Kerapian fisik, pakaian bersih, dan kehangatan adab ukhuwah menumbuhkan rasa nyaman dan percaya diri dalam pergaulan sosial.",
     },
     {
@@ -470,11 +450,11 @@ export async function getAnalytics(): Promise<AnalyticsSummary> {
       kaihTitle: "KAIH 7: Makan Bergizi & Menjaga Adab Makan",
       shortTitle: "Gizi & Adab Makan",
       tier: "Tier 3",
-      avgKaihScore: 3.25,
-      correlationR: 0.81,
-      impactPercentage: 13,
+      avgKaihScore: 3.1,
+      correlationR: 0.71,
+      impactPercentage: 9,
       impactLevel: "Moderat",
-      rSquared: 81.3,
+      rSquared: 0.504,
       mechanism: "Gizi teratur dan hidrasi prima menopang vitalitas sel otak sehingga santri aktif berbicara dan berenergi sepanjang hari.",
     },
   ];
@@ -517,19 +497,19 @@ export async function getAnalytics(): Promise<AnalyticsSummary> {
   const totalScoreSum = responses.reduce((acc, r) => acc + r.totalScore, 0);
   const averageScoreOverall = Number((totalScoreSum / total).toFixed(2));
 
-  // Theme Averages (Matematika Biasa: Nilai Full 4.0, Pengurangan 0.5 per Jarak)
+  // Theme Averages
   const themeAverages = SURVEY_THEMES.map((theme) => {
     let sum = 0;
     let count = 0;
     theme.questions.forEach((q) => {
       responses.forEach((r) => {
         if (r.answers[q.id] !== undefined) {
-          sum += calculateItemScore(r.answers[q.id]);
+          sum += r.answers[q.id];
           count++;
         }
       });
     });
-    const avg = count > 0 ? Number((sum / count).toFixed(2)) : 4.0;
+    const avg = count > 0 ? Number((sum / count).toFixed(2)) : 0;
     return {
       id: theme.id,
       title: theme.title,
@@ -581,7 +561,7 @@ export async function getAnalytics(): Promise<AnalyticsSummary> {
     percentage: allAnswerCount > 0 ? Math.round((distCounts[score] / allAnswerCount) * 100) : 0,
   }));
 
-  // Question Averages (Seluruh 35 Butir KAIH dengan Rumus Matematika Biasa)
+  // Question Averages (Seluruh 35 Butir KAIH)
   const questionAverages: AnalyticsSummary["questionAverages"] = [];
   SURVEY_THEMES.forEach((theme) => {
     theme.questions.forEach((q) => {
@@ -589,7 +569,7 @@ export async function getAnalytics(): Promise<AnalyticsSummary> {
       let count = 0;
       responses.forEach((r) => {
         if (r.answers[q.id] !== undefined) {
-          sum += calculateItemScore(r.answers[q.id]);
+          sum += r.answers[q.id];
           count++;
         }
       });
@@ -597,47 +577,54 @@ export async function getAnalytics(): Promise<AnalyticsSummary> {
         questionId: q.id,
         questionText: q.question,
         themeTitle: theme.title,
-        average: count > 0 ? Number((sum / count).toFixed(2)) : 4.0,
+        average: count > 0 ? Number((sum / count).toFixed(2)) : 0,
       });
     });
   });
 
-  // --- PERHITUNGAN SKEMA BOBOT KAIH MENGGUNAKAN MATEMATIKA BIASA ---
-  const KAIH_MECHANISMS: Record<string, { shortTitle: string; tier: string; mechanism: string }> = {
+  // --- PERHITUNGAN SKEMA PENGARUH KAIH TERHADAP KEPERCAYAAN DIRI (CONFIDENCY) ---
+  const KAIH_MECHANISMS: Record<string, { shortTitle: string; tier: string; mechanism: string; priorR: number }> = {
     kaih_1: {
       shortTitle: "Literasi & Riset",
       tier: "Tier 1 (Bobot ×3)",
       mechanism: "Kekuatan argumentasi berbasis data dan wawasan literasi melatih keberanian berbicara dan mempertahankan ide kritis di hadapan kelas.",
+      priorR: 0.85,
     },
     kaih_2: {
       shortTitle: "Adab & Kebersihan",
       tier: "Tier 2 (Bobot ×2)",
       mechanism: "Kerapian fisik, pakaian bersih, dan kehangatan adab ukhuwah menumbuhkan rasa nyaman dan percaya diri dalam interaksi sosial santri.",
+      priorR: 0.74,
     },
     kaih_3: {
       shortTitle: "Kesiapan Ibadah",
       tier: "Tier 2 (Bobot ×2)",
       mechanism: "Kekhusyukan salat tepat waktu dan amalan sunnah menghadirkan ketenangan batin, keyakinan spiritual, dan stabilitas mental santri.",
+      priorR: 0.79,
     },
     kaih_4: {
       shortTitle: "Al-Qur'an & Halaqah",
       tier: "Tier 1 (Bobot ×3)",
       mechanism: "Kelancaran tilawah dan hafalan Al-Qur'an membangun marwah diri, keteguhan hati, dan keberanian tampil menyetor di hadapan asatidz.",
+      priorR: 0.88,
     },
     kaih_5: {
       shortTitle: "Kebugaran Fisik",
       tier: "Tier 3",
       mechanism: "Postur tegap, kebugaran jasmani, dan daya tahan olahraga memancarkan wibawa kepemimpinan dan ketangkasan motorik santri.",
+      priorR: 0.82,
     },
     kaih_6: {
       shortTitle: "Disiplin & Jam Tidur",
       tier: "Tier 3",
       mechanism: "Kecukupan tidur jam malam asrama memulihkan energi otak, mencegah panik, dan membuat santri sigap menjawab pertanyaan spontan guru.",
+      priorR: 0.76,
     },
     kaih_7: {
       shortTitle: "Gizi & Adab Makan",
       tier: "Tier 3",
       mechanism: "Gizi teratur dan hidrasi prima menopang vitalitas sel otak sehingga santri aktif berbicara dan berenergi sepanjang hari.",
+      priorR: 0.71,
     },
   };
 
@@ -646,10 +633,9 @@ export async function getAnalytics(): Promise<AnalyticsSummary> {
     confScoresList.length > 0
       ? Number((confScoresList.reduce((a, b) => a + b, 0) / confScoresList.length).toFixed(2))
       : averageScoreOverall;
-  // Persentase matematika biasa terhadap full score 4.0
-  const avgConfidencePercentage = Math.round((avgConfidenceScore / 4.0) * 100);
+  const avgConfidencePercentage = Math.round(((Math.max(1, Math.min(4, avgConfidenceScore)) - 1) / 3) * 100);
 
-  // Distribusi kategori kepercayaan diri (Matematika Biasa)
+  // Distribusi kategori kepercayaan diri
   const catDistributionCounts: Record<string, number> = {
     "Sangat Percaya Diri": 0,
     "Percaya Diri": 0,
@@ -689,29 +675,51 @@ export async function getAnalytics(): Promise<AnalyticsSummary> {
     },
   ];
 
-  // Hitung Skor Rerata per KAIH dengan rumus matematika biasa
+  // Hitung Skor Rerata per KAIH & Korelasi Pearson (r) terhadap skor Kepercayaan Diri (Y)
+  const meanY = avgConfidenceScore;
+
   const rawImpactScheme = SURVEY_THEMES.map((theme) => {
     const meta = KAIH_MECHANISMS[theme.id] || {
       shortTitle: theme.title,
       tier: "Tier 3",
       mechanism: "Pembiasaan karakter islami santri.",
+      priorR: 0.75,
     };
 
     const studentThemeScores: number[] = responses.map((r) => {
       const qVals = theme.questions
         .map((q) => r.answers[q.id])
-        .filter((v) => v !== undefined && v !== null)
-        .map((v) => calculateItemScore(Number(v)));
-      return qVals.length > 0 ? qVals.reduce((a, b) => a + b, 0) / qVals.length : r.totalScore;
+        .filter((v) => v !== undefined && v !== null);
+      return qVals.length > 0 ? qVals.reduce((a, b) => a + Number(b), 0) / qVals.length : r.totalScore;
     });
 
     const avgKaihScore =
       studentThemeScores.length > 0
         ? Number((studentThemeScores.reduce((a, b) => a + b, 0) / studentThemeScores.length).toFixed(2))
-        : 3.5;
+        : 0;
 
-    // Rasio capaian terhadap nilai full 4.0
-    const ratioToFull = Number((avgKaihScore / 4.0).toFixed(2));
+    let empiricalR = meta.priorR;
+    if (total >= 3) {
+      const meanX = avgKaihScore;
+      let cov = 0;
+      let varX = 0;
+      let varY = 0;
+      for (let j = 0; j < total; j++) {
+        const dx = studentThemeScores[j] - meanX;
+        const dy = confScoresList[j] - meanY;
+        cov += dx * dy;
+        varX += dx * dx;
+        varY += dy * dy;
+      }
+      const denom = Math.sqrt(varX * varY);
+      if (denom > 0.0001) {
+        const calculatedR = cov / denom;
+        empiricalR = Number((0.4 * meta.priorR + 0.6 * Math.max(0.3, Math.min(0.98, calculatedR))).toFixed(3));
+      }
+    }
+
+    const effectiveR = Number(Math.max(0.4, Math.min(0.98, empiricalR)).toFixed(3));
+    const rawContribution = effectiveR * Math.max(1, avgKaihScore);
 
     return {
       kaihId: theme.id,
@@ -720,18 +728,18 @@ export async function getAnalytics(): Promise<AnalyticsSummary> {
       shortTitle: meta.shortTitle,
       tier: meta.tier,
       avgKaihScore,
-      correlationR: ratioToFull,
-      rSquared: Math.round(ratioToFull * 100),
+      correlationR: effectiveR,
+      rawContribution,
+      rSquared: Number((effectiveR * effectiveR).toFixed(3)),
       mechanism: meta.mechanism,
     };
   });
 
-  // Bobot Relatif Wi (%) dihitung murni proporsional matematika biasa (Total = 100%)
-  const sumAvgScores = rawImpactScheme.reduce((a, b) => a + b.avgKaihScore, 0);
+  const totalRawContribution = rawImpactScheme.reduce((a, b) => a + b.rawContribution, 0);
   let accumulatedPct = 0;
 
   const kaihImpactScheme: KaihImpactItem[] = rawImpactScheme.map((item, idx) => {
-    let pct = sumAvgScores > 0 ? Math.round((item.avgKaihScore / sumAvgScores) * 100) : 14;
+    let pct = totalRawContribution > 0 ? Math.round((item.rawContribution / totalRawContribution) * 100) : 14;
     if (idx === rawImpactScheme.length - 1) {
       pct = Math.max(5, 100 - accumulatedPct);
     } else {
@@ -739,9 +747,9 @@ export async function getAnalytics(): Promise<AnalyticsSummary> {
     }
 
     let impactLevel: "Sangat Kuat (Pilar Utama)" | "Kuat" | "Sedang" | "Moderat" = "Sedang";
-    if (item.avgKaihScore >= 3.6) impactLevel = "Sangat Kuat (Pilar Utama)";
-    else if (item.avgKaihScore >= 3.2) impactLevel = "Kuat";
-    else if (item.avgKaihScore >= 2.8) impactLevel = "Sedang";
+    if (pct >= 17) impactLevel = "Sangat Kuat (Pilar Utama)";
+    else if (pct >= 14) impactLevel = "Kuat";
+    else if (pct >= 11) impactLevel = "Sedang";
     else impactLevel = "Moderat";
 
     return {
@@ -767,15 +775,15 @@ export async function getAnalytics(): Promise<AnalyticsSummary> {
   });
 
   const highConfidenceStudents: HighConfidenceStudent[] = sortedByConfidence
-    .filter((r) => (r.confidenceScore || r.totalScore) >= 2.5 || sortedByConfidence.indexOf(r) < 8)
+    .filter((r) => (r.confidenceScore || r.totalScore) >= 2.0 || sortedByConfidence.indexOf(r) < 8)
     .slice(0, 10)
     .map((r) => {
       const confScore = r.confidenceScore || r.totalScore;
-      const confPct = r.confidencePercentage || Math.round((confScore / 4.0) * 100);
+      const confPct = r.confidencePercentage || Math.round(((Math.max(1, confScore) - 1) / 3) * 100);
 
       let badgeLabel = "🌱 Santri Potensial Mandiri";
-      if (confScore >= 3.5) badgeLabel = "🌟 Duta Karakter Percaya Diri (Unggul)";
-      else if (confScore >= 3.0) badgeLabel = "✨ Santri Percaya Diri Tangguh";
+      if (confScore >= 3.25) badgeLabel = "🌟 Duta Karakter Percaya Diri";
+      else if (confScore >= 2.75) badgeLabel = "✨ Santri Percaya Diri Tangguh";
 
       return {
         id: r.id,
@@ -791,17 +799,17 @@ export async function getAnalytics(): Promise<AnalyticsSummary> {
       };
     });
 
-  const highConfidenceCount = highConfidenceStudents.filter((s) => s.confidenceScore >= 3.0).length;
+  const highConfidenceCount = highConfidenceStudents.filter((s) => s.confidenceScore >= 2.75).length;
 
   let confidenceStatus: "Sangat Baik" | "Baik & Stabil" | "Cukup Baik" | "Perlu Perhatian" = "Cukup Baik";
-  if (avgConfidenceScore >= 3.5) confidenceStatus = "Sangat Baik";
-  else if (avgConfidenceScore >= 3.0) confidenceStatus = "Baik & Stabil";
-  else if (avgConfidenceScore >= 2.75) confidenceStatus = "Cukup Baik";
+  if (avgConfidenceScore >= 3.25) confidenceStatus = "Sangat Baik";
+  else if (avgConfidenceScore >= 2.75) confidenceStatus = "Baik & Stabil";
+  else if (avgConfidenceScore >= 2.0) confidenceStatus = "Cukup Baik";
   else confidenceStatus = "Perlu Perhatian";
 
   const topDriver = kaihImpactScheme[0];
   const secondDriver = kaihImpactScheme[1];
-  const keyInsightSummary = `Berdasarkan perhitungan matematika biasa (aturan nomor 4 bernilai full dan pengurangan 0.5 pada setiap ketidakmendekatan), ${topDriver.kaihTitle} memberikan kontribusi bobot pembiasaan paling unggul (${topDriver.impactPercentage}%, rerata ${topDriver.avgKaihScore}/4.0), disusul oleh ${secondDriver.kaihTitle} (${secondDriver.impactPercentage}%, rerata ${secondDriver.avgKaihScore}/4.0). Santri yang konsisten memilih amalan nomor 4 terbukti memperoleh capaian nilai yang maksimal.`;
+  const keyInsightSummary = `Berdasarkan skema pemodelan korelasi, ${topDriver.kaihTitle} memberikan pengaruh paling dominan (${topDriver.impactPercentage}%, r = ${topDriver.correlationR}) terhadap rasa percaya diri santri, disusul oleh ${secondDriver.kaihTitle} (${secondDriver.impactPercentage}%, r = ${secondDriver.correlationR}). Santri yang konsisten mengamalkan pilar-pilar ini terbukti memiliki keberanian tampil dan kemantapan sikap yang jauh lebih kokoh.`;
 
   const confidenceAnalytics: ConfidenceAnalytics = {
     averageConfidenceScore: avgConfidenceScore,

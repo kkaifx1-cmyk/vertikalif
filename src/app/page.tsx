@@ -269,7 +269,7 @@ function HomeInner() {
                       Evaluasi 7 Karakter Utama <span className="text-emerald-700">SMAIT Ihsanul Fikri</span> (7 KAIH)
                     </h1>
                     <p className="text-base text-slate-600 sm:text-lg leading-relaxed max-w-2xl">
-                      Platform instrumen refleksi mandiri santri untuk mengukur pembiasaan ibadah, literasi riset, adab ukhuwah bermasyarakat, dan kedisiplinan asrama dengan metode penilaian matematika murni yang transparan dan akuntabel.
+                      Platform instrumen refleksi mandiri santri untuk mengukur pembiasaan ibadah, literasi riset, adab ukhuwah bermasyarakat, dan kedisiplinan asrama dengan metode penilaian persentase dan skala Likert murni yang transparan dan akuntabel.
                     </p>
                   </div>
 
@@ -348,7 +348,7 @@ function HomeInner() {
                         </div>
                         <div className="flex items-center gap-2 text-slate-600">
                           <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
-                          <span>Formula Matematika Biasa: Nilai 4 Full (4.00) & Penalti -0.5</span>
+                          <span>Kalkulasi Persentase Capaian Murni (0% – 100%)</span>
                         </div>
                         <div className="flex items-center gap-2 text-slate-600">
                           <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
@@ -362,7 +362,7 @@ function HomeInner() {
             </div>
           </section>
 
-          {/* Section: Formula Matematika Biasa (Transparansi Penilaian) */}
+          {/* Section: Formula Penilaian Persentase & Standar Likert */}
           <section className="py-12 bg-white border-b border-slate-200/80">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
               <div className="rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-50/60 via-white to-amber-50/40 p-6 sm:p-8 shadow-xs">
@@ -370,36 +370,36 @@ function HomeInner() {
                   <div className="space-y-2 max-w-2xl">
                     <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-emerald-800">
                       <Calculator className="h-4 w-4 text-emerald-700" />
-                      <span>Transparansi Perhitungan Skor</span>
+                      <span>Transparansi Penilaian Berbasis Persentase</span>
                     </div>
                     <h3 className="text-xl font-extrabold text-slate-900">
-                      Sistem Perhitungan Matematika Biasa (Nilai 4 Full & Penalti -0.5)
+                      Sistem Penilaian Persentase & Standar Likert 1–4
                     </h3>
                     <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                      Skor setiap butir dinilai berdasarkan kedekatan dengan target kesempurnaan (Skala 4 = 4.00 penuh). Setiap penurunan 1 tingkat ketidaksesuaian diberikan pengurangan tepat 0.5 poin secara adil dan matematis.
+                      Setiap butir diukur dengan skala Likert 1 s.d. 4 murni dan dikonversi ke indeks persentase capaian secara ilmiah: % Capaian = ((Skor - 1) / 3) × 100%. Bobot pengaruh 7 KAIH dirancang proporsional sehingga akumulasinya tepat berjumlah 100%.
                     </p>
                   </div>
 
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 w-full md:w-auto shrink-0">
                     <div className="p-3 rounded-xl bg-white border border-emerald-300 shadow-2xs text-center">
                       <div className="text-[11px] font-bold text-slate-500">Skala 4 (SS)</div>
-                      <div className="text-lg font-black text-emerald-700">4.00</div>
-                      <div className="text-[10px] text-emerald-600 font-semibold">Full 100%</div>
+                      <div className="text-lg font-black text-emerald-700">100%</div>
+                      <div className="text-[10px] text-emerald-600 font-semibold">Skor 4.00</div>
                     </div>
                     <div className="p-3 rounded-xl bg-white border border-slate-200 shadow-2xs text-center">
                       <div className="text-[11px] font-bold text-slate-500">Skala 3 (S)</div>
-                      <div className="text-lg font-black text-slate-800">3.50</div>
-                      <div className="text-[10px] text-slate-500 font-semibold">-0.5 Poin</div>
+                      <div className="text-lg font-black text-slate-800">67%</div>
+                      <div className="text-[10px] text-slate-500 font-semibold">Skor 3.00</div>
                     </div>
                     <div className="p-3 rounded-xl bg-white border border-slate-200 shadow-2xs text-center">
                       <div className="text-[11px] font-bold text-slate-500">Skala 2 (KS)</div>
-                      <div className="text-lg font-black text-slate-800">3.00</div>
-                      <div className="text-[10px] text-slate-500 font-semibold">-1.0 Poin</div>
+                      <div className="text-lg font-black text-slate-800">33%</div>
+                      <div className="text-[10px] text-slate-500 font-semibold">Skor 2.00</div>
                     </div>
                     <div className="p-3 rounded-xl bg-white border border-slate-200 shadow-2xs text-center">
                       <div className="text-[11px] font-bold text-slate-500">Skala 1 (STS)</div>
-                      <div className="text-lg font-black text-rose-700">2.50</div>
-                      <div className="text-[10px] text-rose-600 font-semibold">-1.5 Poin</div>
+                      <div className="text-lg font-black text-rose-700">0%</div>
+                      <div className="text-[10px] text-rose-600 font-semibold">Skor 1.00</div>
                     </div>
                   </div>
                 </div>
