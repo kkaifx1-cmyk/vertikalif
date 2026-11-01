@@ -176,7 +176,11 @@ export async function getAllResponses(): Promise<ResponseRecord[]> {
       .select("*")
       .order("created_at", { ascending: false });
 
-    if (!error && data && data.length > 0) {
+    if (!error && Array.isArray(data)) {
+      if (data.length === 0) {
+        responsesCache = [];
+        return [];
+      }
       const mapped: ResponseRecord[] = [];
 
       for (const row of data) {
@@ -251,16 +255,19 @@ export async function getAllResponses(): Promise<ResponseRecord[]> {
 
 export async function deleteResponse(id: string, name?: string): Promise<boolean> {
   deletedIds.add(id);
-  responsesCache = responsesCache.filter((r) => r.id !== id && (!name || r.nama !== name));
+  const cleanName = (name || "").trim().toLowerCase();
+  responsesCache = responsesCache.filter(
+    (r) => r.id !== id && (!cleanName || r.nama.trim().toLowerCase() !== cleanName)
+  );
 
   try {
-    // 1. Hapus berdasarkan ID
+    // 1. Hapus berdasarkan ID dari database Supabase
     await supabase.from("survey_responses").delete().eq("id", id);
 
-    // 2. Jika nama disertakan, bersihkan seluruh duplikat pengujian untuk nama santri tersebut
-    if (name) {
-      await supabase.from("survey_responses").delete().eq("nama", name);
-      console.log(`✓ Deleted response ${id} and all duplicate entries for "${name}" from Supabase.`);
+    // 2. Jika nama disertakan, bersihkan seluruh entri untuk nama santri tersebut
+    if (name && name.trim()) {
+      await supabase.from("survey_responses").delete().ilike("nama", name.trim());
+      console.log(`✓ Deleted response ${id} and all entries for "${name}" from Supabase.`);
     } else {
       console.log(`✓ Deleted response ${id} from Supabase.`);
     }
@@ -273,25 +280,21 @@ export async function deleteResponse(id: string, name?: string): Promise<boolean
 
 export async function clearAllResponses(): Promise<boolean> {
   const current = await getAllResponses();
-  const idsToDelete = current.map((r) => r.id);
   current.forEach((r) => deletedIds.add(r.id));
   responsesCache = [];
 
   try {
-    if (idsToDelete.length > 0) {
-      const { error } = await supabase
-        .from("survey_responses")
-        .delete()
-        .in("id", idsToDelete);
+    // Hapus seluruh baris di Supabase secara bersih
+    const { error } = await supabase
+      .from("survey_responses")
+      .delete()
+      .gte("created_at", "1970-01-01");
 
-      if (error) {
-        console.warn("Notice Supabase clearAll error:", error.message);
-        await supabase.from("survey_responses").delete().neq("id", "");
-      } else {
-        console.log(`✓ Cleared ${idsToDelete.length} responses from Supabase. All student limits reset.`);
-      }
+    if (error) {
+      console.warn("Notice Supabase clearAll fallback:", error.message);
+      await supabase.from("survey_responses").delete().neq("id", "___NEVER___");
     } else {
-      await supabase.from("survey_responses").delete().neq("id", "");
+      console.log("✓ Cleared all responses from Supabase. All student limits reset.");
     }
   } catch (err) {
     console.warn("Notice Supabase clearAll catch:", err);
@@ -487,7 +490,19 @@ export async function getAnalytics(): Promise<AnalyticsSummary> {
           { category: "Cukup Percaya Diri", count: 0, percentage: 0, color: "#f59e0b" },
           { category: "Perlu Bimbingan", count: 0, percentage: 0, color: "#ef4444" },
         ],
-        kaihImpactScheme: defaultKaihImpactScheme,
+        kaihImpactScheme: SURVEY_THEMES.map((theme) => ({
+          kaihId: theme.id,
+          kaihNumber: theme.kaihNumber,
+          kaihTitle: `KAIH ${theme.kaihNumber}: ${theme.title}`,
+          shortTitle: theme.title.split(":")[0]?.trim() || `KAIH ${theme.kaihNumber}`,
+          tier: theme.tier || "Tier 3",
+          avgKaihScore: 0,
+          correlationR: 0,
+          impactPercentage: 0,
+          impactLevel: "Moderat" as const,
+          rSquared: 0,
+          mechanism: "Belum ada respon santri yang terekam dalam sistem.",
+        })),
         highConfidenceStudents: [],
         keyInsightSummary: "Belum ada respon santri yang terekam dalam sistem.",
       },

@@ -175,64 +175,27 @@ function SuperAdminDashboard() {
 
   // Handler Hapus 1 Respon (Sekali Pencet Langsung Terhapus & Optimistic Update 0ms)
   const handleDeleteResponse = async (id: string, name: string) => {
+    const cleanName = (name || "").trim().toLowerCase();
+
     // 1. Optimistic Update Seketika (0 ms): Langsung lenyapkan santri dari UI tanpa delay
-    setResponses((prev) => prev.filter((r) => r.id !== id && r.nama !== name));
-    if (analytics) {
-      setAnalytics((prev) => {
-        if (!prev) return prev;
-        const remainingStudents = prev.confidenceAnalytics.highConfidenceStudents.filter(
-          (s) => s.id !== id && s.nama !== name
-        );
-        return {
-          ...prev,
-          totalResponses: Math.max(0, prev.totalResponses - 1),
-          confidenceAnalytics: {
-            ...prev.confidenceAnalytics,
-            totalEvaluated: Math.max(0, prev.confidenceAnalytics.totalEvaluated - 1),
-            highConfidenceStudents: remainingStudents,
-            highConfidenceCount: remainingStudents.filter((s) => s.confidenceScore >= 2.75).length,
-          },
-        };
-      });
-    }
+    setResponses((prev) => prev.filter((r) => r.id !== id && r.nama.trim().toLowerCase() !== cleanName));
 
-    // 2. Eksekusi request DELETE ke server di background (menghapus ID dan seluruh duplikat nama santri)
-    try {
-      const res = await fetch(`/api/survey?id=${id}&name=${encodeURIComponent(name)}`, {
-        method: "DELETE",
-      });
-      const json = await res.json();
-      if (json.success) {
-        // Sinkronisasi data latar belakang tanpa popup alert yang mengganggu
-        fetchResponses();
-        fetchAnalytics();
-      }
-    } catch {
-      // Jika terjadi kesalahan koneksi, refresh data asli
-      fetchResponses();
-      fetchAnalytics();
-    }
-  };
+    setAnalytics((prev) => {
+      if (!prev) return prev;
+      const remainingStudents = prev.confidenceAnalytics.highConfidenceStudents.filter(
+        (s) => s.id !== id && s.nama.trim().toLowerCase() !== cleanName
+      );
+      const remainingTotal = Math.max(0, prev.totalResponses - 1);
 
-  // Handler Hapus / Reset Semua Respon (Sekali Konfirmasi Langsung Bersih Seketika)
-  const handleClearAll = async () => {
-    if (
-      !confirm(
-        "Apakah Anda yakin ingin MENGOSONGKAN SELURUH data survei & leaderboard? Seluruh data santri akan dibersihkan dan limit pengisian akan otomatis direset."
-      )
-    ) {
-      return;
-    }
-
-    // Optimistic UI Update seketika: langsung kosongkan UI
-    setResponses([]);
-    if (analytics) {
-      setAnalytics((prev) => {
-        if (!prev) return prev;
+      // Jika data habis (0 respon), otomatis diagram garis langsung menjadi 0 dan ter-reset seketika
+      if (remainingTotal === 0) {
         return {
           ...prev,
           totalResponses: 0,
           averageScoreOverall: 0,
+          highestTheme: { title: "-", score: 0 },
+          lowestTheme: { title: "-", score: 0 },
+          themeAverages: prev.themeAverages.map((t) => ({ ...t, average: 0 })),
           confidenceAnalytics: {
             ...prev.confidenceAnalytics,
             averageConfidenceScore: 0,
@@ -240,27 +203,105 @@ function SuperAdminDashboard() {
             totalEvaluated: 0,
             highConfidenceCount: 0,
             highConfidenceStudents: [],
-            categoryDistribution: [
-              { category: "Sangat Percaya Diri", count: 0, percentage: 0, color: "#15803d" },
-              { category: "Percaya Diri", count: 0, percentage: 0, color: "#10b981" },
-              { category: "Cukup Percaya Diri", count: 0, percentage: 0, color: "#f59e0b" },
-              { category: "Perlu Bimbingan", count: 0, percentage: 0, color: "#ef4444" },
-            ],
+            kaihImpactScheme: prev.confidenceAnalytics.kaihImpactScheme.map((k) => ({
+              ...k,
+              avgKaihScore: 0,
+              impactPercentage: 0,
+              correlationR: 0,
+              rSquared: 0,
+            })),
+            categoryDistribution: prev.confidenceAnalytics.categoryDistribution.map((c) => ({
+              ...c,
+              count: 0,
+              percentage: 0,
+            })),
           },
         };
+      }
+
+      return {
+        ...prev,
+        totalResponses: remainingTotal,
+        confidenceAnalytics: {
+          ...prev.confidenceAnalytics,
+          totalEvaluated: Math.max(0, prev.confidenceAnalytics.totalEvaluated - 1),
+          highConfidenceStudents: remainingStudents,
+          highConfidenceCount: remainingStudents.filter((s) => s.confidenceScore >= 2.75).length,
+        },
+      };
+    });
+
+    // 2. Eksekusi request DELETE ke server di background
+    try {
+      const res = await fetch(`/api/survey?id=${id}&name=${encodeURIComponent(name)}`, {
+        method: "DELETE",
       });
+      const json = await res.json();
+      if (json.success) {
+        await fetchResponses();
+        await fetchAnalytics();
+      }
+    } catch {
+      await fetchResponses();
+      await fetchAnalytics();
     }
+  };
+
+  // Handler Hapus / Reset Semua Respon (Sekali Konfirmasi Langsung Bersih Seketika & Diagram Garis Menjadi 0)
+  const handleClearAll = async () => {
+    if (
+      !confirm(
+        "Apakah Anda yakin ingin MENGOSONGKAN SELURUH data survei & leaderboard? Seluruh data santri akan dibersihkan, diagram otomatis direset ke 0, dan limit pengisian kembali utuh."
+      )
+    ) {
+      return;
+    }
+
+    // Optimistic UI Update seketika: langsung kosongkan seluruh respon, leaderboard, dan reset diagram garis ke 0
+    setResponses([]);
+    setAnalytics((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        totalResponses: 0,
+        averageScoreOverall: 0,
+        highestTheme: { title: "-", score: 0 },
+        lowestTheme: { title: "-", score: 0 },
+        themeAverages: prev.themeAverages.map((t) => ({ ...t, average: 0 })),
+        confidenceAnalytics: {
+          ...prev.confidenceAnalytics,
+          averageConfidenceScore: 0,
+          averageConfidencePercentage: 0,
+          totalEvaluated: 0,
+          highConfidenceCount: 0,
+          highConfidenceStudents: [],
+          kaihImpactScheme: prev.confidenceAnalytics.kaihImpactScheme.map((k) => ({
+            ...k,
+            avgKaihScore: 0,
+            impactPercentage: 0,
+            correlationR: 0,
+            rSquared: 0,
+          })),
+          categoryDistribution: [
+            { category: "Sangat Percaya Diri", count: 0, percentage: 0, color: "#15803d" },
+            { category: "Percaya Diri", count: 0, percentage: 0, color: "#10b981" },
+            { category: "Cukup Percaya Diri", count: 0, percentage: 0, color: "#f59e0b" },
+            { category: "Perlu Bimbingan", count: 0, percentage: 0, color: "#ef4444" },
+          ],
+        },
+      };
+    });
 
     try {
       const res = await fetch("/api/survey?all=true", { method: "DELETE" });
       const json = await res.json();
       if (json.success) {
-        fetchResponses();
-        fetchAnalytics();
+        await fetchResponses();
+        await fetchAnalytics();
       }
     } catch {
-      fetchResponses();
-      fetchAnalytics();
+      await fetchResponses();
+      await fetchAnalytics();
     }
   };
 
@@ -1000,7 +1041,7 @@ function SuperAdminDashboard() {
                                   textAnchor="end"
                                   interval={0}
                                 />
-                                <YAxis tick={{ fontSize: 11, fill: "#475569" }} unit="%" domain={[0, "auto"]} />
+                                <YAxis tick={{ fontSize: 11, fill: "#475569" }} unit="%" domain={[0, 30]} ticks={[0, 5, 10, 15, 20, 25, 30]} />
                                 <Tooltip
                                   contentStyle={{
                                     backgroundColor: "#0f172a",
