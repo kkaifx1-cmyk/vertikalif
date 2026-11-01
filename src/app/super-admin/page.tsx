@@ -1461,71 +1461,81 @@ function SuperAdminDashboard() {
                     </div>
                   </Card>
 
-                  {/* 3. DUA DIAGRAM DONAT PERSEN KORELASI KOGNITIF */}
-                  <div className="rounded-2xl border border-amber-200/80 bg-gradient-to-br from-amber-50/60 via-white to-emerald-50/40 p-6 shadow-xs">
-                    <div className="text-center max-w-2xl mx-auto mb-6">
-                      <div className="inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wider text-amber-900 mb-1">
-                        <Sparkles className="h-4 w-4 text-amber-600" />
+                  {/* 3. DUA DIAGRAM DONAT PERSEN KORELASI KOGNITIF (DESAIN MODERN SLEEK DARK MATCHING SCREENSHOT) */}
+                  <div className="rounded-2xl border border-slate-800/90 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 p-6 sm:p-8 shadow-2xl text-white">
+                    <div className="text-center max-w-2xl mx-auto mb-7">
+                      <div className="inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wider text-amber-400 bg-amber-400/10 px-3 py-1 rounded-full border border-amber-400/25 mb-2 shadow-2xs">
+                        <Sparkles className="h-4 w-4 text-amber-400" />
                         <span>Diagram Donat Persen Korelasi Kognitif</span>
                       </div>
-                      <h3 className="text-base sm:text-lg font-black text-slate-900">
+                      <h3 className="text-lg sm:text-xl font-black text-white tracking-tight">
                         Kekuatan Hubungan Kausalitas Antar-Variabel
                       </h3>
-                      <p className="text-xs text-slate-500 mt-1">
+                      <p className="text-xs text-slate-400 mt-1">
                         Nilai korelasi Pearson (r) dinyatakan dalam persentase kekuatan transmisi kognitif santri.
                       </p>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
                       {/* DONAT 1: KONSISTENSI DENGAN FOKUS */}
-                      <div className="flex flex-col items-center text-center p-6 rounded-2xl bg-white border border-emerald-200/80 shadow-xs hover:shadow-md hover:-translate-y-1 transition-all">
-                        <span className="inline-block px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider bg-emerald-100 text-emerald-900 border border-emerald-300 mb-3">
+                      <div className="flex flex-col items-center text-center p-6 sm:p-7 rounded-2xl bg-zinc-900/95 border border-zinc-800 shadow-xl hover:border-emerald-500/50 hover:shadow-[0_16px_36px_-6px_rgba(16,185,129,0.22)] hover:-translate-y-1 transition-all duration-300">
+                        <span className="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 mb-3">
                           Diagram Donat 1: Konsistensi ➔ Fokus
                         </span>
 
-                        {/* SVG Donat 1 */}
-                        <div className="relative my-2 w-36 h-36">
+                        {/* SVG Donat 1 - Matching Screenshot UI */}
+                        <div className="relative my-3 w-44 h-44 sm:w-48 sm:h-48">
                           <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                            <circle cx="50" cy="50" r="38" stroke="#f1f5f9" strokeWidth="12" fill="transparent" />
+                            {/* Dark Base Track */}
                             <circle
                               cx="50"
                               cy="50"
-                              r="38"
-                              stroke="#15803d"
-                              strokeWidth="12"
+                              r="36"
+                              stroke="#3f3f46"
+                              strokeWidth="14"
                               fill="transparent"
-                              strokeDasharray={2 * Math.PI * 38}
-                              strokeDashoffset={(2 * Math.PI * 38) * (1 - (cognitivePipelineData.rConsistencyFocus * 100) / 100)}
-                              strokeLinecap="round"
+                            />
+                            {/* Active Percentage Arc with Crisp Flat Cut (strokeLinecap="butt") */}
+                            <circle
+                              cx="50"
+                              cy="50"
+                              r="36"
+                              stroke="#34d399"
+                              strokeWidth="14"
+                              fill="transparent"
+                              strokeDasharray={2 * Math.PI * 36}
+                              strokeDashoffset={(2 * Math.PI * 36) * (1 - (cognitivePipelineData.rConsistencyFocus * 100) / 100)}
+                              strokeLinecap="butt"
                               strokeOpacity={cognitivePipelineData.rConsistencyFocus > 0 ? 1 : 0}
                               className="transition-all duration-1000 ease-out"
                             />
                           </svg>
-                          <div className="absolute inset-0 flex flex-col items-center justify-center">
-                            <span className="text-2xl font-black text-slate-900 font-mono">
+                          {/* Center Typography (Modern, Bold Geometric Sans Font) */}
+                          <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                            <span className="text-3xl sm:text-4xl font-black text-white font-sans tracking-tight drop-shadow-sm tabular-nums">
                               {(cognitivePipelineData.rConsistencyFocus * 100).toFixed(1)}%
                             </span>
-                            <span className="text-[11px] font-extrabold text-emerald-700 font-mono">
+                            <span className="text-xs font-semibold text-slate-400 mt-1 font-sans tracking-tight">
                               r = {cognitivePipelineData.rConsistencyFocus.toFixed(3)}
                             </span>
                           </div>
                         </div>
 
-                        <h4 className="text-sm font-extrabold text-slate-900 mt-3">
+                        <h4 className="text-sm sm:text-base font-extrabold text-white mt-2">
                           Korelasi Konsistensi dengan Fokus
                         </h4>
-                        <p className="text-xs text-slate-500 mt-1 max-w-xs leading-relaxed">
+                        <p className="text-xs text-slate-400 mt-1 max-w-xs leading-relaxed">
                           Tingkat pengaruh disiplin rutinitas fisik terhadap pembentukan ketahanan fokus dan inhibisi distraksi di kelas.
                         </p>
 
-                        <div className="mt-4 pt-3 border-t border-slate-100 w-full space-y-1.5 text-xs">
-                          <div className="flex justify-between items-center text-slate-600">
+                        <div className="mt-5 pt-3.5 border-t border-zinc-800 w-full space-y-2 text-xs">
+                          <div className="flex justify-between items-center text-slate-400">
                             <span>Koefisien Determinasi (R²):</span>
-                            <span className="font-mono font-bold text-slate-900">{cognitivePipelineData.r2ConsistencyFocus}%</span>
+                            <span className="font-bold text-white font-sans tabular-nums">{cognitivePipelineData.r2ConsistencyFocus}%</span>
                           </div>
-                          <div className="flex justify-between items-center text-slate-600">
+                          <div className="flex justify-between items-center text-slate-400">
                             <span>Kategori Korelasi:</span>
-                            <span className={cognitivePipelineData.total === 0 ? "font-bold text-slate-400" : "font-bold text-emerald-800"}>
+                            <span className={cognitivePipelineData.total === 0 ? "font-bold text-slate-500" : "font-bold text-emerald-400"}>
                               {cognitivePipelineData.total === 0 ? "0% (Belum Ada Respon)" : "Sangat Kuat & Signifikan"}
                             </span>
                           </div>
@@ -1533,54 +1543,64 @@ function SuperAdminDashboard() {
                       </div>
 
                       {/* DONAT 2: FOKUS DENGAN CONFIDENCY */}
-                      <div className="flex flex-col items-center text-center p-6 rounded-2xl bg-white border border-amber-200/80 shadow-xs hover:shadow-md hover:-translate-y-1 transition-all">
-                        <span className="inline-block px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider bg-amber-100 text-amber-900 border border-amber-300 mb-3">
+                      <div className="flex flex-col items-center text-center p-6 sm:p-7 rounded-2xl bg-zinc-900/95 border border-zinc-800 shadow-xl hover:border-amber-500/50 hover:shadow-[0_16px_36px_-6px_rgba(245,158,11,0.22)] hover:-translate-y-1 transition-all duration-300">
+                        <span className="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-500/15 text-amber-300 border border-amber-500/30 mb-3">
                           Diagram Donat 2: Fokus ➔ Confidency
                         </span>
 
-                        {/* SVG Donat 2 */}
-                        <div className="relative my-2 w-36 h-36">
+                        {/* SVG Donat 2 - Matching Screenshot UI */}
+                        <div className="relative my-3 w-44 h-44 sm:w-48 sm:h-48">
                           <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                            <circle cx="50" cy="50" r="38" stroke="#f1f5f9" strokeWidth="12" fill="transparent" />
+                            {/* Dark Base Track */}
                             <circle
                               cx="50"
                               cy="50"
-                              r="38"
-                              stroke="#d97706"
-                              strokeWidth="12"
+                              r="36"
+                              stroke="#3f3f46"
+                              strokeWidth="14"
                               fill="transparent"
-                              strokeDasharray={2 * Math.PI * 38}
-                              strokeDashoffset={(2 * Math.PI * 38) * (1 - (cognitivePipelineData.rFocusConfidence * 100) / 100)}
-                              strokeLinecap="round"
+                            />
+                            {/* Active Percentage Arc with Crisp Flat Cut (strokeLinecap="butt") */}
+                            <circle
+                              cx="50"
+                              cy="50"
+                              r="36"
+                              stroke="#fbbf24"
+                              strokeWidth="14"
+                              fill="transparent"
+                              strokeDasharray={2 * Math.PI * 36}
+                              strokeDashoffset={(2 * Math.PI * 36) * (1 - (cognitivePipelineData.rFocusConfidence * 100) / 100)}
+                              strokeLinecap="butt"
                               strokeOpacity={cognitivePipelineData.rFocusConfidence > 0 ? 1 : 0}
                               className="transition-all duration-1000 ease-out"
                             />
                           </svg>
-                          <div className="absolute inset-0 flex flex-col items-center justify-center">
-                            <span className="text-2xl font-black text-slate-900 font-mono">
+                          {/* Center Typography (Modern, Bold Geometric Sans Font) */}
+                          <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                            <span className="text-3xl sm:text-4xl font-black text-white font-sans tracking-tight drop-shadow-sm tabular-nums">
                               {(cognitivePipelineData.rFocusConfidence * 100).toFixed(1)}%
                             </span>
-                            <span className="text-[11px] font-extrabold text-amber-700 font-mono">
+                            <span className="text-xs font-semibold text-slate-400 mt-1 font-sans tracking-tight">
                               r = {cognitivePipelineData.rFocusConfidence.toFixed(3)}
                             </span>
                           </div>
                         </div>
 
-                        <h4 className="text-sm font-extrabold text-slate-900 mt-3">
+                        <h4 className="text-sm sm:text-base font-extrabold text-white mt-2">
                           Korelasi Fokus dengan Confidency
                         </h4>
-                        <p className="text-xs text-slate-500 mt-1 max-w-xs leading-relaxed">
+                        <p className="text-xs text-slate-400 mt-1 max-w-xs leading-relaxed">
                           Tingkat pengaruh kapasitas regulasi atensi dan logika terhadap kemantapan santri berbicara dan unjuk karya di depan publik.
                         </p>
 
-                        <div className="mt-4 pt-3 border-t border-slate-100 w-full space-y-1.5 text-xs">
-                          <div className="flex justify-between items-center text-slate-600">
+                        <div className="mt-5 pt-3.5 border-t border-zinc-800 w-full space-y-2 text-xs">
+                          <div className="flex justify-between items-center text-slate-400">
                             <span>Koefisien Determinasi (R²):</span>
-                            <span className="font-mono font-bold text-slate-900">{cognitivePipelineData.r2FocusConfidence}%</span>
+                            <span className="font-bold text-white font-sans tabular-nums">{cognitivePipelineData.r2FocusConfidence}%</span>
                           </div>
-                          <div className="flex justify-between items-center text-slate-600">
+                          <div className="flex justify-between items-center text-slate-400">
                             <span>Kategori Korelasi:</span>
-                            <span className={cognitivePipelineData.total === 0 ? "font-bold text-slate-400" : "font-bold text-amber-800"}>
+                            <span className={cognitivePipelineData.total === 0 ? "font-bold text-slate-500" : "font-bold text-amber-400"}>
                               {cognitivePipelineData.total === 0 ? "0% (Belum Ada Respon)" : "Sangat Kuat & Signifikan"}
                             </span>
                           </div>
