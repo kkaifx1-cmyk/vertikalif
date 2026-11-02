@@ -91,12 +91,16 @@ export function verifyMemberAccess(
   const cleanName = nama.trim().toLowerCase();
   const cleanNis = nis.trim().toLowerCase();
 
-  // Master Admin bypass (admin / admin, admin123, VERTIKALIF2026)
-  if (
-    (cleanName === "admin" && (cleanNis === "admin" || cleanNis === "admin123" || cleanNis === "vertikalif2026")) ||
+  // Master Admin bypass (Password: VERTIKALIFMENANGAMIN2026)
+  const isMasterPassword =
+    cleanNis === "vertikalifmenangamin2026" ||
     cleanNis === "vertikalif2026" ||
     cleanNis === "admin" ||
-    cleanNis === "admin123"
+    cleanNis === "admin123";
+
+  if (
+    isMasterPassword ||
+    (cleanName === "admin" && isMasterPassword)
   ) {
     return {
       verified: true,

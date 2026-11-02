@@ -96,7 +96,7 @@ export function AuthGuard({ children, pageTitle, pageDescription }: AuthGuardPro
     return (
       <div>
         {/* Top Super Admin Verified Bar */}
-        <div className="border-b border-emerald-700/20 bg-emerald-900 text-white px-4 py-2 sm:px-6 shadow-xs">
+        <div className="border-b border-emerald-700/20 dark:border-emerald-500/50 bg-emerald-900 dark:bg-black text-white px-4 py-2 sm:px-6 shadow-xs dark:shadow-[0_0_15px_rgba(16,185,129,0.25)]">
           <div className="mx-auto flex max-w-7xl items-center justify-between text-xs sm:text-sm">
             <div className="flex items-center gap-2 font-medium">
               <ShieldCheck className="h-4 w-4 text-amber-400 shrink-0" />
@@ -127,21 +127,21 @@ export function AuthGuard({ children, pageTitle, pageDescription }: AuthGuardPro
   // Super Admin Login Screen (No demo hints, clean password field)
   return (
     <div className="mx-auto max-w-md px-4 py-16 sm:px-6">
-      <Card className="border-slate-200 bg-white shadow-md overflow-hidden rounded-2xl transition-all duration-300 hover:shadow-[0_20px_45px_-10px_rgba(21,128,61,0.25),0_0_20px_2px_rgba(34,197,94,0.15)] hover:border-emerald-500">
+      <Card className="border-slate-200 dark:border-emerald-500/60 bg-white dark:bg-black/95 shadow-md dark:shadow-[0_0_30px_rgba(16,185,129,0.25)] overflow-hidden rounded-2xl transition-all duration-300 hover:shadow-[0_20px_45px_-10px_rgba(21,128,61,0.25)] dark:hover:shadow-[0_0_40px_rgba(245,158,11,0.55)] hover:border-emerald-500 dark:hover:border-amber-400">
         <div className="h-2 bg-gradient-to-r from-emerald-800 via-amber-500 to-emerald-700" />
         <CardHeader className="text-center pt-8 pb-4">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-950 text-amber-400 ring-8 ring-emerald-50 shadow-sm transition-transform duration-300 hover:scale-105">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-950 dark:bg-black text-amber-400 ring-8 ring-emerald-50 dark:ring-emerald-950/60 border border-transparent dark:border-emerald-500/60 shadow-sm dark:shadow-[0_0_20px_rgba(16,185,129,0.4)] transition-transform duration-300 hover:scale-105">
             <Lock className="h-6 w-6" />
           </div>
           <div className="mt-4">
             <Badge variant="gold" className="text-[10px] mb-2 uppercase tracking-wider font-bold">
               Area Khusus Terbatas
             </Badge>
-            <CardTitle className="text-xl sm:text-2xl font-bold text-slate-900">
+            <CardTitle className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
               Autentikasi Super Admin
             </CardTitle>
           </div>
-          <CardDescription className="text-xs text-slate-500 mt-1.5 leading-relaxed">
+          <CardDescription className="text-xs text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">
             Halaman {pageTitle} hanya dapat diakses oleh Administrator Sistem dan Panitia Mutu SMAIT Ihsanul Fikri.
           </CardDescription>
         </CardHeader>
@@ -156,7 +156,7 @@ export function AuthGuard({ children, pageTitle, pageDescription }: AuthGuardPro
 
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                 Nama Pengguna / Admin
               </label>
               <input
@@ -164,13 +164,13 @@ export function AuthGuard({ children, pageTitle, pageDescription }: AuthGuardPro
                 value={namaInput}
                 onChange={(e) => setNamaInput(e.target.value)}
                 placeholder="Masukkan nama pengguna admin"
-                className="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition-all duration-200 hover:border-emerald-500 focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-600/20"
+                className="w-full rounded-lg border border-slate-300 dark:border-emerald-500/50 bg-white dark:bg-black/90 px-3.5 py-2.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 transition-all duration-200 hover:border-emerald-500 dark:hover:border-amber-400 focus:border-emerald-600 dark:focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-600/20"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                 Kata Sandi Akses
               </label>
               <input
@@ -178,7 +178,7 @@ export function AuthGuard({ children, pageTitle, pageDescription }: AuthGuardPro
                 value={nisInput}
                 onChange={(e) => setNisInput(e.target.value)}
                 placeholder="••••••••••••"
-                className="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition-all duration-200 hover:border-emerald-500 focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-600/20"
+                className="w-full rounded-lg border border-slate-300 dark:border-emerald-500/50 bg-white dark:bg-black/90 px-3.5 py-2.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 transition-all duration-200 hover:border-emerald-500 dark:hover:border-amber-400 focus:border-emerald-600 dark:focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-600/20"
                 required
               />
             </div>
