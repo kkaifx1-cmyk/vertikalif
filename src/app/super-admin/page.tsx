@@ -35,6 +35,10 @@ import {
   Info,
   CheckCircle2,
   Zap,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
   ArrowUpRight,
   ArrowRight,
   ArrowDown,
@@ -630,6 +634,26 @@ function SuperAdminDashboard() {
       return matchesSearch && matchesClass && matchesGender && matchesConfidence;
     });
   }, [extendedStudents, searchQuery, selectedClass, selectedGender, selectedConfidenceCategory]);
+
+  // Pagination State (20 Santri per Halaman)
+  const ITEMS_PER_PAGE = 20;
+  const [currentPage, setCurrentPage] = useState<number>(1);
+
+  // Reset ke halaman 1 saat filter, pencarian, atau sesi berubah
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, selectedClass, selectedGender, selectedConfidenceCategory, selectedSessionId]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredStudents.length / ITEMS_PER_PAGE));
+  const safePage = Math.min(currentPage, totalPages);
+
+  const paginatedStudents = useMemo(() => {
+    const startIndex = (safePage - 1) * ITEMS_PER_PAGE;
+    return filteredStudents.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  }, [filteredStudents, safePage]);
+
+  const startItem = filteredStudents.length > 0 ? (safePage - 1) * ITEMS_PER_PAGE + 1 : 0;
+  const endItem = Math.min(safePage * ITEMS_PER_PAGE, filteredStudents.length);
 
   // Export to CSV Function
   const exportToCSV = () => {
@@ -2507,7 +2531,7 @@ function SuperAdminDashboard() {
                       Filter &amp; Pencarian Data Santri
                     </h3>
                     <p className="text-xs text-slate-500">
-                      Menampilkan {filteredStudents.length} dari total {activeResponses.length} data santri terverifikasi (${activeSession.name})
+                      Menampilkan {startItem}–{endItem} dari total {filteredStudents.length} data santri ({activeSession.name}) • Halaman {safePage} dari {totalPages}
                     </p>
                   </div>
 
@@ -2630,7 +2654,7 @@ function SuperAdminDashboard() {
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100 text-slate-700">
-                          {filteredStudents.map((item) => {
+                          {paginatedStudents.map((item) => {
                             const isIkhwan = item.jenisKelamin !== "Akhwat";
 
                             return (
@@ -2757,6 +2781,107 @@ function SuperAdminDashboard() {
                       </table>
                     </div>
                   )}
+
+                    {/* Pagination Controls Bar (20 Santri per Halaman) */}
+                    <div className="p-4 border-t border-slate-200 dark:border-emerald-500/30 bg-slate-50/70 dark:bg-black/95 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+                      {/* Left: Info */}
+                      <div className="text-slate-600 dark:text-slate-400 font-medium text-center sm:text-left">
+                        Menampilkan <strong className="text-slate-900 dark:text-emerald-400 font-mono">{startItem}–{endItem}</strong> dari total{" "}
+                        <strong className="text-slate-900 dark:text-white font-mono">{filteredStudents.length}</strong> santri
+                        <span className="text-slate-400 dark:text-slate-500 ml-1.5">(20 data per halaman)</span>
+                      </div>
+
+                      {/* Right: Page Buttons */}
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => setCurrentPage(1)}
+                          disabled={safePage <= 1}
+                          title="Halaman Pertama"
+                          className="px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-emerald-500/40 bg-white dark:bg-black text-slate-700 dark:text-slate-300 hover:border-emerald-500 dark:hover:border-amber-400 hover:text-emerald-700 dark:hover:text-amber-400 disabled:opacity-35 disabled:cursor-not-allowed transition-all shadow-2xs cursor-pointer active:scale-95"
+                        >
+                          <ChevronsLeft className="h-3.5 w-3.5" />
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                          disabled={safePage <= 1}
+                          title="Halaman Sebelumnya"
+                          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-emerald-500/40 bg-white dark:bg-black text-slate-700 dark:text-slate-300 hover:border-emerald-500 dark:hover:border-amber-400 hover:text-emerald-700 dark:hover:text-amber-400 disabled:opacity-35 disabled:cursor-not-allowed transition-all shadow-2xs cursor-pointer active:scale-95 font-bold"
+                        >
+                          <ChevronLeft className="h-3.5 w-3.5" />
+                          <span className="hidden sm:inline">Sebelumnya</span>
+                        </button>
+
+                        {/* Page Numbers */}
+                        <div className="flex items-center gap-1">
+                          {(() => {
+                            const pages: (number | string)[] = [];
+                            if (totalPages <= 7) {
+                              for (let i = 1; i <= totalPages; i++) pages.push(i);
+                            } else {
+                              pages.push(1);
+                              if (safePage > 3) pages.push("...");
+                              const start = Math.max(2, safePage - 1);
+                              const end = Math.min(totalPages - 1, safePage + 1);
+                              for (let i = start; i <= end; i++) {
+                                if (!pages.includes(i)) pages.push(i);
+                              }
+                              if (safePage < totalPages - 2) pages.push("...");
+                              pages.push(totalPages);
+                            }
+
+                            return pages.map((p, idx) => {
+                              if (p === "...") {
+                                return (
+                                  <span key={`ellipsis-${idx}`} className="px-2 py-1 text-slate-400 font-mono">
+                                    …
+                                  </span>
+                                );
+                              }
+                              const pageNum = p as number;
+                              const isActive = pageNum === safePage;
+                              return (
+                                <button
+                                  key={pageNum}
+                                  type="button"
+                                  onClick={() => setCurrentPage(pageNum)}
+                                  className={`h-8 w-8 rounded-lg font-mono text-xs font-black transition-all cursor-pointer ${
+                                    isActive
+                                      ? "bg-gradient-to-r from-emerald-600 to-emerald-800 text-white shadow-md ring-2 ring-emerald-400 scale-105"
+                                      : "border border-slate-200 dark:border-emerald-500/30 bg-white dark:bg-black text-slate-700 dark:text-slate-300 hover:border-emerald-400 hover:text-emerald-800 dark:hover:text-amber-400"
+                                  }`}
+                                >
+                                  {pageNum}
+                                </button>
+                              );
+                            });
+                          })()}
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                          disabled={safePage >= totalPages}
+                          title="Halaman Berikutnya"
+                          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-emerald-500/40 bg-white dark:bg-black text-slate-700 dark:text-slate-300 hover:border-emerald-500 dark:hover:border-amber-400 hover:text-emerald-700 dark:hover:text-amber-400 disabled:opacity-35 disabled:cursor-not-allowed transition-all shadow-2xs cursor-pointer active:scale-95 font-bold"
+                        >
+                          <span className="hidden sm:inline">Berikutnya</span>
+                          <ChevronRight className="h-3.5 w-3.5" />
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => setCurrentPage(totalPages)}
+                          disabled={safePage >= totalPages}
+                          title="Halaman Terakhir"
+                          className="px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-emerald-500/40 bg-white dark:bg-black text-slate-700 dark:text-slate-300 hover:border-emerald-500 dark:hover:border-amber-400 hover:text-emerald-700 dark:hover:text-amber-400 disabled:opacity-35 disabled:cursor-not-allowed transition-all shadow-2xs cursor-pointer active:scale-95"
+                        >
+                          <ChevronsRight className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                    </div>
                 </CardContent>
               </Card>
             </div>
