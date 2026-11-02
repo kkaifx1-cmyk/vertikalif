@@ -1,14 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { CheckCircle2, Heart, ShieldCheck } from "lucide-react";
 
 export function Footer() {
   return (
     <footer className="border-t border-slate-200 dark:border-emerald-500/40 bg-white/90 dark:bg-black/95 backdrop-blur-xs text-slate-600 dark:text-slate-400 transition-colors duration-300">
       <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 items-start">
           {/* Brand Info */}
           <div className="space-y-3">
             <div className="flex items-center gap-3">
@@ -25,47 +24,13 @@ export function Footer() {
                 <p className="text-xs text-emerald-700 dark:text-emerald-400 font-medium">Kabupaten Magelang, Jawa Tengah</p>
               </div>
             </div>
-            <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+            <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed max-w-lg">
               Platform instrumen refleksi mandiri evaluasi 7 Karakter Utama Ihsanul Fikri (7 KAIH) untuk mengukur pembiasaan ibadah, literasi riset, adab ukhuwah, dan kedisiplinan santri berbasis data objektif dan terukur.
             </p>
           </div>
 
-          {/* Quick Links */}
-          <div className="space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white">
-              Navigasi Platform
-            </h4>
-            <ul className="space-y-2 text-xs">
-              <li>
-                <Link href="/?tab=beranda" className="hover:text-emerald-700 dark:hover:text-amber-400 transition-colors">
-                  Beranda &amp; Visi Sekolah
-                </Link>
-              </li>
-              <li>
-                <Link href="/?tab=kaih" className="hover:text-emerald-700 dark:hover:text-amber-400 transition-colors">
-                  7 Karakter Utama (KAIH 1 s.d. 7)
-                </Link>
-              </li>
-              <li>
-                <Link href="/?tab=profil" className="hover:text-emerald-700 dark:hover:text-amber-400 transition-colors">
-                  Profil Tim Pembuat &amp; Pembimbing
-                </Link>
-              </li>
-              <li>
-                <Link href="/analisis" className="hover:text-emerald-700 dark:hover:text-amber-400 transition-colors">
-                  Portal Analitik &amp; Visualisasi
-                </Link>
-              </li>
-              <li>
-                <Link href="/super-admin" className="hover:text-emerald-700 dark:hover:text-amber-400 transition-colors">
-                  Portal Super Admin (Restricted)
-                </Link>
-              </li>
-            </ul>
-          </div>
-
           {/* Core Values & Security */}
-          <div className="space-y-3">
+          <div className="space-y-3 md:pl-8">
             <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white">
               Integritas &amp; Kerahasiaan
             </h4>
