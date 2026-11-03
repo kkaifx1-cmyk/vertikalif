@@ -12,6 +12,8 @@ export interface ResponseRecord {
   confidencePercentage?: number; // Persentase Kepercayaan Diri (0 - 100%)
   confidenceCategory?: "Sangat Percaya Diri" | "Percaya Diri" | "Cukup Percaya Diri" | "Perlu Bimbingan";
   topKaihFactor?: string; // Pilar KAIH terkuat yang membentuk kepercayaan diri
+  focusScore?: number; // Skor Kefokusan & Pembiasaan 28 Butir (1.00 - 4.00)
+  rawConfidenceScore?: number; // Skor Unjuk Diri 7 Butir Soal 5 (1.00 - 4.00)
   createdAt: string;
   answers: Record<string, number>; // questionId -> score (1-4)
   feedback?: string;
@@ -131,18 +133,36 @@ export function verifyMemberAccess(
 }
 
 
-// Helper evaluasi rasa percaya diri (Self-Confidence) santri berbasis butir Confidency KAIH (k1_5 s.d. k7_5)
+// Helper evaluasi rasa percaya diri (Self-Confidence) santri berbasis Metode 2 (Sintesis Terpadu 50% Fokus + 50% Unjuk Diri)
 export function evaluateConfidence(answers: Record<string, number>, fallbackScore: number) {
-  const confKeys = ["k1_5", "k2_5", "k3_5", "k4_5", "k5_5", "k6_5", "k7_5"];
-  const confScores = confKeys
+  // 1. Ambil 28 Butir Fokus & Pembiasaan KAIH (Butir 1, 2, 3, 4 dari seluruh 7 KAIH)
+  const focusKeys: string[] = [];
+  for (let k = 1; k <= 7; k++) {
+    for (let b = 1; b <= 4; b++) {
+      focusKeys.push(`k${k}_${b}`);
+    }
+  }
+  const focusScores = focusKeys
     .map((k) => answers[k])
     .filter((v) => v !== undefined && v !== null && !isNaN(Number(v)));
-
-  const confidenceScore =
-    confScores.length > 0
-      ? Number((confScores.reduce((a, b) => a + Number(b), 0) / confScores.length).toFixed(2))
+  const avgFocus =
+    focusScores.length > 0
+      ? focusScores.reduce((a, b) => a + Number(b), 0) / focusScores.length
       : fallbackScore;
 
+  // 2. Ambil 7 Butir Unjuk Diri Nyata (Butir 5 dari seluruh 7 KAIH)
+  const confKeys = ["k1_5", "k2_5", "k3_5", "k4_5", "k5_5", "k6_5", "k7_5"];
+  const rawConfScores = confKeys
+    .map((k) => answers[k])
+    .filter((v) => v !== undefined && v !== null && !isNaN(Number(v)));
+  const avgRawConf =
+    rawConfScores.length > 0
+      ? rawConfScores.reduce((a, b) => a + Number(b), 0) / rawConfScores.length
+      : fallbackScore;
+
+  // 3. METODE 2: Sintesis Terpadu 50% Fokus Belajar + 50% Keberanian Tampil
+  // Memastikan bahwa percaya diri sejati harus berakar pada fokus dan pemahaman (anti-membual)
+  const confidenceScore = Number((0.5 * avgFocus + 0.5 * avgRawConf).toFixed(2));
   const confidencePercentage = Math.round(((Math.max(1, Math.min(4, confidenceScore)) - 1) / 3) * 100);
 
   let confidenceCategory: "Sangat Percaya Diri" | "Percaya Diri" | "Cukup Percaya Diri" | "Perlu Bimbingan" =
@@ -168,7 +188,14 @@ export function evaluateConfidence(answers: Record<string, number>, fallbackScor
     }
   });
 
-  return { confidenceScore, confidencePercentage, confidenceCategory, topKaihFactor };
+  return {
+    confidenceScore,
+    confidencePercentage,
+    confidenceCategory,
+    topKaihFactor,
+    focusScore: Number(avgFocus.toFixed(2)),
+    rawConfidenceScore: Number(avgRawConf.toFixed(2)),
+  };
 }
 
 let responsesCache: ResponseRecord[] = [];
@@ -225,7 +252,7 @@ export async function getAllResponses(): Promise<ResponseRecord[]> {
         });
 
         const calculatedScore = count > 0 ? Number((sum / count).toFixed(2)) : Math.min(4.0, Number(row.total_score));
-        const { confidenceScore, confidencePercentage, confidenceCategory, topKaihFactor } =
+        const { confidenceScore, confidencePercentage, confidenceCategory, topKaihFactor, focusScore, rawConfidenceScore } =
           evaluateConfidence(normalizedAnswers, calculatedScore);
 
         mapped.push({
@@ -239,6 +266,8 @@ export async function getAllResponses(): Promise<ResponseRecord[]> {
           confidencePercentage,
           confidenceCategory,
           topKaihFactor,
+          focusScore,
+          rawConfidenceScore,
           createdAt: row.created_at,
           answers: normalizedAnswers,
           feedback: row.feedback || "",
@@ -313,7 +342,7 @@ export async function saveResponse(
   const scores = Object.values(newResponse.answers);
   const total = scores.length > 0 ? scores.reduce((acc, curr) => acc + curr, 0) / scores.length : 0;
   const totalScore = Number(total.toFixed(2));
-  const { confidenceScore, confidencePercentage, confidenceCategory, topKaihFactor } =
+  const { confidenceScore, confidencePercentage, confidenceCategory, topKaihFactor, focusScore, rawConfidenceScore } =
     evaluateConfidence(newResponse.answers, totalScore);
 
   const record: ResponseRecord = {
@@ -324,6 +353,8 @@ export async function saveResponse(
     confidencePercentage,
     confidenceCategory,
     topKaihFactor,
+    focusScore,
+    rawConfidenceScore,
     createdAt: new Date().toISOString(),
   };
 
@@ -704,8 +735,10 @@ export function computeAnalyticsFromResponses(responses: ResponseRecord[]): Anal
       priorR: 0.75,
     };
 
+    // Murni 4 butir fokus & pembiasaan KAIH (Butir 1, 2, 3, 4 - Butir 5 dikeluarkan agar bebas autokorelasi)
+    const focusQuestions = theme.questions.filter((q) => q.butirNum !== 5 && !q.id.endsWith("_5"));
     const studentThemeScores: number[] = responses.map((r) => {
-      const qVals = theme.questions
+      const qVals = focusQuestions
         .map((q) => r.answers[q.id])
         .filter((v) => v !== undefined && v !== null);
       return qVals.length > 0 ? qVals.reduce((a, b) => a + Number(b), 0) / qVals.length : r.totalScore;
@@ -717,7 +750,7 @@ export function computeAnalyticsFromResponses(responses: ResponseRecord[]): Anal
         : 0;
 
     let empiricalR = meta.priorR;
-    if (total >= 3) {
+    if (total >= 2) {
       const meanX = avgKaihScore;
       let cov = 0;
       let varX = 0;
@@ -732,11 +765,12 @@ export function computeAnalyticsFromResponses(responses: ResponseRecord[]): Anal
       const denom = Math.sqrt(varX * varY);
       if (denom > 0.0001) {
         const calculatedR = cov / denom;
-        empiricalR = Number((0.4 * meta.priorR + 0.6 * Math.max(0.3, Math.min(0.98, calculatedR))).toFixed(3));
+        // Korelasi Pearson murni 100% data empiris santri
+        empiricalR = Number(Math.max(0.0, Math.min(0.99, calculatedR)).toFixed(3));
       }
     }
 
-    const effectiveR = Number(Math.max(0.4, Math.min(0.98, empiricalR)).toFixed(3));
+    const effectiveR = empiricalR;
     const rawContribution = effectiveR * Math.max(1, avgKaihScore);
 
     return {

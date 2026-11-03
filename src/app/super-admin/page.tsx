@@ -314,7 +314,11 @@ function SuperAdminDashboard() {
           itemConfCnt[i - 1]++;
         }
       }
-      cList.push(cCnt > 0 ? cSum / cCnt : r.confidenceScore || r.totalScore || 3.0);
+      // METODE 2: Confidency Sejati santri dikalibrasi adil (50% Fokus + 50% Butir 5 Unjuk Diri)
+      const rawC = cCnt > 0 ? cSum / cCnt : 3.0;
+      const studentF = fCnt > 0 ? fSum / fCnt : 3.0;
+      const synthC = r.confidenceScore !== undefined ? r.confidenceScore : Number((0.5 * studentF + 0.5 * rawC).toFixed(2));
+      cList.push(synthC);
     });
 
     const avgK = kList.length > 0 ? kList.reduce((a, b) => a + b, 0) / kList.length : 0;
@@ -2487,7 +2491,7 @@ function SuperAdminDashboard() {
                           1. Pemetaan 35 Butir
                         </span>
                         <p className="text-[11px] text-slate-500 leading-relaxed">
-                          Butir #1 memetakan <strong>Konsistensi Aksi</strong> (IK), Butir #2, #3, #4 memetakan <strong>Fokus Belajar</strong> (IF), dan Butir #5 memetakan <strong>Confidency</strong> (IC).
+                          Butir #1 memetakan <strong>Konsistensi Aksi</strong> (IK), Butir #2, #3, #4 memetakan <strong>Fokus Belajar</strong> (IF), dan Butir #5 memetakan <strong>Unjuk Diri</strong>. Skor Confidency Akhir dikalibrasi adil (50% Fokus + 50% Unjuk Diri).
                         </p>
                       </div>
 
