@@ -19,16 +19,12 @@ import {
   Moon,
   Apple,
   Award,
-  Crown,
   ChevronRight,
   Home,
 } from "lucide-react";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { WHITELIST_MEMBERS } from "@/lib/survey-data";
-
-const ubayMember = WHITELIST_MEMBERS.find((m) => m.nama.toLowerCase().includes("ubay"));
-const otherMembers = WHITELIST_MEMBERS.filter((m) => !m.nama.toLowerCase().includes("ubay"));
 
 type TabKey = "beranda" | "kaih" | "profil";
 
@@ -583,100 +579,21 @@ function HomeInner() {
               </p>
             </div>
 
-            {/* SPOTLIGHT CARD KOTAKAN UTAMA TOKOH KUNCI: MUHAMMAD GUS UBAY IZZULHAQ */}
-            {ubayMember && (
-              <div className="mb-14 flex justify-center">
-                <div className="group relative w-full max-w-2xl rounded-3xl border-2 border-amber-400/90 dark:border-amber-400 bg-white/95 dark:bg-black/95 backdrop-blur-md p-6 sm:p-10 shadow-[0_20px_50px_-10px_rgba(245,158,11,0.35),0_0_30px_rgba(245,158,11,0.25)] hover:shadow-[0_25px_60px_-10px_rgba(245,158,11,0.5),0_0_45px_rgba(245,158,11,0.4)] transition-all duration-300 hover:-translate-y-1.5 cursor-default overflow-hidden">
-                  {/* Efek Pendaran Cahaya Emas & Zamrud Ambient */}
-                  <div className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 w-96 h-96 bg-amber-500/15 dark:bg-amber-400/20 rounded-full blur-3xl -z-10" />
-                  <div className="pointer-events-none absolute -bottom-24 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-2xl -z-10" />
-
-                  {/* Header Badge Tokoh Kunci */}
-                  <div className="flex flex-col items-center text-center">
-                    <div className="inline-flex items-center gap-2 rounded-full border border-amber-400/90 bg-amber-500/15 dark:bg-amber-400/15 px-4 py-1.5 text-xs font-extrabold text-amber-700 dark:text-amber-300 shadow-[0_0_20px_rgba(245,158,11,0.3)] mb-5">
-                      <Crown className="h-4 w-4 text-amber-500 dark:text-amber-400 animate-pulse" />
-                      <span className="tracking-wide uppercase text-[11px]">Tokoh Kunci Inovasi &amp; AI Analytics Lead</span>
-                    </div>
-
-                    {/* Pas Foto Formal 3x4 Centered dengan Frame Emas Berkilau & Tetap Proporsional */}
-                    <div className="relative w-full max-w-md sm:max-w-lg aspect-[4/3] shrink-0 overflow-hidden rounded-2xl sm:rounded-3xl border-2 border-amber-400 dark:border-amber-400 bg-slate-900 shadow-[0_12px_40px_rgba(245,158,11,0.45)] ring-4 ring-amber-400/30 group-hover:ring-amber-400/60 mb-6 transition-all duration-300">
-                      <Image
-                        src={ubayMember.avatar}
-                        alt={ubayMember.nama}
-                        fill
-                        priority
-                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 448px, 512px"
-                        className={`object-cover ${ubayMember.avatarPosition || "object-center"}`}
-                      />
-                    </div>
-
-                    {/* Nama Tokoh Kunci & Metadata */}
-                    <div className="space-y-2 max-w-lg w-full">
-                      <h2 className="text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-slate-900 dark:text-white group-hover:dark:text-amber-300 transition-colors">
-                        {ubayMember.nama}
-                      </h2>
-
-                      <div className="flex flex-wrap items-center justify-center gap-2">
-                        <Badge variant="gold" className="text-xs px-3.5 py-1 font-bold shadow-xs">
-                          <Sparkles className="h-3.5 w-3.5 mr-1 text-amber-600 dark:text-amber-300" />
-                          {ubayMember.peran}
-                        </Badge>
-                        <span className="inline-flex items-center rounded-full border border-emerald-500/50 bg-emerald-500/10 px-3 py-0.5 text-xs font-semibold text-emerald-800 dark:text-emerald-300 font-mono">
-                          NIS: {ubayMember.nis} • Kelas {ubayMember.kelas}
-                        </span>
-                      </div>
-
-                      {/* Bio Lengkap & Quote Pernyataan */}
-                      <div className="pt-4 border-t border-amber-400/30 dark:border-amber-400/25 mt-3">
-                        <p className="text-sm sm:text-base text-slate-700 dark:text-slate-200 leading-relaxed font-medium">
-                          &ldquo;{ubayMember.bio}&rdquo;
-                        </p>
-                      </div>
-
-                      {/* Tag Keunggulan & Kontribusi Utama */}
-                      <div className="pt-3 flex flex-wrap justify-center gap-2 text-[11px] font-semibold text-slate-600 dark:text-slate-400">
-                        <span className="px-2.5 py-1 rounded-lg bg-emerald-500/10 dark:bg-emerald-950/50 border border-emerald-500/30 text-emerald-800 dark:text-emerald-300">
-                          ⚡ Gemini AI Reasoning Engine
-                        </span>
-                        <span className="px-2.5 py-1 rounded-lg bg-amber-500/10 dark:bg-amber-950/50 border border-amber-500/30 text-amber-800 dark:text-amber-300">
-                          🎯 Causal Chain (7 KAIH ➔ Fokus ➔ Confidency)
-                        </span>
-                        <span className="px-2.5 py-1 rounded-lg bg-emerald-500/10 dark:bg-emerald-950/50 border border-emerald-500/30 text-emerald-800 dark:text-emerald-300">
-                          📈 Formula Korelasi &amp; Rekomendasi Mutu
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Subheader Tim Pengembang & Dewan Pembimbing */}
-            <div className="text-center max-w-2xl mx-auto mb-8">
-              <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-emerald-800 dark:text-emerald-400 mb-1">
-                <Users className="h-3.5 w-3.5" />
-                <span>Kolaborasi Tim Pengembang &amp; Guru Pembimbing</span>
-              </div>
-              <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white">
-                Sinergi Tim Pengembang &amp; Dewan Pembimbing
-              </h3>
-            </div>
-
-            {/* Anggota Lainnya Grid: 6 orang tersusun rapi (3 kolom di desktop, 2 di tablet, 1 di mobile) */}
+            {/* Members Grid: Hitam Pekat, Outline Hijau Default, Berubah Emas saat Kursor Hover */}
             <div className="flex flex-wrap justify-center gap-6">
-              {otherMembers.map((member) => (
+              {WHITELIST_MEMBERS.map((member) => (
                 <div
                   key={member.nis}
-                  className="group w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] max-w-sm rounded-2xl border border-slate-200/90 dark:border-emerald-500/60 bg-white/95 dark:bg-black/95 backdrop-blur-xs flex flex-col justify-between transition-all duration-300 hover:-translate-y-2 hover:border-emerald-500 dark:hover:border-amber-400 hover:shadow-[0_16px_32px_-8px_rgba(21,128,61,0.28)] dark:shadow-[0_0_20px_rgba(16,185,129,0.2)] dark:hover:shadow-[0_0_35px_rgba(245,158,11,0.55),0_0_15px_rgba(251,191,36,0.35)] cursor-default"
+                  className="group w-full sm:w-[calc(50%-12px)] lg:w-[calc(25%-18px)] max-w-sm rounded-2xl border border-slate-200/90 dark:border-emerald-500/60 bg-white/95 dark:bg-black/95 backdrop-blur-xs flex flex-col justify-between transition-all duration-300 hover:-translate-y-2 hover:border-emerald-500 dark:hover:border-amber-400 hover:shadow-[0_16px_32px_-8px_rgba(21,128,61,0.28)] dark:shadow-[0_0_20px_rgba(16,185,129,0.2)] dark:hover:shadow-[0_0_35px_rgba(245,158,11,0.55),0_0_15px_rgba(251,191,36,0.35)] cursor-default"
                 >
                   <div className="pt-6 pb-2 text-center flex flex-col items-center">
                     {/* Pas Foto Formal 3x4 dengan Frame Hijau -> Berubah Emas saat Hover */}
-                    <div className="relative w-28 h-36 shrink-0 overflow-hidden rounded-xl border-2 border-emerald-600 dark:border-emerald-500 group-hover:dark:border-amber-400 bg-slate-100 dark:bg-black shadow-md dark:shadow-[0_0_18px_rgba(16,185,129,0.4)] group-hover:dark:shadow-[0_0_25px_rgba(245,158,11,0.65)] mb-3.5 transition-all duration-300">
+                    <div className="relative w-24 h-32 shrink-0 overflow-hidden rounded-xl border-2 border-emerald-600 dark:border-emerald-500 group-hover:dark:border-amber-400 bg-slate-100 dark:bg-black shadow-md dark:shadow-[0_0_18px_rgba(16,185,129,0.4)] group-hover:dark:shadow-[0_0_25px_rgba(245,158,11,0.65)] mb-3.5 transition-all duration-300">
                       <Image
                         src={member.avatar}
                         alt={member.nama}
                         fill
-                        sizes="(max-width: 640px) 112px, 144px"
+                        sizes="(max-width: 640px) 96px, 128px"
                         className={`object-cover ${member.avatarPosition || "object-top"}`}
                       />
                     </div>
