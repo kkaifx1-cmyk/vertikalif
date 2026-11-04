@@ -185,78 +185,7 @@ function HomeInner() {
 
   return (
     <div className="flex flex-col min-h-screen bg-transparent text-slate-900 dark:text-white transition-colors duration-300">
-      {/* ========================================================================= */}
-      {/* TAB NAVIGATION SWITCHER BAR WITH INTEGRATED THEME TOGGLE (PITCH BLACK)     */}
-      {/* ========================================================================= */}
-      <div className="sticky top-16 z-40 border-b border-emerald-500/30 dark:border-emerald-500/50 bg-white/90 dark:bg-black/95 backdrop-blur-xl shadow-[0_10px_30px_-5px_rgba(16,185,129,0.18),0_4px_12px_rgba(0,0,0,0.04)] dark:shadow-[0_10px_35px_-5px_rgba(0,0,0,0.9),0_0_20px_rgba(16,185,129,0.2)] transition-colors duration-300">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-3">
-          {/* Posisi Ketiga Tombol Tepat di Tengah Halaman */}
-          <div className="flex items-center justify-center">
-            {/* Dock Capsule: Pas kursor menjauh hanya tampil logonya, pas kursor mendekat muncul ketiga tombol lengkap dengan cahaya timbulnya */}
-            <nav
-              aria-label="Navigasi Menu Utama"
-              className="group relative inline-flex items-center gap-1 sm:gap-2 p-1.5 sm:p-2 bg-slate-100/95 dark:bg-black/95 backdrop-blur-md rounded-2xl border-2 border-emerald-400/60 dark:border-emerald-500/60 shadow-[0_6px_25px_rgba(16,185,129,0.22),inset_0_2px_4px_rgba(0,0,0,0.06)] dark:shadow-[0_0_25px_rgba(16,185,129,0.35),inset_0_2px_6px_rgba(0,0,0,0.8)] hover:border-emerald-500 dark:hover:border-amber-400 hover:shadow-[0_14px_35px_rgba(16,185,129,0.45),0_0_25px_rgba(34,197,94,0.35)] dark:hover:shadow-[0_0_40px_rgba(245,158,11,0.55),0_0_20px_rgba(16,185,129,0.4)] transition-all duration-500 ease-out cursor-pointer"
-            >
-              {/* Efek Pendaran Cahaya Timbul Halus di Balik Navigasi */}
-              <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-emerald-500 via-amber-400 to-emerald-600 opacity-0 group-hover:opacity-35 blur-md transition-opacity duration-500 -z-10" />
-
-              {/* 1. Tombol Beranda */}
-              <button
-                type="button"
-                onClick={() => switchTab("beranda")}
-                title="Beranda & Visi Sekolah"
-                className={`relative inline-flex items-center justify-center px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold transition-all duration-300 cursor-pointer whitespace-nowrap active:scale-95 group-hover:px-4 sm:group-hover:px-5.5 ${
-                  activeTab === "beranda"
-                    ? "bg-gradient-to-r from-emerald-700 via-emerald-800 to-emerald-900 text-white shadow-[0_8px_25px_rgba(16,185,129,0.55)] dark:shadow-[0_0_25px_rgba(16,185,129,0.8),0_0_12px_rgba(34,197,94,0.6)] ring-2 ring-emerald-400 -translate-y-0.5"
-                    : "text-slate-700 dark:text-slate-300 hover:text-emerald-950 dark:hover:text-amber-300 hover:bg-white dark:hover:bg-emerald-950/40 hover:shadow-[0_4px_16px_rgba(16,185,129,0.25)] dark:hover:shadow-[0_0_18px_rgba(245,158,11,0.4)] hover:ring-1 hover:ring-emerald-400/60 dark:hover:ring-amber-400/60"
-                }`}
-              >
-                <Home className="h-4 w-4 shrink-0 transition-transform duration-300 group-hover:scale-110" />
-                <span className="max-w-0 opacity-0 overflow-hidden group-hover:max-w-xs group-hover:opacity-100 group-hover:ml-2 transition-all duration-400 ease-out font-bold">
-                  Beranda
-                </span>
-              </button>
-
-              {/* 2. Tombol 7 Karakter KAIH */}
-              <button
-                type="button"
-                onClick={() => switchTab("kaih")}
-                title="7 Karakter KAIH (35 Butir Refleksi)"
-                className={`relative inline-flex items-center justify-center px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold transition-all duration-300 cursor-pointer whitespace-nowrap active:scale-95 group-hover:px-4 sm:group-hover:px-5.5 ${
-                  activeTab === "kaih"
-                    ? "bg-gradient-to-r from-emerald-700 via-emerald-800 to-emerald-900 text-white shadow-[0_8px_25px_rgba(16,185,129,0.55)] dark:shadow-[0_0_25px_rgba(16,185,129,0.8),0_0_12px_rgba(34,197,94,0.6)] ring-2 ring-emerald-400 -translate-y-0.5"
-                    : "text-slate-700 dark:text-slate-300 hover:text-emerald-950 dark:hover:text-amber-300 hover:bg-white dark:hover:bg-emerald-950/40 hover:shadow-[0_4px_16px_rgba(16,185,129,0.25)] dark:hover:shadow-[0_0_18px_rgba(245,158,11,0.4)] hover:ring-1 hover:ring-emerald-400/60 dark:hover:ring-amber-400/60"
-                }`}
-              >
-                <Sparkles className="h-4 w-4 shrink-0 text-amber-400 animate-pulse transition-transform duration-300 group-hover:scale-110" />
-                <span className="max-w-0 opacity-0 overflow-hidden group-hover:max-w-xs group-hover:opacity-100 group-hover:ml-2 transition-all duration-400 ease-out inline-flex items-center gap-1.5 font-bold">
-                  <span>7 Karakter KAIH</span>
-                  <span className="text-[10px] bg-emerald-800/80 dark:bg-black text-amber-300 px-2 py-0.5 rounded-full font-black border border-amber-300/40 dark:border-emerald-500/60">
-                    35 Butir
-                  </span>
-                </span>
-              </button>
-
-              {/* 3. Tombol Profil Pembuat */}
-              <button
-                type="button"
-                onClick={() => switchTab("profil")}
-                title="Profil Tim Pembuat & Pembimbing"
-                className={`relative inline-flex items-center justify-center px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold transition-all duration-300 cursor-pointer whitespace-nowrap active:scale-95 group-hover:px-4 sm:group-hover:px-5.5 ${
-                  activeTab === "profil"
-                    ? "bg-gradient-to-r from-emerald-700 via-emerald-800 to-emerald-900 text-white shadow-[0_8px_25px_rgba(16,185,129,0.55)] dark:shadow-[0_0_25px_rgba(16,185,129,0.8),0_0_12px_rgba(34,197,94,0.6)] ring-2 ring-emerald-400 -translate-y-0.5"
-                    : "text-slate-700 dark:text-slate-300 hover:text-emerald-950 dark:hover:text-amber-300 hover:bg-white dark:hover:bg-emerald-950/40 hover:shadow-[0_4px_16px_rgba(16,185,129,0.25)] dark:hover:shadow-[0_0_18px_rgba(245,158,11,0.4)] hover:ring-1 hover:ring-emerald-400/60 dark:hover:ring-amber-400/60"
-                }`}
-              >
-                <Users2 className="h-4 w-4 shrink-0 text-emerald-500 dark:text-emerald-400 transition-transform duration-300 group-hover:scale-110" />
-                <span className="max-w-0 opacity-0 overflow-hidden group-hover:max-w-xs group-hover:opacity-100 group-hover:ml-2 transition-all duration-400 ease-out font-bold">
-                  Profil Pembuat
-                </span>
-              </button>
-            </nav>
-          </div>
-        </div>
-      </div>
+      
 
       {/* ========================================================================= */}
       {/* TAB 1: BERANDA                                                            */}
