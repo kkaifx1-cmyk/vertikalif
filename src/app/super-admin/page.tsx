@@ -69,6 +69,15 @@ const THEME_COLORS = ["#15803d", "#d97706", "#0284c7", "#7c3aed", "#059669", "#e
 const LIKERT_COLORS = ["#ef4444", "#f59e0b", "#10b981", "#15803d"];
 const CONFIDENCE_BAR_COLORS = ["#15803d", "#d97706", "#0284c7", "#7c3aed", "#059669", "#ea580c", "#0891b2"];
 
+function formatDuration(seconds?: number): string {
+  if (!seconds || seconds <= 0) return "-";
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
+  if (m === 0) return `${s} dtk`;
+  if (s === 0) return `${m} mnt`;
+  return `${m} mnt ${s} dtk`;
+}
+
 interface ExtendedStudentData {
   id: string;
   nama: string;
@@ -76,6 +85,7 @@ interface ExtendedStudentData {
   jenisKelamin: string;
   nomorId: string;
   totalScore: number;
+  durationSeconds?: number;
   confidenceScore: number;
   confidencePercentage: number;
   confidenceCategory: string;
@@ -517,6 +527,7 @@ function SuperAdminDashboard() {
         jenisKelamin: r.jenisKelamin || "Ikhwan",
         nomorId: r.nomorId || "-",
         totalScore: r.totalScore,
+        durationSeconds: r.durationSeconds || 0,
         confidenceScore: r.confidenceScore || Number(icScore.toFixed(2)),
         confidencePercentage: r.confidencePercentage || icPct,
         confidenceCategory: r.confidenceCategory || "Cukup Percaya Diri",
@@ -611,6 +622,14 @@ function SuperAdminDashboard() {
     };
   }, [activeResponses, cognitivePipelineData]);
 
+  // Rata-rata durasi pengerjaan sesi aktif
+  const avgSessionDuration = useMemo(() => {
+    const valid = activeResponses.filter((r) => r.durationSeconds && r.durationSeconds > 0);
+    if (valid.length === 0) return 0;
+    const sum = valid.reduce((acc, curr) => acc + (curr.durationSeconds || 0), 0);
+    return Math.round(sum / valid.length);
+  }, [activeResponses]);
+
   // Filter Table Logic
   const filteredStudents = useMemo(() => {
     return extendedStudents.filter((r) => {
@@ -669,6 +688,7 @@ function SuperAdminDashboard() {
       "Tingkat Kelas",
       "Jenis Kelamin",
       "NIS / Nomor ID",
+      "Durasi Pengerjaan",
       "Skor Total (35 Butir)",
       "Konsistensi Tindakan (IK %)",
       "Fokus Belajar (IF %)",
@@ -685,6 +705,7 @@ function SuperAdminDashboard() {
       `"${r.kategori}"`,
       `"${r.jenisKelamin}"`,
       `"${r.nomorId}"`,
+      `"${formatDuration(r.durationSeconds)}"`,
       `"${r.totalScore}"`,
       `"${r.ikPct}%"`,
       `"${r.ifPct}%"`,
@@ -2536,6 +2557,11 @@ function SuperAdminDashboard() {
                     </h3>
                     <p className="text-xs text-slate-500">
                       Menampilkan {startItem}–{endItem} dari total {filteredStudents.length} data santri ({activeSession.name}) • Halaman {safePage} dari {totalPages}
+                      {avgSessionDuration > 0 && (
+                        <span className="ml-2 font-semibold text-emerald-800 dark:text-emerald-400">
+                          • Rerata Pengerjaan: {formatDuration(avgSessionDuration)}
+                        </span>
+                      )}
                     </p>
                   </div>
 
@@ -2649,6 +2675,7 @@ function SuperAdminDashboard() {
                           <tr>
                             <th className="px-5 py-3.5">Santri Responden</th>
                             <th className="px-4 py-3.5">Kelas &amp; NIS</th>
+                            <th className="px-3.5 py-3.5 text-center whitespace-nowrap">Durasi Pengerjaan</th>
                             <th className="px-4 py-3.5 text-center">Konsistensi (IK)</th>
                             <th className="px-4 py-3.5 text-center">Fokus (IF)</th>
                             <th className="px-4 py-3.5 text-center">Confidency (IC)</th>
@@ -2694,6 +2721,18 @@ function SuperAdminDashboard() {
                                       NIS: {item.nomorId}
                                     </span>
                                   </div>
+                                </td>
+
+                                {/* 2b. Durasi Pengerjaan (Timer 7 KAIH) */}
+                                <td className="px-3.5 py-3.5 text-center whitespace-nowrap">
+                                  {item.durationSeconds && item.durationSeconds > 0 ? (
+                                    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/70 border border-emerald-300/80 dark:border-emerald-500/50 text-emerald-800 dark:text-emerald-300 font-mono font-bold text-xs shadow-2xs">
+                                      <Clock className="h-3.5 w-3.5 text-amber-500 shrink-0" />
+                                      <span>{formatDuration(item.durationSeconds)}</span>
+                                    </div>
+                                  ) : (
+                                    <span className="text-slate-400 font-mono text-xs">-</span>
+                                  )}
                                 </td>
 
                                 {/* 3. Konsistensi (IK) Progress */}

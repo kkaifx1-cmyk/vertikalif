@@ -8,6 +8,7 @@ export interface ResponseRecord {
   jenisKelamin?: string; // "Ikhwan" | "Akhwat"
   nomorId?: string;
   totalScore: number;
+  durationSeconds?: number; // Durasi waktu pengerjaan 7 KAIH (dalam detik)
   confidenceScore?: number; // Skor Kepercayaan Diri Santri (1.00 - 4.00)
   confidencePercentage?: number; // Persentase Kepercayaan Diri (0 - 100%)
   confidenceCategory?: "Sangat Percaya Diri" | "Percaya Diri" | "Cukup Percaya Diri" | "Perlu Bimbingan";
@@ -240,11 +241,16 @@ export async function getAllResponses(): Promise<ResponseRecord[]> {
         const hasKaihKeys = keys.some((k) => k.startsWith("k"));
         if (!hasKaihKeys) continue;
 
+        const durationSeconds = Number(
+          rawAnswers._duration_seconds || rawAnswers.durationSeconds || row.duration_seconds || 0
+        );
+
         const normalizedAnswers: Record<string, number> = {};
         let sum = 0;
         let count = 0;
 
         Object.entries(rawAnswers).forEach(([k, v]) => {
+          if (k.startsWith("_") || k === "durationSeconds" || k === "duration_seconds") return;
           const num = Number(v);
           const capped = Math.min(4, Math.max(1, num));
           normalizedAnswers[k] = capped;
@@ -263,6 +269,7 @@ export async function getAllResponses(): Promise<ResponseRecord[]> {
           jenisKelamin: row.jenis_kelamin || "Ikhwan",
           nomorId: row.nomor_id || "",
           totalScore: calculatedScore,
+          durationSeconds: durationSeconds > 0 ? durationSeconds : undefined,
           confidenceScore,
           confidencePercentage,
           confidenceCategory,
@@ -346,10 +353,16 @@ export async function saveResponse(
   const { confidenceScore, confidencePercentage, confidenceCategory, topKaihFactor, focusScore, rawConfidenceScore } =
     evaluateConfidence(newResponse.answers, totalScore);
 
+  const durationSeconds =
+    typeof newResponse.durationSeconds === "number" && newResponse.durationSeconds > 0
+      ? newResponse.durationSeconds
+      : undefined;
+
   const record: ResponseRecord = {
     id: `resp_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
     ...newResponse,
     totalScore,
+    durationSeconds,
     confidenceScore,
     confidencePercentage,
     confidenceCategory,
@@ -361,8 +374,13 @@ export async function saveResponse(
 
   responsesCache.unshift(record);
 
-  // Write to Supabase with jenis_kelamin
+  // Write to Supabase with jenis_kelamin and _duration_seconds inside answers
   try {
+    const answersPayload = {
+      ...record.answers,
+      ...(durationSeconds ? { _duration_seconds: durationSeconds } : {}),
+    };
+
     const { error } = await supabase.from("survey_responses").insert({
       id: record.id,
       nama: record.nama,
@@ -370,7 +388,7 @@ export async function saveResponse(
       jenis_kelamin: record.jenisKelamin || "Ikhwan",
       nomor_id: record.nomorId || null,
       total_score: record.totalScore,
-      answers: record.answers,
+      answers: answersPayload,
       feedback: record.feedback || null,
       created_at: record.createdAt,
     });

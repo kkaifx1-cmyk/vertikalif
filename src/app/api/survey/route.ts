@@ -37,7 +37,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { nama, kategori, jenisKelamin, nomorId, answers, feedback, violationsCount } = body;
+    const { nama, kategori, jenisKelamin, nomorId, answers, feedback, violationsCount, durationSeconds } = body;
 
     if (!nama || !kategori || !answers) {
       return NextResponse.json(
@@ -91,6 +91,7 @@ export async function POST(request: Request) {
       nomorId: nomorId || "",
       answers,
       feedback: finalFeedback,
+      durationSeconds: typeof durationSeconds === "number" && durationSeconds > 0 ? Math.max(1, Math.round(durationSeconds)) : undefined,
     });
 
     return NextResponse.json({

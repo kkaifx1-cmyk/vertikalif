@@ -477,6 +477,26 @@ export default function SurveyPage() {
   const [validationError, setValidationError] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [submittedData, setSubmittedData] = useState<{ id: string; totalScore: number } | null>(null);
+  // Timer pengerjaan 7 KAIH (berjalan secara senyap di background tanpa tampilan waktu bagi santri)
+  const [kaihStartTime, setKaihStartTime] = useState<number | null>(null);
+
+  // Catat waktu mulai pengerjaan instrumen 7 KAIH secara senyap di background saat santri mulai masuk ke soal KAIH
+  useEffect(() => {
+    if (currentStep >= 1 && !kaihStartTime) {
+      try {
+        const stored = sessionStorage.getItem("kaih_start_time");
+        if (stored && !isNaN(Number(stored))) {
+          setKaihStartTime(Number(stored));
+        } else {
+          const now = Date.now();
+          setKaihStartTime(now);
+          sessionStorage.setItem("kaih_start_time", now.toString());
+        }
+      } catch {
+        setKaihStartTime(Date.now());
+      }
+    }
+  }, [currentStep, kaihStartTime]);
 
   // Total steps = 9 (0: Identitas, 1..7: KAIH 1..7, 8: Penutup)
   const totalSteps = currentThemes.length + 2;
@@ -530,9 +550,14 @@ export default function SurveyPage() {
 
   const handleNext = () => {
     if (validateCurrentStep()) {
-      // Kunci mode layar penuh & matikan fungsi ESC saat santri mulai masuk ke KAIH 1
+      // Kunci mode layar penuh & mulai timer pengerjaan 7 KAIH saat santri mulai masuk ke KAIH 1
       if (currentStep === 0) {
         enterFullscreenAndLock();
+        const now = Date.now();
+        setKaihStartTime(now);
+        try {
+          sessionStorage.setItem("kaih_start_time", now.toString());
+        } catch {}
       }
       setCurrentStep((prev) => prev + 1);
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -551,6 +576,16 @@ export default function SurveyPage() {
     setIsSubmitting(true);
     setValidationError("");
 
+    // Hitung durasi pengerjaan 7 KAIH dari saat mulai hingga selesai dikirim
+    let durationSeconds = 0;
+    try {
+      const stored = typeof window !== "undefined" ? sessionStorage.getItem("kaih_start_time") : null;
+      const startTime = kaihStartTime || (stored ? Number(stored) : null);
+      if (startTime && startTime > 0) {
+        durationSeconds = Math.max(1, Math.round((Date.now() - startTime) / 1000));
+      }
+    } catch {}
+
     try {
       const response = await fetch("/api/survey", {
         method: "POST",
@@ -563,6 +598,7 @@ export default function SurveyPage() {
           answers,
           feedback,
           violationsCount,
+          durationSeconds: durationSeconds > 0 ? durationSeconds : undefined,
         }),
       });
 
@@ -579,6 +615,9 @@ export default function SurveyPage() {
         } catch {
           // ignore
         }
+        try {
+          sessionStorage.removeItem("kaih_start_time");
+        } catch {}
         setSubmittedData({
           id: result.data.id,
           totalScore: result.data.totalScore,
@@ -603,6 +642,10 @@ export default function SurveyPage() {
     setAnswers({});
     setFeedback("");
     setViolationsCount(0);
+    setKaihStartTime(null);
+    try {
+      sessionStorage.removeItem("kaih_start_time");
+    } catch {}
     setCurrentStep(0);
     setSubmittedData(null);
     fetchSubmittedStudents();
