@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getAllResponses, saveResponse, deleteResponse, clearAllResponses } from "@/lib/data-store";
+import { extractWibDate } from "@/lib/session-helper";
 
 export async function GET(request: Request) {
   try {
@@ -14,14 +15,21 @@ export async function GET(request: Request) {
     };
 
     if (submittedOnly) {
-      const submitted = responses.map((r) => ({
+      const todayWib = extractWibDate(new Date());
+      // Kunci hanya santri yang SUDAH mengisi pada sesi hari ini
+      // Santri yang mengisi pada sesi sebelumnya (misal Senin 02 Nov) otomatis terbuka kembali untuk hari Kamis ini
+      const submittedToday = responses.filter((r) => extractWibDate(r.createdAt) === todayWib);
+      const submitted = submittedToday.map((r) => ({
         id: r.id,
         nomorId: r.nomorId || "",
         nama: r.nama,
         kategori: r.kategori,
         createdAt: r.createdAt,
       }));
-      return NextResponse.json({ success: true, data: submitted }, { headers: noCacheHeaders });
+      return NextResponse.json(
+        { success: true, data: submitted, sessionDate: todayWib, totalActiveSubmissionsToday: submitted.length },
+        { headers: noCacheHeaders }
+      );
     }
 
     return NextResponse.json({ success: true, data: responses }, { headers: noCacheHeaders });
@@ -46,17 +54,22 @@ export async function POST(request: Request) {
       );
     }
 
-    // Pengecekan Limit Pengisian: 1 Santri hanya dapat mengisi 1 kali
+    // Pengecekan Limit Pengisian: 1 Santri hanya dapat mengisi 1 kali PER SESI / PER HARI EVALUASI
+    const todayWib = extractWibDate(new Date());
     const existing = await getAllResponses();
     const cleanName = nama.trim().toLowerCase();
     const cleanNomorId = (nomorId || "").trim();
 
-    const isDuplicate = existing.some((r) => {
-      // 1. Cek kecocokan nomor ID / NIS
+    // Hanya tolak jika santri sudah pernah mengisi pada sesi/tanggal yang sama hari ini
+    const isDuplicateToday = existing.some((r) => {
+      const rDate = extractWibDate(r.createdAt);
+      if (rDate !== todayWib) return false;
+
+      // 1. Cek kecocokan nomor ID / NIS pada hari ini
       if (cleanNomorId && r.nomorId && r.nomorId.trim() === cleanNomorId) {
         return true;
       }
-      // 2. Cek kecocokan nama lengkap dan kategori kelas
+      // 2. Cek kecocokan nama lengkap dan kategori kelas pada hari ini
       if (
         r.nama.trim().toLowerCase() === cleanName &&
         r.kategori.trim().toLowerCase() === kategori.trim().toLowerCase()
@@ -66,12 +79,12 @@ export async function POST(request: Request) {
       return false;
     });
 
-    if (isDuplicate) {
+    if (isDuplicateToday) {
       return NextResponse.json(
         {
           success: false,
           code: "STUDENT_LIMIT_EXCEEDED",
-          message: `Pengisian ditolak: Santri atas nama "${nama}" (${cleanNomorId ? `NIS: ${cleanNomorId}` : kategori}) sudah pernah menyelesaikan pengisian survei ini sebelumnya. Kuota pengisian dibatasi tepat 1 kali per santri demi integritas dan validitas data instrumen.`,
+          message: `Pengisian ditolak: Santri atas nama "${nama}" (${cleanNomorId ? `NIS: ${cleanNomorId}` : kategori}) sudah menyelesaikan pengisian survei pada sesi hari ini (${todayWib}). Kuota pengisian dibatasi tepat 1 kali per sesi demi integritas data instrumen.`,
         },
         { status: 409 }
       );
