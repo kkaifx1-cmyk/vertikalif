@@ -97,7 +97,7 @@ export function verifyMemberAccess(
   if (cleanPassword !== "VERTIKALIFMENANG2026") {
     return {
       verified: false,
-      message: "Kata sandi salah. Kata sandi wajib menggunakan VERTIKALIFMENANG2026.",
+      message: "Username atau password salah. Silakan coba lagi.",
     };
   }
 
@@ -105,7 +105,7 @@ export function verifyMemberAccess(
   if (!cleanName) {
     return {
       verified: false,
-      message: "Nama pengguna wajib diisi menggunakan nama salah satu anggota Profil Pembuat.",
+      message: "Mohon ketik username dan password.",
     };
   }
 
@@ -124,7 +124,7 @@ export function verifyMemberAccess(
   if (!found) {
     return {
       verified: false,
-      message: "Nama pengguna tidak dikenali. Akses Super Admin wajib menggunakan nama salah satu anggota Profil Pembuat (Naufal, Faiq, Fatahillah, Ubay, Arbi, Rizal, Taufan).",
+      message: "Username atau password salah. Silakan coba lagi.",
     };
   }
 
