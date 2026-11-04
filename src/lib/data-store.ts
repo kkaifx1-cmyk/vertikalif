@@ -88,50 +88,51 @@ const deletedIds = new Set<string>(DEFAULT_EXCLUDED_IDS);
 
 export function verifyMemberAccess(
   nama: string,
-  nis: string
-): { verified: boolean; member?: (typeof WHITELIST_MEMBERS)[0] } {
-  const cleanName = nama.trim().toLowerCase();
-  const cleanNis = nis.trim().toLowerCase();
+  nisOrPassword: string
+): { verified: boolean; member?: (typeof WHITELIST_MEMBERS)[0]; message?: string } {
+  const cleanName = (nama || "").trim().toLowerCase().replace(/^(pak|ustadz|ustad)\s+/i, "");
+  const cleanPassword = (nisOrPassword || "").trim().toUpperCase();
 
-  // Master Admin bypass (Password: VERTIKALIFMENANGAMIN2026)
-  const isMasterPassword =
-    cleanNis === "vertikalifmenangamin2026" ||
-    cleanNis === "vertikalif2026" ||
-    cleanNis === "admin" ||
-    cleanNis === "admin123";
-
-  if (
-    isMasterPassword ||
-    (cleanName === "admin" && isMasterPassword)
-  ) {
+  // 1. Validasi Password: Wajib VERTIKALIFMENANG2026 (Tanpa bypass lain)
+  if (cleanPassword !== "VERTIKALIFMENANG2026") {
     return {
-      verified: true,
-      member: {
-        nama: "Super Administrator",
-        nis: "ADMIN",
-        kelas: "Pusat Kendali",
-        peran: "Super Admin VERTIKAL IF",
-        avatar: "/logo-ihsanul-fikri.png",
-        bio: "Akses kendali penuh atas basis data kuesioner SMAIT Ihsanul Fikri.",
-      },
+      verified: false,
+      message: "Kata sandi salah. Kata sandi wajib menggunakan VERTIKALIFMENANG2026.",
     };
   }
 
-  // Whitelist Panitia Check
-  const found = WHITELIST_MEMBERS.find((m) => {
-    const matchName =
-      m.nama.toLowerCase().includes(cleanName) || cleanName.includes(m.nama.toLowerCase());
-    const matchNis = m.nis.toLowerCase() === cleanNis;
-    return matchName || matchNis;
-  });
-
-  if (found) {
-    return { verified: true, member: found };
+  // 2. Validasi Username: Wajib menggunakan nama dari Profil Pembuat (WHITELIST_MEMBERS)
+  if (!cleanName) {
+    return {
+      verified: false,
+      message: "Nama pengguna wajib diisi menggunakan nama salah satu anggota Profil Pembuat.",
+    };
   }
 
-  return { verified: false };
-}
+  const found = WHITELIST_MEMBERS.find((m) => {
+    const mName = m.nama.toLowerCase();
+    // 1. Cocok persis
+    if (mName === cleanName) return true;
+    // 2. Substring (input terkandung di nama lengkap atau sebaliknya, min 3 karakter)
+    if (cleanName.length >= 3 && mName.includes(cleanName)) return true;
+    if (mName.length >= 3 && cleanName.includes(mName)) return true;
+    // 3. Cocok dengan salah satu kata nama (misal: "Ubay", "Naufal", "Faiq", "Arbi", "Fatahillah", "Rizal", "Taufan")
+    const parts = mName.split(/\s+/).filter((p) => p.length >= 3);
+    return parts.some((part) => cleanName === part || cleanName.includes(part));
+  });
 
+  if (!found) {
+    return {
+      verified: false,
+      message: "Nama pengguna tidak dikenali. Akses Super Admin wajib menggunakan nama salah satu anggota Profil Pembuat (Naufal, Faiq, Fatahillah, Ubay, Arbi, Rizal, Taufan).",
+    };
+  }
+
+  return {
+    verified: true,
+    member: found,
+  };
+}
 
 // Helper evaluasi rasa percaya diri (Self-Confidence) santri berbasis Metode 2 (Sintesis Terpadu 50% Fokus + 50% Unjuk Diri)
 export function evaluateConfidence(answers: Record<string, number>, fallbackScore: number) {

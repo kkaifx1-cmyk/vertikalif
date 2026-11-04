@@ -142,7 +142,7 @@ export function AuthGuard({ children, pageTitle, pageDescription }: AuthGuardPro
             </CardTitle>
           </div>
           <CardDescription className="text-xs text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">
-            Halaman {pageTitle} hanya dapat diakses oleh Administrator Sistem dan Panitia Mutu SMAIT Ihsanul Fikri.
+            Halaman {pageTitle} hanya dapat diakses oleh Tim Pengembang & Pembimbing (Profil Pembuat) dengan kata sandi resmi.
           </CardDescription>
         </CardHeader>
 
@@ -163,7 +163,7 @@ export function AuthGuard({ children, pageTitle, pageDescription }: AuthGuardPro
                 type="text"
                 value={namaInput}
                 onChange={(e) => setNamaInput(e.target.value)}
-                placeholder="Masukkan nama pengguna admin"
+                placeholder="Contoh: Muhammad Gus Ubay Izzulhaq / Naufal / Arbi / Faiq"
                 className="w-full rounded-lg border border-slate-300 dark:border-emerald-500/50 bg-white dark:bg-black/90 px-3.5 py-2.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 transition-all duration-200 hover:border-emerald-500 dark:hover:border-amber-400 focus:border-emerald-600 dark:focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-600/20"
                 required
               />
@@ -177,7 +177,7 @@ export function AuthGuard({ children, pageTitle, pageDescription }: AuthGuardPro
                 type="password"
                 value={nisInput}
                 onChange={(e) => setNisInput(e.target.value)}
-                placeholder="••••••••••••"
+                placeholder="Masukkan kata sandi VERTIKALIFMENANG2026"
                 className="w-full rounded-lg border border-slate-300 dark:border-emerald-500/50 bg-white dark:bg-black/90 px-3.5 py-2.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 transition-all duration-200 hover:border-emerald-500 dark:hover:border-amber-400 focus:border-emerald-600 dark:focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-600/20"
                 required
               />

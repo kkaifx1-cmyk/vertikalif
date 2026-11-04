@@ -18,7 +18,7 @@ export async function POST(request: Request) {
       return NextResponse.json(
         {
           success: false,
-          message: "Kombinasi nama pengguna dan kata sandi tidak valid.",
+          message: result.message || "Kombinasi nama pengguna dan kata sandi tidak valid.",
         },
         { status: 401 }
       );
