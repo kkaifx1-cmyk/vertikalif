@@ -581,51 +581,77 @@ function HomeInner() {
 
             {/* Members Grid: Hitam Pekat, Outline Hijau Default, Berubah Emas saat Kursor Hover */}
             <div className="flex flex-wrap justify-center gap-6">
-              {WHITELIST_MEMBERS.map((member) => (
-                <div
-                  key={member.nis}
-                  className="group w-full sm:w-[calc(50%-12px)] lg:w-[calc(25%-18px)] max-w-sm rounded-2xl border border-slate-200/90 dark:border-emerald-500/60 bg-white/95 dark:bg-black/95 backdrop-blur-xs flex flex-col justify-between transition-all duration-300 hover:-translate-y-2 hover:border-emerald-500 dark:hover:border-amber-400 hover:shadow-[0_16px_32px_-8px_rgba(21,128,61,0.28)] dark:shadow-[0_0_20px_rgba(16,185,129,0.2)] dark:hover:shadow-[0_0_35px_rgba(245,158,11,0.55),0_0_15px_rgba(251,191,36,0.35)] cursor-default"
-                >
-                  <div className="pt-6 pb-2 text-center flex flex-col items-center">
-                    {/* Pas Foto Formal 3x4 dengan Frame Hijau -> Berubah Emas saat Hover */}
-                    <div className="relative w-24 h-32 shrink-0 overflow-hidden rounded-xl border-2 border-emerald-600 dark:border-emerald-500 group-hover:dark:border-amber-400 bg-slate-100 dark:bg-black shadow-md dark:shadow-[0_0_18px_rgba(16,185,129,0.4)] group-hover:dark:shadow-[0_0_25px_rgba(245,158,11,0.65)] mb-3.5 transition-all duration-300">
-                      <Image
-                        src={member.avatar}
-                        alt={member.nama}
-                        fill
-                        sizes="(max-width: 640px) 96px, 128px"
-                        className={`object-cover ${member.avatarPosition || "object-top"}`}
-                      />
-                    </div>
-
-                    <div className="space-y-1.5 px-4 w-full">
-                      <h3 className="text-base font-bold text-slate-900 dark:text-white group-hover:dark:text-amber-300 leading-snug transition-colors">
-                        {member.nama}
-                      </h3>
-                      <div>
-                        <Badge variant="gold" className="text-[10px] px-2.5 py-0.5 font-semibold shadow-xs">
-                          {member.peran}
-                        </Badge>
+              {WHITELIST_MEMBERS.map((member) => {
+                const isUbay = member.nama.toLowerCase().includes("ubay");
+                return (
+                  <div
+                    key={member.nis}
+                    className={`group w-full max-w-sm rounded-2xl flex flex-col justify-between transition-all duration-300 hover:-translate-y-2 cursor-default ${
+                      isUbay
+                        ? "sm:w-[calc(60%-12px)] lg:w-[calc(33.333%-16px)] border-2 border-amber-400/90 dark:border-amber-400 bg-white/98 dark:bg-black/95 shadow-[0_12px_35px_rgba(245,158,11,0.3)] hover:shadow-[0_20px_45px_rgba(245,158,11,0.5)] ring-2 ring-amber-400/20"
+                        : "sm:w-[calc(50%-12px)] lg:w-[calc(25%-18px)] border border-slate-200/90 dark:border-emerald-500/60 bg-white/95 dark:bg-black/95 hover:border-emerald-500 dark:hover:border-amber-400 hover:shadow-[0_16px_32px_-8px_rgba(21,128,61,0.28)] dark:shadow-[0_0_20px_rgba(16,185,129,0.2)] dark:hover:shadow-[0_0_35px_rgba(245,158,11,0.55),0_0_15px_rgba(251,191,36,0.35)]"
+                    }`}
+                  >
+                    <div className="pt-6 pb-2 text-center flex flex-col items-center">
+                      {/* Pas Foto Formal dengan Frame: Ukuran Diperbesar Signifikan untuk Ubay */}
+                      <div
+                        className={`relative shrink-0 overflow-hidden transition-all duration-300 ${
+                          isUbay
+                            ? "w-44 h-56 sm:w-52 sm:h-64 rounded-2xl border-3 border-amber-400 dark:border-amber-400 bg-slate-900 shadow-[0_10px_30px_rgba(245,158,11,0.45)] ring-4 ring-amber-400/30 group-hover:ring-amber-400/60 mb-4"
+                            : "w-28 h-36 rounded-xl border-2 border-emerald-600 dark:border-emerald-500 group-hover:dark:border-amber-400 bg-slate-100 dark:bg-black shadow-md dark:shadow-[0_0_18px_rgba(16,185,129,0.4)] group-hover:dark:shadow-[0_0_25px_rgba(245,158,11,0.65)] mb-3.5"
+                        }`}
+                      >
+                        <Image
+                          src={member.avatar}
+                          alt={member.nama}
+                          fill
+                          sizes={isUbay ? "(max-width: 640px) 176px, 208px" : "(max-width: 640px) 112px, 144px"}
+                          className={`object-cover ${member.avatarPosition || "object-top"}`}
+                          priority={isUbay}
+                        />
                       </div>
-                      <p className="text-xs text-slate-500 dark:text-slate-400 font-mono mt-1">
-                        {member.kelas === "Pembimbing" ? (
-                          <>
-                            NIP: <span className="font-semibold text-emerald-800 dark:text-emerald-400 group-hover:dark:text-amber-400 transition-colors">{member.nis}</span> • Guru Pembimbing
-                          </>
-                        ) : (
-                          <>
-                            NIS: <span className="font-semibold text-emerald-800 dark:text-emerald-400 group-hover:dark:text-amber-400 transition-colors">{member.nis}</span> • Kelas {member.kelas}
-                          </>
-                        )}
-                      </p>
+
+                      <div className="space-y-1.5 px-4 w-full">
+                        <h3
+                          className={`font-bold transition-colors ${
+                            isUbay
+                              ? "text-lg sm:text-xl font-black text-slate-950 dark:text-amber-300 tracking-tight"
+                              : "text-base text-slate-900 dark:text-white group-hover:dark:text-amber-300 leading-snug"
+                          }`}
+                        >
+                          {member.nama}
+                        </h3>
+                        <div>
+                          <Badge
+                            variant="gold"
+                            className={`font-semibold shadow-xs ${
+                              isUbay ? "text-xs px-3 py-1 font-bold" : "text-[10px] px-2.5 py-0.5"
+                            }`}
+                          >
+                            {isUbay && <Sparkles className="h-3 w-3 mr-1 text-amber-500 inline" />}
+                            {member.peran}
+                          </Badge>
+                        </div>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 font-mono mt-1">
+                          {member.kelas === "Pembimbing" ? (
+                            <>
+                              NIP: <span className="font-semibold text-emerald-800 dark:text-emerald-400 group-hover:dark:text-amber-400 transition-colors">{member.nis}</span> • Guru Pembimbing
+                            </>
+                          ) : (
+                            <>
+                              NIS: <span className="font-semibold text-emerald-800 dark:text-emerald-400 group-hover:dark:text-amber-400 transition-colors">{member.nis}</span> • Kelas {member.kelas}
+                            </>
+                          )}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="pt-2 pb-5 px-5 text-xs text-slate-600 dark:text-slate-300 text-center leading-relaxed border-t border-slate-100 dark:border-emerald-500/25 mt-2">
+                      {member.bio}
                     </div>
                   </div>
-
-                  <div className="pt-2 pb-5 px-5 text-xs text-slate-600 dark:text-slate-300 text-center leading-relaxed border-t border-slate-100 dark:border-emerald-500/25 mt-2">
-                    {member.bio}
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             {/* Latar Belakang & Pernyataan Proyek: Hitam Pekat, Outline Hijau Default, Berubah Emas saat Kursor Hover */}

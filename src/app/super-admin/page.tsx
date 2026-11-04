@@ -131,8 +131,14 @@ function SuperAdminDashboard() {
   const [selectedGender, setSelectedGender] = useState("Semua");
   const [selectedConfidenceCategory, setSelectedConfidenceCategory] = useState("Semua");
 
-  // Filter Sesi Evaluasi 4 Hari & Rekapan Gabungan
-  const [selectedSessionId, setSelectedSessionId] = useState<string>("all");
+  // Filter Sesi Evaluasi 4 Hari & Rekapan Gabungan (Default otomatis ke Sesi Hari Ini jika sedang berlangsung)
+  const [selectedSessionId, setSelectedSessionId] = useState<string>(() => {
+    const sesiParam = searchParams.get("sesi");
+    if (sesiParam) return sesiParam;
+    const todayWib = extractWibDate(new Date());
+    const todaySession = EVALUATION_SESSIONS.find((s) => s.dateKey === todayWib);
+    return todaySession ? todaySession.id : "all";
+  });
 
   const activeResponses = useMemo(
     () => filterResponsesBySession(responses, selectedSessionId),
@@ -959,34 +965,45 @@ function SuperAdminDashboard() {
                 </CardHeader>
 
                 <CardContent className="p-3 space-y-2.5">
-                  {/* Banner Sesi Aktif Hari Ini */}
-                  <div className="p-3 rounded-xl bg-emerald-50/90 dark:bg-black border border-emerald-300 dark:border-emerald-500/60 shadow-xs dark:shadow-[0_0_15px_rgba(16,185,129,0.25)] flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-2">
-                      <span className="relative flex h-2.5 w-2.5 shrink-0">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
-                      </span>
-                      <div>
-                        <span className="font-extrabold text-emerald-950 dark:text-emerald-300 block text-xs leading-tight">
-                          Sesi Aktif: Senin, 02 Nov 2026
-                        </span>
-                        <span className="text-[10px] text-emerald-700 dark:text-emerald-400 font-mono">
-                          Sesi 1 • Respon Hari Ini Otomatis Masuk
-                        </span>
+                  {/* Banner Sesi Aktif Hari Ini (Dinamis: Kamis 05 Nov 2026 / Sesi Berjalan) */}
+                  {(() => {
+                    const todayWib = extractWibDate(new Date());
+                    const todaySession =
+                      EVALUATION_SESSIONS.find((s) => s.dateKey === todayWib) ||
+                      EVALUATION_SESSIONS.find((s) => s.id === "sesi_2") ||
+                      EVALUATION_SESSIONS[2];
+                    const isTodaySelected = selectedSessionId === todaySession.id;
+
+                    return (
+                      <div className="p-3 rounded-xl bg-emerald-50/90 dark:bg-black border border-emerald-300 dark:border-emerald-500/60 shadow-xs dark:shadow-[0_0_15px_rgba(16,185,129,0.25)] flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                          <span className="relative flex h-2.5 w-2.5 shrink-0">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                          </span>
+                          <div>
+                            <span className="font-extrabold text-emerald-950 dark:text-emerald-300 block text-xs leading-tight">
+                              Sesi Aktif: {todaySession.dayName}, {todaySession.formattedDate}
+                            </span>
+                            <span className="text-[10px] text-emerald-700 dark:text-emerald-400 font-mono">
+                              {todaySession.badge} • Pengambilan Data Siswa Hari Ini (Aktif)
+                            </span>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setSelectedSessionId(todaySession.id)}
+                          className={`shrink-0 px-2.5 py-1 rounded-lg text-[10px] font-black transition-all cursor-pointer ${
+                            isTodaySelected
+                              ? "bg-emerald-600 text-white shadow-xs"
+                              : "bg-white dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-400/50 hover:bg-emerald-100"
+                          }`}
+                        >
+                          {isTodaySelected ? "Sedang Dibuka" : `Buka ${todaySession.badge}`}
+                        </button>
                       </div>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => setSelectedSessionId("sesi_1")}
-                      className={`shrink-0 px-2.5 py-1 rounded-lg text-[10px] font-black transition-all cursor-pointer ${
-                        selectedSessionId === "sesi_1"
-                          ? "bg-emerald-600 text-white shadow-xs"
-                          : "bg-white dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-400/50 hover:bg-emerald-100"
-                      }`}
-                    >
-                      {selectedSessionId === "sesi_1" ? "Sedang Dibuka" : "Buka Sesi 1"}
-                    </button>
-                  </div>
+                    );
+                  })()}
 
                   {/* 1. KARTU REKAPAN GABUNGAN 4 SESI */}
                   {(() => {
@@ -1101,7 +1118,7 @@ function SuperAdminDashboard() {
                                 <span className={`text-xs font-bold ${isSelected ? "text-white" : "text-slate-900"}`}>
                                   {item.session.dayName}, {item.session.formattedDate}
                                 </span>
-                                {(item.session.dateKey === "2026-11-02" || item.status === "Aktif Hari Ini") && (
+                                {(item.session.dateKey === extractWibDate(new Date()) || item.status === "Aktif Hari Ini") && (
                                   <span className="inline-flex items-center gap-1 text-[9px] font-black px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 border border-emerald-500/50 animate-pulse">
                                     <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-ping"></span>
                                     <span>Hari Ini</span>
@@ -2662,11 +2679,29 @@ function SuperAdminDashboard() {
                       </div>
                     </div>
                   ) : filteredStudents.length === 0 ? (
-                    <div className="p-12 text-center space-y-2">
-                      <p className="text-sm font-semibold text-slate-700">Tidak ada data respon santri yang sesuai.</p>
-                      <p className="text-xs text-slate-400">
-                        Coba sesuaikan kata kunci pencarian atau bersihkan filter dropdown Anda.
+                    <div className="p-12 text-center space-y-3">
+                      <div className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 mb-1">
+                        <Clock className="h-6 w-6 text-emerald-600 animate-pulse" />
+                      </div>
+                      <p className="text-sm font-bold text-slate-800 dark:text-white">
+                        {selectedSessionId === "sesi_2"
+                          ? "Belum ada respon yang masuk untuk Sesi 2 (Kamis, 05 Nov 2026)."
+                          : "Tidak ada data respon santri yang sesuai filter."}
                       </p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto">
+                        {selectedSessionId === "sesi_2"
+                          ? "Pengambilan data siswa hari ini sedang berlangsung. Respon santri yang mengisi kuesioner akan otomatis terekam dan muncul di sini secara real-time saat disubmit."
+                          : "Coba sesuaikan kata kunci pencarian atau bersihkan filter dropdown Anda."}
+                      </p>
+                      {selectedSessionId !== "all" && (
+                        <button
+                          type="button"
+                          onClick={() => setSelectedSessionId("all")}
+                          className="mt-2 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-all shadow-xs cursor-pointer"
+                        >
+                          Lihat Rekapan Gabungan Semua Sesi
+                        </button>
+                      )}
                     </div>
                   ) : (
                     <div className="overflow-x-auto">
