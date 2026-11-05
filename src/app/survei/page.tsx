@@ -115,26 +115,24 @@ export default function SurveyPage() {
     [currentThemes]
   );
 
-  // Derivasi daftar rombel sesuai kelas yang dipilih
-  const availableRombels = useMemo(
-    () =>
-      Array.from(
-        new Set(
-          STUDENT_ROSTER.filter((s) => s.kelas === identity.kategori).map(
-            (s) => s.rombel
-          )
-        )
-      ).filter(Boolean) as string[],
-    [identity.kategori]
-  );
+  // Derivasi daftar rombel sesuai jenjang kelas secara instan (O(1) tanpa scan 777 siswa)
+  const availableRombels = useMemo(() => {
+    if (!identity.kategori) return [];
+    if (identity.kategori === "Siswa Kelas XII") {
+      return ["XII-1", "XII-2", "XII-3", "XII-4", "XII-5", "XII-6", "XII-7", "XII-8", "XII-9"];
+    }
+    const prefix = identity.kategori === "Siswa Kelas XI" ? "XI" : "X";
+    return Array.from({ length: 10 }, (_, i) => `${prefix}-${i + 1}`);
+  }, [identity.kategori]);
 
   // Filter daftar siswa berdasarkan kelas, rombel, dan kata kunci pencarian
   const filteredStudents = useMemo(() => {
+    if (!identity.kategori) return [];
+    const q = searchQuery.trim().toLowerCase();
     return STUDENT_ROSTER.filter((s) => {
       if (s.kelas !== identity.kategori) return false;
       if (selectedRombel && s.rombel !== selectedRombel) return false;
-      if (searchQuery.trim()) {
-        const q = searchQuery.toLowerCase();
+      if (q) {
         return (
           s.nama.toLowerCase().includes(q) ||
           (s.rombel && s.rombel.toLowerCase().includes(q)) ||
@@ -144,6 +142,22 @@ export default function SurveyPage() {
       return true;
     });
   }, [identity.kategori, selectedRombel, searchQuery]);
+
+  // Pre-group santri tersaring berdasarkan rombel (0 filter iteration pada loop render JSX)
+  const studentsByRombel = useMemo(() => {
+    const map = new Map<string, typeof filteredStudents>();
+    for (const s of filteredStudents) {
+      const rombelKey = s.rombel || "";
+      if (!rombelKey) continue;
+      let arr = map.get(rombelKey);
+      if (!arr) {
+        arr = [];
+        map.set(rombelKey, arr);
+      }
+      arr.push(s);
+    }
+    return map;
+  }, [filteredStudents]);
 
   // Helper to extract grade prefix ("X", "XI", "XII")
   const getGradePrefix = (gradeValue: string) => {
@@ -180,28 +194,32 @@ export default function SurveyPage() {
   const maxRombelNumber = identity.kategori === "Siswa Kelas XII" ? 9 : 10;
   const rombelNumbers = Array.from({ length: maxRombelNumber }, (_, i) => i + 1);
 
-  // Handler when Tingkat Kelas changes
+  // Handler when Tingkat Kelas changes (ultra-cepat tanpa re-render berlebih)
   const handleGradeChange = (gradeValue: string) => {
+    if (identity.kategori === gradeValue) return;
     const newPrefix = getGradePrefix(gradeValue);
-    setIdentity((prev) => ({
-      ...prev,
-      kategori: gradeValue,
-      nama: "",
-      nomorId: "",
-    }));
-    setSelectedStudentId("");
+    let updatedRombel = "";
+    let detectedGender = identity.jenisKelamin;
+
     if (selectedRombel) {
       const parts = selectedRombel.split("-");
       const rombelNum = parts.length > 1 ? parts[1] : "";
       const maxNum = gradeValue === "Siswa Kelas XII" ? 9 : 10;
       if (rombelNum && Number(rombelNum) <= maxNum) {
-        setSelectedRombel(`${newPrefix}-${rombelNum}`);
-        const detectedGender = getRombelGender(gradeValue, Number(rombelNum));
-        setIdentity((prev) => ({ ...prev, jenisKelamin: detectedGender }));
-      } else {
-        setSelectedRombel("");
+        updatedRombel = `${newPrefix}-${rombelNum}`;
+        detectedGender = getRombelGender(gradeValue, Number(rombelNum));
       }
     }
+
+    setIdentity((prev) => ({
+      ...prev,
+      kategori: gradeValue,
+      nama: "",
+      nomorId: "",
+      jenisKelamin: detectedGender,
+    }));
+    setSelectedStudentId("");
+    setSelectedRombel(updatedRombel);
     setSearchQuery("");
     setIsManualName(false);
     setValidationError("");
@@ -254,35 +272,32 @@ export default function SurveyPage() {
     return EVALUATION_SESSIONS.find((s) => s.dateKey === todayWib) || EVALUATION_SESSIONS[2];
   }, [todayWib]);
 
-  // Pemeriksa apakah siswa sudah mengisi kuesioner pada sesi hari ini
+  // Set NIS dan Nama santri yang sudah mengisi sesi hari ini (O(1) Instant Hash Lookup)
+  const todaySubmittedMap = useMemo(() => {
+    const nisSet = new Set<string>();
+    const nameSet = new Set<string>();
+
+    for (const s of submittedList) {
+      if (todayWib && s.createdAt && extractWibDate(s.createdAt) !== todayWib) {
+        continue;
+      }
+      if (s.nomorId) nisSet.add(s.nomorId.trim());
+      if (s.nama) nameSet.add(s.nama.trim().toLowerCase());
+    }
+
+    return { nisSet, nameSet };
+  }, [submittedList, todayWib]);
+
+  // Pemeriksa apakah siswa sudah mengisi kuesioner pada sesi hari ini (O(1) Complexity - 0ms freeze)
   const isStudentAlreadySubmitted = useCallback(
-    (nis: string, name: string, category: string): boolean => {
+    (nis: string, name: string, _category?: string): boolean => {
       const cleanNis = (nis || "").trim();
       const cleanName = (name || "").trim().toLowerCase();
-      const cleanCat = (category || "").trim().toLowerCase();
-
-      return submittedList.some((s) => {
-        // Hanya kunci jika terekam pada sesi hari ini (hari sebelumnya otomatis terbuka kembali)
-        if (todayWib && s.createdAt && extractWibDate(s.createdAt) !== todayWib) {
-          return false;
-        }
-
-        // Cocokkan NIS jika ada
-        if (cleanNis && s.nomorId && s.nomorId.trim() === cleanNis) {
-          return true;
-        }
-        // Cocokkan nama dan kategori kelas
-        if (
-          cleanName &&
-          s.nama.trim().toLowerCase() === cleanName &&
-          (!cleanCat || !s.kategori || s.kategori.trim().toLowerCase() === cleanCat)
-        ) {
-          return true;
-        }
-        return false;
-      });
+      if (cleanNis && todaySubmittedMap.nisSet.has(cleanNis)) return true;
+      if (cleanName && todaySubmittedMap.nameSet.has(cleanName)) return true;
+      return false;
     },
-    [submittedList, todayWib]
+    [todaySubmittedMap]
   );
 
   // Status Mode Karantina Ujian: Aktif saat mengerjakan butir KAIH 1 s.d. Konfirmasi
@@ -956,7 +971,7 @@ export default function SurveyPage() {
                           key={c.value}
                           type="button"
                           onClick={() => handleGradeChange(c.value)}
-                          className={`flex items-center justify-center py-2.5 px-3 rounded-lg font-extrabold text-sm sm:text-base cursor-pointer select-none touch-manipulation transition-colors duration-150 active:scale-[0.97] border ${
+                          className={`flex items-center justify-center py-2.5 px-3 rounded-lg font-extrabold text-sm sm:text-base cursor-pointer select-none touch-manipulation transition-all duration-75 active:scale-[0.98] border ${
                             isSelected
                               ? "bg-emerald-700 text-white border-emerald-600 shadow-md ring-2 ring-emerald-500/50"
                               : "bg-white text-slate-700 border-slate-300 shadow-xs hover:border-emerald-500 hover:text-emerald-800 hover:bg-emerald-50/70 active:bg-emerald-100"
@@ -1155,12 +1170,12 @@ export default function SurveyPage() {
                       {availableRombels
                         .filter((r) => !selectedRombel || r === selectedRombel)
                         .map((r) => {
-                          const studentsInRombel = filteredStudents.filter((s) => s.rombel === r);
+                          const studentsInRombel = studentsByRombel.get(r) || [];
                           if (studentsInRombel.length === 0) return null;
                           return (
                             <optgroup key={r} label={`Kelas ${r} (${studentsInRombel[0]?.jenisKelamin})`}>
                               {studentsInRombel.map((s) => {
-                                const alreadyFilled = isStudentAlreadySubmitted(s.nis, s.nama, s.kelas);
+                                const alreadyFilled = isStudentAlreadySubmitted(s.nis, s.nama);
                                 return (
                                   <option
                                     key={s.id}
