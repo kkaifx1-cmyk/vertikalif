@@ -834,7 +834,7 @@ export default function SurveyPage() {
               <button
                 type="button"
                 onClick={() => currentStep > 0 && setCurrentStep(0)}
-                className={`px-2.5 py-1 rounded-full transition-all shrink-0 cursor-pointer ${
+                className={`px-2.5 py-1 rounded-full touch-manipulation select-none transition-all shrink-0 cursor-pointer ${
                   currentStep === 0
                     ? "bg-emerald-700 text-white font-bold shadow-xs"
                     : currentStep > 0
@@ -956,10 +956,10 @@ export default function SurveyPage() {
                           key={c.value}
                           type="button"
                           onClick={() => handleGradeChange(c.value)}
-                          className={`flex items-center justify-center py-2.5 px-3 rounded-lg font-extrabold text-sm sm:text-base transition-all duration-200 cursor-pointer border ${
+                          className={`flex items-center justify-center py-2.5 px-3 rounded-lg font-extrabold text-sm sm:text-base cursor-pointer select-none touch-manipulation transition-colors duration-150 active:scale-[0.97] border ${
                             isSelected
-                              ? "-translate-y-1 bg-emerald-700 text-white border-emerald-600 shadow-[0_10px_22px_-3px_rgba(21,128,61,0.45),0_0_16px_2px_rgba(34,197,94,0.3)] ring-2 ring-emerald-500/40"
-                              : "bg-white text-slate-700 border-slate-300 shadow-xs hover:-translate-y-1.5 hover:border-emerald-500 hover:text-emerald-800 hover:bg-emerald-50/60 hover:shadow-[0_12px_24px_-4px_rgba(21,128,61,0.35),0_0_16px_2px_rgba(34,197,94,0.22)] active:translate-y-0 active:scale-95"
+                              ? "bg-emerald-700 text-white border-emerald-600 shadow-md ring-2 ring-emerald-500/50"
+                              : "bg-white text-slate-700 border-slate-300 shadow-xs hover:border-emerald-500 hover:text-emerald-800 hover:bg-emerald-50/70 active:bg-emerald-100"
                           }`}
                         >
                           {c.label}
@@ -994,15 +994,17 @@ export default function SurveyPage() {
                           key={num}
                           type="button"
                           onClick={() => {
+                            const activeGrade = identity.kategori || "Siswa Kelas X";
                             if (!identity.kategori) {
-                              setIdentity((prev) => ({ ...prev, kategori: "Siswa Kelas X" }));
+                              setIdentity((prev) => ({ ...prev, kategori: activeGrade }));
                             }
-                            handleRombelSelect(rombelCode);
+                            const prefix = getGradePrefix(activeGrade);
+                            handleRombelSelect(`${prefix}-${num}`);
                           }}
-                          className={`group relative flex flex-col items-center justify-center py-1.5 sm:py-2 px-1 rounded-lg border transition-all duration-200 cursor-pointer ${
+                          className={`group relative flex flex-col items-center justify-center py-1.5 sm:py-2 px-1 rounded-lg border cursor-pointer select-none touch-manipulation transition-all duration-150 active:scale-95 ${
                             isRombelSelected
-                              ? "-translate-y-1 bg-gradient-to-b from-amber-400 via-amber-400 to-amber-500 text-slate-950 border-amber-500 shadow-[0_10px_22px_-3px_rgba(245,158,11,0.5),0_0_14px_2px_rgba(251,191,36,0.35)] font-black ring-2 ring-amber-300 scale-105"
-                              : "bg-white text-slate-800 border-slate-200 shadow-xs hover:-translate-y-1 hover:border-emerald-500 hover:bg-emerald-50 hover:text-emerald-900 hover:shadow-[0_10px_20px_-3px_rgba(21,128,61,0.25),0_0_14px_2px_rgba(34,197,94,0.18)] active:translate-y-0 active:scale-95"
+                              ? "bg-gradient-to-b from-amber-400 via-amber-400 to-amber-500 text-slate-950 border-amber-500 shadow-md font-black ring-2 ring-amber-300 scale-[1.03]"
+                              : "bg-white text-slate-800 border-slate-200 shadow-xs hover:border-emerald-500 hover:bg-emerald-50/70 hover:text-emerald-900 active:bg-emerald-100"
                           }`}
                         >
                           <span className="text-sm sm:text-base font-extrabold leading-tight">
@@ -1073,10 +1075,10 @@ export default function SurveyPage() {
                         key={j.id}
                         type="button"
                         onClick={() => setSelectedJurusan(j.id)}
-                        className={`text-left p-3.5 rounded-xl border transition-all duration-200 cursor-pointer flex flex-col justify-between ${
+                        className={`text-left p-3.5 rounded-xl border cursor-pointer select-none touch-manipulation transition-all duration-150 active:scale-[0.98] flex flex-col justify-between ${
                           isSelected
-                            ? "-translate-y-1 bg-gradient-to-br from-emerald-50 to-emerald-100/70 border-emerald-600 shadow-[0_8px_20px_-3px_rgba(21,128,61,0.35),0_0_12px_1px_rgba(34,197,94,0.25)] ring-2 ring-emerald-500/50"
-                            : "bg-white border-slate-200 shadow-xs hover:-translate-y-1 hover:border-emerald-400 hover:shadow-[0_6px_16px_-3px_rgba(21,128,61,0.2)]"
+                            ? "bg-gradient-to-br from-emerald-50 to-emerald-100/80 border-emerald-600 shadow-md ring-2 ring-emerald-500/50"
+                            : "bg-white border-slate-200 shadow-xs hover:border-emerald-400 hover:bg-emerald-50/50"
                         }`}
                       >
                         <div>
@@ -1129,7 +1131,7 @@ export default function SurveyPage() {
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       placeholder={selectedRombel ? `Cari nama santri di kelas ${selectedRombel}...` : "Ketik nama santri untuk mencari cepat..."}
-                      className="w-full rounded-lg border border-slate-300 bg-white pl-8.5 pr-3 py-2 text-xs text-slate-900 placeholder:text-slate-400 transition-all duration-200 hover:-translate-y-0.5 hover:border-emerald-500 hover:shadow-[0_6px_16px_-2px_rgba(21,128,61,0.2),0_0_12px_1px_rgba(34,197,94,0.15)] focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-600/20"
+                      className="w-full rounded-lg border border-slate-300 bg-white pl-8.5 pr-3 py-2 text-xs text-slate-900 placeholder:text-slate-400 transition-colors duration-150 hover:border-emerald-500 focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-600/20"
                     />
                   </div>
                 )}
@@ -1139,10 +1141,10 @@ export default function SurveyPage() {
                   disabled={!identity.kategori}
                   value={selectedStudentId}
                   onChange={(e) => handleStudentSelect(e.target.value)}
-                  className={`w-full rounded-lg border px-3.5 py-2.5 text-sm text-slate-900 cursor-pointer transition-all duration-200 ${
+                  className={`w-full rounded-lg border px-3.5 py-2.5 text-sm text-slate-900 cursor-pointer select-none touch-manipulation transition-colors duration-150 ${
                     !identity.kategori
                       ? "bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed"
-                      : "bg-white border-slate-300 font-medium hover:-translate-y-0.5 hover:border-emerald-500 hover:shadow-[0_8px_20px_-3px_rgba(21,128,61,0.25),0_0_14px_1px_rgba(34,197,94,0.18)] focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-600/20"
+                      : "bg-white border-slate-300 font-medium hover:border-emerald-500 focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-600/20"
                   }`}
                 >
                   {!identity.kategori ? (
@@ -1234,7 +1236,7 @@ export default function SurveyPage() {
                   <select
                     value={identity.jenisKelamin}
                     onChange={(e) => setIdentity({ ...identity, jenisKelamin: e.target.value })}
-                    className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 transition-all duration-200 cursor-pointer shadow-xs hover:-translate-y-0.5 hover:border-emerald-500 hover:shadow-[0_8px_20px_-3px_rgba(21,128,61,0.2),0_0_12px_1px_rgba(34,197,94,0.15)] focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-600/20 focus:shadow-[0_0_16px_rgba(21,128,61,0.25)]"
+                    className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 transition-colors duration-150 cursor-pointer select-none touch-manipulation shadow-xs hover:border-emerald-500 focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-600/20"
                   >
                     {GENDER_OPTIONS.map((g) => (
                       <option key={g.value} value={g.value}>
@@ -1254,7 +1256,7 @@ export default function SurveyPage() {
                     value={identity.nomorId}
                     onChange={(e) => setIdentity({ ...identity, nomorId: e.target.value.replace(/\D/g, "") })}
                     placeholder="Contoh: 2024"
-                    className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 font-mono transition-all duration-200 hover:-translate-y-0.5 hover:border-emerald-500 hover:shadow-[0_8px_20px_-3px_rgba(21,128,61,0.2),0_0_12px_1px_rgba(34,197,94,0.15)] focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-600/20 focus:shadow-[0_0_16px_rgba(21,128,61,0.25)]"
+                    className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 font-mono transition-colors duration-150 hover:border-emerald-500 focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-600/20"
                   />
                 </div>
               </div>
@@ -1382,10 +1384,10 @@ export default function SurveyPage() {
                                 key={opt.value}
                                 type="button"
                                 onClick={() => handleSelectScore(q.id, opt.value)}
-                                className={`flex flex-col items-center justify-center rounded-xl border p-3 text-center transition-all duration-200 cursor-pointer ${
+                                className={`flex flex-col items-center justify-center rounded-xl border p-3 text-center cursor-pointer select-none touch-manipulation transition-all duration-150 active:scale-95 ${
                                   isSelected
-                                    ? "border-emerald-600 bg-emerald-700 text-white font-bold -translate-y-1.5 shadow-[0_12px_26px_-4px_rgba(21,128,61,0.5),0_0_18px_2px_rgba(34,197,94,0.4)] ring-2 ring-emerald-500/50 scale-[1.02]"
-                                    : "border-slate-200 bg-slate-50/60 hover:bg-white hover:border-emerald-500 hover:-translate-y-1.5 hover:shadow-[0_10px_22px_-4px_rgba(21,128,61,0.3),0_0_14px_1px_rgba(34,197,94,0.22)] text-slate-700 active:translate-y-0"
+                                    ? "border-emerald-600 bg-emerald-700 text-white font-bold shadow-md ring-2 ring-emerald-500/50 scale-[1.02]"
+                                    : "border-slate-200 bg-slate-50/70 hover:bg-white hover:border-emerald-500 hover:text-emerald-900 active:bg-emerald-100 text-slate-700"
                                 }`}
                               >
                                 <span className={`text-lg font-black ${isSelected ? "text-amber-300" : "text-slate-800"}`}>
@@ -1523,7 +1525,7 @@ export default function SurveyPage() {
                 variant="gold"
                 size="lg"
                 disabled={isSubmitting}
-                className="gap-2 font-bold shadow-xs text-slate-950 transition-all hover:-translate-y-1 hover:shadow-[0_10px_24px_rgba(202,138,4,0.35)] active:scale-95 cursor-pointer"
+                className="gap-2 font-bold shadow-xs text-slate-950 cursor-pointer select-none touch-manipulation active:scale-95 transition-all duration-150"
               >
                 <Send className="h-4 w-4 text-slate-950" />
                 {isSubmitting ? "Mengirimkan Data..." : "Kirim Respon Survei"}

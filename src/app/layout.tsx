@@ -17,7 +17,13 @@ export const metadata: Metadata = {
   description:
     "Platform instrumen survei refleksi mandiri evaluasi 7 Karakter Utama Ihsanul Fikri (7 KAIH) santri SMAIT Ihsanul Fikri Kabupaten Magelang secara objektif dan terukur.",
   icons: {
-    icon: "/logo-ihsanul-fikri.png",
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon.png", type: "image/png" },
+      { url: "/logo-ihsanul-fikri.png", type: "image/png" },
+    ],
+    shortcut: "/favicon.ico",
+    apple: "/apple-icon.png",
   },
 };
 
@@ -33,6 +39,9 @@ export default function RootLayout({
       className={`${inter.variable} h-full antialiased`}
     >
       <head>
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" type="image/png" href="/logo-ihsanul-fikri.png" />
+        <link rel="apple-touch-icon" href="/apple-icon.png" />
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
       <body
