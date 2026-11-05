@@ -584,26 +584,26 @@ function HomeInner() {
               {WHITELIST_MEMBERS.map((member) => (
                 <div
                   key={member.nis}
-                  className="group w-full sm:w-[calc(50%-12px)] lg:w-[calc(25%-18px)] max-w-sm rounded-2xl border border-slate-200/90 dark:border-emerald-500/60 bg-white/95 dark:bg-black/95 backdrop-blur-xs flex flex-col justify-between transition-all duration-300 hover:-translate-y-2 hover:border-emerald-500 dark:hover:border-amber-400 hover:shadow-[0_16px_32px_-8px_rgba(21,128,61,0.28)] dark:shadow-[0_0_20px_rgba(16,185,129,0.2)] dark:hover:shadow-[0_0_35px_rgba(245,158,11,0.55),0_0_15px_rgba(251,191,36,0.35)] cursor-default"
+                  className="group w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] xl:w-[calc(25%-18px)] max-w-sm rounded-2xl border border-slate-200/90 dark:border-emerald-500/60 bg-white/95 dark:bg-black/95 backdrop-blur-xs flex flex-col justify-between transition-all duration-300 hover:-translate-y-2 hover:border-emerald-500 dark:hover:border-amber-400 hover:shadow-[0_16px_32px_-8px_rgba(21,128,61,0.28)] dark:shadow-[0_0_20px_rgba(16,185,129,0.2)] dark:hover:shadow-[0_0_35px_rgba(245,158,11,0.55),0_0_15px_rgba(251,191,36,0.35)] cursor-default"
                 >
                   <div className="pt-6 pb-2 text-center flex flex-col items-center">
-                    {/* Pas Foto Formal 3x4 dengan Frame Hijau -> Berubah Emas saat Hover (Seragam untuk Semua) */}
-                    <div className="relative w-28 h-36 shrink-0 overflow-hidden rounded-xl border-2 border-emerald-600 dark:border-emerald-500 group-hover:dark:border-amber-400 bg-slate-100 dark:bg-black shadow-md dark:shadow-[0_0_18px_rgba(16,185,129,0.4)] group-hover:dark:shadow-[0_0_25px_rgba(245,158,11,0.65)] mb-3.5 transition-all duration-300">
+                    {/* Pas Foto Formal 3x4 dengan Frame Hijau -> Berubah Emas saat Hover (Ukuran Sedang Elegan untuk Semua) */}
+                    <div className="relative w-36 h-48 sm:w-40 sm:h-52 shrink-0 overflow-hidden rounded-2xl border-2 border-emerald-600 dark:border-emerald-500 group-hover:dark:border-amber-400 bg-slate-100 dark:bg-black shadow-md dark:shadow-[0_0_20px_rgba(16,185,129,0.4)] group-hover:dark:shadow-[0_0_28px_rgba(245,158,11,0.65)] mb-4 transition-all duration-300">
                       <Image
                         src={member.avatar}
                         alt={member.nama}
                         fill
-                        sizes="(max-width: 640px) 112px, 144px"
+                        sizes="(max-width: 640px) 144px, 160px"
                         className={`object-cover ${member.avatarPosition || "object-top"}`}
                       />
                     </div>
 
                     <div className="space-y-1.5 px-4 w-full">
-                      <h3 className="text-base font-bold text-slate-900 dark:text-white group-hover:dark:text-amber-300 leading-snug transition-colors">
+                      <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white group-hover:dark:text-amber-300 leading-snug transition-colors">
                         {member.nama}
                       </h3>
                       <div>
-                        <Badge variant="gold" className="text-[10px] px-2.5 py-0.5 font-semibold shadow-xs">
+                        <Badge variant="gold" className="text-[11px] px-3 py-0.5 font-semibold shadow-xs">
                           {member.peran}
                         </Badge>
                       </div>
