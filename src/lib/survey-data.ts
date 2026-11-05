@@ -554,7 +554,8 @@ export const WHITELIST_MEMBERS: WhitelistProfile[] = [
     nis: "19890101",
     kelas: "Pembimbing",
     peran: "Technology & AI Project Mentor",
-    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=300&q=80",
+    avatar: "/rizal-hanifa-pratama.png",
+    avatarPosition: "object-[center_20%]",
     bio: "Mendampingi jalannya riset proyek, supervisi implementasi kecerdasan buatan (AI) dan aplikasi web, serta memfasilitasi integrasi sistem kuesioner terpadu di sekolah.",
   },
   {
