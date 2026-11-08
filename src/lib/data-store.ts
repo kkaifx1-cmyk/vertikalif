@@ -204,19 +204,38 @@ let responsesCache: ResponseRecord[] = [];
 
 export async function getAllResponses(): Promise<ResponseRecord[]> {
   try {
-    const { data, error } = await supabase
-      .from("survey_responses")
-      .select("*")
-      .order("created_at", { ascending: false });
+    let allData: any[] = [];
+    let from = 0;
+    const step = 1000;
 
-    if (!error && Array.isArray(data)) {
-      if (data.length === 0) {
+    // PostgREST/Supabase memiliki batas default 1.000 baris per query.
+    // Lakukan paginasi batch secara otomatis agar seluruh respon multi-sesi (1.156+ data) terekam lengkap tanpa terpotong.
+    while (true) {
+      const { data, error } = await supabase
+        .from("survey_responses")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .range(from, from + step - 1);
+
+      if (error) {
+        console.warn("Notice Supabase batch fetch error:", error.message);
+        break;
+      }
+
+      if (!data || data.length === 0) break;
+      allData = allData.concat(data);
+      if (data.length < step) break;
+      from += step;
+    }
+
+    if (Array.isArray(allData)) {
+      if (allData.length === 0) {
         responsesCache = [];
         return [];
       }
       const mapped: ResponseRecord[] = [];
 
-      for (const row of data) {
+      for (const row of allData) {
         // Abaikan ID yang telah dihapus
         if (deletedIds.has(row.id)) continue;
 
