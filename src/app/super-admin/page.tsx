@@ -258,8 +258,11 @@ function SuperAdminDashboard() {
         confidencePct: 0,
         rConsistencyFocus: 0,
         rFocusConfidence: 0,
+        rConsistencyConfidence: 0,
         r2ConsistencyFocus: 0,
         r2FocusConfidence: 0,
+        avgRawConfidence: 0,
+        rawConfidencePct: 0,
         consistencyItems: kLabels.map((name) => ({ name, val: 0, pct: 0 })),
         focusDimensions: [
           {
@@ -289,6 +292,7 @@ function SuperAdminDashboard() {
     const kList: number[] = [];
     const fList: number[] = [];
     const cList: number[] = [];
+    const rawCList: number[] = [];
 
     let sumSelective = 0, countSelective = 0;
     let sumOpen = 0, countOpen = 0;
@@ -354,6 +358,7 @@ function SuperAdminDashboard() {
       }
       // METODE 2: Confidency Sejati santri dikalibrasi adil (50% Fokus + 50% Butir 5 Unjuk Diri)
       const rawC = cCnt > 0 ? cSum / cCnt : 3.0;
+      rawCList.push(rawC);
       const studentF = fCnt > 0 ? fSum / fCnt : 3.0;
       const synthC = r.confidenceScore !== undefined ? r.confidenceScore : Number((0.5 * studentF + 0.5 * rawC).toFixed(2));
       cList.push(synthC);
@@ -362,6 +367,7 @@ function SuperAdminDashboard() {
     const avgK = kList.length > 0 ? kList.reduce((a, b) => a + b, 0) / kList.length : 0;
     const avgF = fList.length > 0 ? fList.reduce((a, b) => a + b, 0) / fList.length : 0;
     const avgC = cList.length > 0 ? cList.reduce((a, b) => a + b, 0) / cList.length : 0;
+    const avgRawC = rawCList.length > 0 ? rawCList.reduce((a, b) => a + b, 0) / rawCList.length : 0;
 
     const calcPearson = (xs: number[], ys: number[], meanX: number, meanY: number) => {
       let cov = 0, varX = 0, varY = 0;
@@ -379,9 +385,11 @@ function SuperAdminDashboard() {
 
     const rKF = total >= 2 ? calcPearson(kList, fList, avgK, avgF) : 0;
     const rFC = total >= 2 ? calcPearson(fList, cList, avgF, avgC) : 0;
+    const rKC = total >= 2 ? calcPearson(kList, cList, avgK, avgC) : 0;
 
     const rConsistencyFocus = Number(rKF.toFixed(3));
     const rFocusConfidence = Number(rFC.toFixed(3));
+    const rConsistencyConfidence = Number(rKC.toFixed(3));
 
     return {
       total,
@@ -391,8 +399,11 @@ function SuperAdminDashboard() {
       focusPct: avgF > 0 ? Math.round(((Math.max(1, avgF) - 1) / 3) * 100) : 0,
       avgConfidence: Number(avgC.toFixed(2)),
       confidencePct: avgC > 0 ? Math.round(((Math.max(1, avgC) - 1) / 3) * 100) : 0,
+      avgRawConfidence: Number(avgRawC.toFixed(2)),
+      rawConfidencePct: avgRawC > 0 ? Math.round(((Math.max(1, avgRawC) - 1) / 3) * 100) : 0,
       rConsistencyFocus,
       rFocusConfidence,
+      rConsistencyConfidence,
       r2ConsistencyFocus: Number((rConsistencyFocus * rConsistencyFocus * 100).toFixed(1)),
       r2FocusConfidence: Number((rFocusConfidence * rFocusConfidence * 100).toFixed(1)),
       consistencyItems: kLabels.map((name, i) => {
@@ -432,11 +443,11 @@ function SuperAdminDashboard() {
         };
       }),
     };
-  }, [responses]);
+  }, [activeResponses]);
 
   // Ekstensi Data Santri (IK, IF, IC, Tier 3 Sleep, dan Status Persona) & IKV Komposit
   const { ikvData, extendedStudents, personaCounts } = useMemo(() => {
-    if (!responses || responses.length === 0) {
+    if (!activeResponses || activeResponses.length === 0) {
       return {
         ikvData: {
           ikvScore: 0.0,
@@ -640,9 +651,16 @@ function SuperAdminDashboard() {
     }
     const rKF = cognitivePipelineData.rConsistencyFocus;
     const rFC = cognitivePipelineData.rFocusConfidence;
+    const rKC = cognitivePipelineData.rConsistencyConfidence ?? 0;
     const mult = rKF * rFC;
     const medPct = mult * 100;
-    const direct = Math.max(0, 100 - medPct);
+
+    // Hayes PROCESS Direct Effect (c')
+    // c' = (rKC - rKF * rFC) / (1 - rKF^2)
+    const denom = 1 - rKF * rKF;
+    const cPrime = denom > 0.001 ? (rKC - mult) / denom : 0;
+    const direct = Math.max(0, cPrime * 100);
+
     return {
       pathStrength: mult.toFixed(3),
       mediationPct: medPct.toFixed(1),
@@ -1698,8 +1716,8 @@ function SuperAdminDashboard() {
                     }}
                     confidenceItems={cognitivePipelineData.confidenceItems}
                     confidenceSummary={{
-                      pct: cognitivePipelineData.confidencePct,
-                      avg: cognitivePipelineData.avgConfidence,
+                      pct: cognitivePipelineData.rawConfidencePct ?? cognitivePipelineData.confidencePct,
+                      avg: cognitivePipelineData.avgRawConfidence ?? cognitivePipelineData.avgConfidence,
                     }}
                   />
 

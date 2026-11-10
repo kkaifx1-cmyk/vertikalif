@@ -225,31 +225,32 @@ export function computeSessionMetrics(
   let countC = 0;
 
   sessionResponses.forEach((r) => {
+    const answers = (r.answers || {}) as Record<string, any>;
     // 7 KAIH butir
     for (let k = 1; k <= 7; k++) {
-      const q1 = r.answers[`q${k}_1`];
-      if (q1 !== undefined) {
-        sumK += q1;
+      const q1 = answers[`k${k}_1`] ?? answers[`q${k}_1`];
+      if (q1 !== undefined && !isNaN(Number(q1))) {
+        sumK += Number(q1);
         countK++;
       }
-      const q2 = r.answers[`q${k}_2`];
-      const q3 = r.answers[`q${k}_3`];
-      const q4 = r.answers[`q${k}_4`];
-      if (q2 !== undefined) {
-        sumF += q2;
+      const q2 = answers[`k${k}_2`] ?? answers[`q${k}_2`];
+      const q3 = answers[`k${k}_3`] ?? answers[`q${k}_3`];
+      const q4 = answers[`k${k}_4`] ?? answers[`q${k}_4`];
+      if (q2 !== undefined && !isNaN(Number(q2))) {
+        sumF += Number(q2);
         countF++;
       }
-      if (q3 !== undefined) {
-        sumF += q3;
+      if (q3 !== undefined && !isNaN(Number(q3))) {
+        sumF += Number(q3);
         countF++;
       }
-      if (q4 !== undefined) {
-        sumF += q4;
+      if (q4 !== undefined && !isNaN(Number(q4))) {
+        sumF += Number(q4);
         countF++;
       }
-      const q5 = r.answers[`q${k}_5`];
-      if (q5 !== undefined) {
-        sumC += q5;
+      const q5 = answers[`k${k}_5`] ?? answers[`q${k}_5`];
+      if (q5 !== undefined && !isNaN(Number(q5))) {
+        sumC += Number(q5);
         countC++;
       }
     }
