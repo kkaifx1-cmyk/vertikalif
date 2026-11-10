@@ -71,7 +71,8 @@ import { LiveActivityFeed } from "@/components/super-admin/live-activity-feed";
 import { MediationTriangle } from "@/components/super-admin/mediation-triangle";
 import { PathDonuts } from "@/components/super-admin/path-donuts";
 import { VariableDetailsBreakdown } from "@/components/super-admin/variable-details-breakdown";
-import { RoleModelsSpotlight } from "@/components/super-admin/role-models-spotlight";
+import { RoleModelsSpotlight, ExtendedStudentData } from "@/components/super-admin/role-models-spotlight";
+import { StudentDetailModal } from "@/components/super-admin/student-detail-modal";
 import { NumberTicker } from "@/components/super-admin/number-ticker";
 
 const THEME_COLORS = ["#15803d", "#d97706", "#0284c7", "#7c3aed", "#059669", "#ea580c", "#4f46e5"];
@@ -85,35 +86,6 @@ function formatDuration(seconds?: number): string {
   if (m === 0) return `${s} dtk`;
   if (s === 0) return `${m} mnt`;
   return `${m} mnt ${s} dtk`;
-}
-
-interface ExtendedStudentData {
-  id: string;
-  nama: string;
-  kategori: string;
-  jenisKelamin: string;
-  nomorId: string;
-  totalScore: number;
-  durationSeconds?: number;
-  confidenceScore: number;
-  confidencePercentage: number;
-  confidenceCategory: string;
-  topKaihFactor: string;
-  createdAt: string;
-  feedback?: string;
-  ikScore: number;
-  ikPct: number;
-  ifScore: number;
-  ifPct: number;
-  icScore: number;
-  icPct: number;
-  tier3Score: number;
-  tier3Pct: number;
-  persona: "anchored_leader" | "quiet_hafidz" | "fragile_performer" | "developing";
-  personaLabel: string;
-  personaBadgeClass: string;
-  sessionBadge?: string;
-  sessionName?: string;
 }
 
 function SuperAdminDashboard() {
@@ -139,6 +111,7 @@ function SuperAdminDashboard() {
   const [selectedClass, setSelectedClass] = useState("Semua");
   const [selectedGender, setSelectedGender] = useState("Semua");
   const [selectedConfidenceCategory, setSelectedConfidenceCategory] = useState("Semua");
+  const [inspectedStudentModal, setInspectedStudentModal] = useState<ExtendedStudentData | null>(null);
 
   // Filter Sesi Evaluasi 4 Hari & Rekapan Gabungan (Default otomatis ke Sesi Hari Ini jika sedang berlangsung)
   const [selectedSessionId, setSelectedSessionId] = useState<string>(() => {
@@ -586,6 +559,7 @@ function SuperAdminDashboard() {
         personaBadgeClass,
         sessionBadge,
         sessionName,
+        answers: (r.answers || {}) as Record<string, number>,
       };
     });
 
@@ -1768,13 +1742,17 @@ function SuperAdminDashboard() {
                                 {extendedStudents
                                   .filter((s) => s.persona === "quiet_hafidz")
                                   .map((s) => (
-                                    <span
+                                    <button
                                       key={s.id}
-                                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white dark:bg-zinc-900 border border-blue-200 dark:border-zinc-800 text-xs font-semibold text-slate-800 dark:text-zinc-200 shadow-2xs"
+                                      type="button"
+                                      onClick={() => setInspectedStudentModal(s)}
+                                      title={`Klik untuk melihat radar ${s.nama}`}
+                                      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white dark:bg-zinc-900 border border-blue-200 dark:border-zinc-800 hover:border-amber-400/50 hover:shadow-xs text-xs font-semibold text-slate-800 dark:text-zinc-200 shadow-2xs cursor-pointer transition-all duration-200 hover:-translate-y-0.5"
                                     >
                                       <span>{s.nama}</span>
                                       <span className="text-[10px] text-blue-700 dark:text-blue-400 font-mono font-bold">({s.kategori})</span>
-                                    </span>
+                                      <Compass className="h-3 w-3 text-amber-500 ml-0.5" />
+                                    </button>
                                   ))}
                               </div>
                             </div>
@@ -1839,13 +1817,17 @@ function SuperAdminDashboard() {
                                 {extendedStudents
                                   .filter((s) => s.persona === "fragile_performer")
                                   .map((s) => (
-                                    <span
+                                    <button
                                       key={s.id}
-                                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white dark:bg-zinc-900 border border-red-200 dark:border-zinc-800 text-xs font-semibold text-slate-800 dark:text-zinc-200 shadow-2xs"
+                                      type="button"
+                                      onClick={() => setInspectedStudentModal(s)}
+                                      title={`Klik untuk melihat radar ${s.nama}`}
+                                      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white dark:bg-zinc-900 border border-red-200 dark:border-zinc-800 hover:border-amber-400/50 hover:shadow-xs text-xs font-semibold text-slate-800 dark:text-zinc-200 shadow-2xs cursor-pointer transition-all duration-200 hover:-translate-y-0.5"
                                     >
                                       <span>{s.nama}</span>
                                       <span className="text-[10px] text-red-700 dark:text-red-400 font-mono font-bold">({s.kategori})</span>
-                                    </span>
+                                      <Compass className="h-3 w-3 text-amber-500 ml-0.5" />
+                                    </button>
                                   ))}
                               </div>
                             </div>
@@ -2094,7 +2076,11 @@ function SuperAdminDashboard() {
                             const isIkhwan = item.jenisKelamin !== "Akhwat";
 
                             return (
-                              <tr key={item.id} className="hover:bg-emerald-50/70 transition-colors">
+                              <tr
+                                key={item.id}
+                                onClick={() => setInspectedStudentModal(item)}
+                                className="hover:bg-amber-50/60 dark:hover:bg-zinc-800/50 transition-colors cursor-pointer group"
+                              >
                                 {/* 1. Nama Santri & Gender Avatar */}
                                 <td className="px-5 py-3.5 font-semibold text-slate-900 whitespace-nowrap">
                                   <div className="flex items-center gap-2.5">
@@ -2108,7 +2094,10 @@ function SuperAdminDashboard() {
                                       {item.nama.charAt(0).toUpperCase()}
                                     </div>
                                     <div>
-                                      <span className="block font-bold text-slate-900">{item.nama}</span>
+                                      <div className="flex items-center gap-1 group-hover:text-amber-600 transition-colors">
+                                        <span className="block font-bold text-slate-900 dark:text-white">{item.nama}</span>
+                                        <Compass className="h-3 w-3 text-amber-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                      </div>
                                       <span className="text-[10px] text-slate-400 font-medium">
                                         {item.jenisKelamin} • {item.kategori}
                                       </span>
@@ -2213,14 +2202,31 @@ function SuperAdminDashboard() {
 
                                 {/* 8. Aksi Kendali */}
                                 <td className="px-4 py-3.5 text-center whitespace-nowrap">
-                                  <button
-                                    type="button"
-                                    onClick={() => handleDeleteResponse(item.id, item.nama)}
-                                    title={`Hapus respon ${item.nama}`}
-                                    className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200 cursor-pointer active:scale-90"
-                                  >
-                                    <Trash2 className="h-4 w-4 text-red-500 hover:text-red-700" />
-                                  </button>
+                                  <div className="flex items-center justify-center gap-1.5">
+                                    <button
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setInspectedStudentModal(item);
+                                      }}
+                                      title={`Lihat Grafik Radar 7 KAIH ${item.nama}`}
+                                      className="px-2 py-1 text-[10px] font-bold text-amber-700 dark:text-amber-300 bg-amber-100/80 dark:bg-amber-950/40 hover:bg-amber-200 dark:hover:bg-amber-900/60 rounded-md transition-colors inline-flex items-center gap-1 cursor-pointer shadow-2xs"
+                                    >
+                                      <Compass className="h-3 w-3 text-amber-600 dark:text-amber-400" />
+                                      <span>Radar</span>
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleDeleteResponse(item.id, item.nama);
+                                      }}
+                                      title={`Hapus respon ${item.nama}`}
+                                      className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-lg transition-all duration-200 cursor-pointer active:scale-90"
+                                    >
+                                      <Trash2 className="h-4 w-4 text-red-500 hover:text-red-700" />
+                                    </button>
+                                  </div>
                                 </td>
                               </tr>
                             );
@@ -2337,6 +2343,12 @@ function SuperAdminDashboard() {
             </div>
           </div>
         </div>
+
+        {/* Modal Detail Santri (Drill-down Radar 7 Pilar KAIH) */}
+        <StudentDetailModal
+          student={inspectedStudentModal}
+          onClose={() => setInspectedStudentModal(null)}
+        />
       </div>
     </AuthGuard>
   );
