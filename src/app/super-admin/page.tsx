@@ -68,6 +68,10 @@ import { BentoKpiGrid } from "@/components/super-admin/bento-kpi-grid";
 import { RadarKaihChart } from "@/components/super-admin/radar-kaih-chart";
 import { CohortCorrelationMatrix } from "@/components/super-admin/cohort-correlation-matrix";
 import { LiveActivityFeed } from "@/components/super-admin/live-activity-feed";
+import { MediationTriangle } from "@/components/super-admin/mediation-triangle";
+import { PathDonuts } from "@/components/super-admin/path-donuts";
+import { VariableDetailsBreakdown } from "@/components/super-admin/variable-details-breakdown";
+import { RoleModelsSpotlight } from "@/components/super-admin/role-models-spotlight";
 
 const THEME_COLORS = ["#15803d", "#d97706", "#0284c7", "#7c3aed", "#059669", "#ea580c", "#4f46e5"];
 const LIKERT_COLORS = ["#ef4444", "#f59e0b", "#10b981", "#15803d"];
@@ -1649,375 +1653,79 @@ function SuperAdminDashboard() {
                     </div>
                   </div>
 
-                  {/* 2. KARTU TRANSMISI AIR TERJUN KOGNITIF (COGNITIVE WATERFALL CARD) */}
-                  <Card className="border-slate-200 bg-white shadow-xs rounded-2xl p-6 sm:p-7 transition-all duration-300 hover:border-amber-400 hover:shadow-[0_14px_32px_-6px_rgba(245,158,11,0.22)]">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-2">
-                      <div>
-                        <CardTitle className="text-base sm:text-lg font-extrabold text-slate-900 flex items-center gap-2">
-                          <Sparkles className="h-5 w-5 text-amber-500" />
-                          Alur Transmisi Rantai Kognitif: Kebiasaan ➔ Fokus ➔ Confidency
-                        </CardTitle>
-                        <CardDescription className="text-xs text-slate-500 mt-0.5">
-                          Visualisasi bagaimana disiplin fisik 7 KAIH dikonversi menjadi kapasitas atensi, dan atensi menjadi keberanian tampil
-                        </CardDescription>
-                      </div>
-                      <Badge className="bg-amber-100 text-amber-900 border border-amber-300 text-xs font-bold self-start sm:self-auto">
-                        Model Mediasi Penuh (Full Mediation)
-                      </Badge>
-                    </div>
+                  {/* 2. ARSITEKTUR SEGITIGA MEDIASI HAYES PROCESS (X -> M -> Y) */}
+                  <MediationTriangle
+                    consistencyPct={cognitivePipelineData.consistencyPct}
+                    avgConsistency={cognitivePipelineData.avgConsistency}
+                    focusPct={cognitivePipelineData.focusPct}
+                    avgFocus={cognitivePipelineData.avgFocus}
+                    confidencePct={cognitivePipelineData.confidencePct}
+                    avgConfidence={cognitivePipelineData.avgConfidence}
+                    rConsistencyFocus={cognitivePipelineData.rConsistencyFocus}
+                    rFocusConfidence={cognitivePipelineData.rFocusConfidence}
+                    directEffect={directEffect}
+                    mediationPct={mediationPct}
+                    pathStrength={pathStrength}
+                  />
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 my-6 items-center">
-                      {/* Box Tahap 1: Input Konsistensi */}
-                      <div className="p-5 rounded-2xl border-2 border-emerald-200 bg-emerald-50/50 text-center space-y-2 relative shadow-2xs hover:shadow-md transition-all">
-                        <Badge className="bg-emerald-600 text-white text-[10px] font-bold">Tahap 1: Input Tindakan</Badge>
-                        <h3 className="text-sm font-bold text-slate-800">Konsistensi 7 KAIH (X)</h3>
-                        <div className="text-3xl font-black text-emerald-800 font-mono">{cognitivePipelineData.consistencyPct}%</div>
-                        <p className="text-[11px] text-slate-500">Akumulasi Butir 1 seluruh 7 KAIH (Rutinitas Fisik)</p>
-                      </div>
+                  {/* 3. DUA DIAGRAM DONAT ANALISIS JALUR (PATH A & PATH B) */}
+                  <PathDonuts
+                    rConsistencyFocus={cognitivePipelineData.rConsistencyFocus}
+                    r2ConsistencyFocus={cognitivePipelineData.r2ConsistencyFocus}
+                    rFocusConfidence={cognitivePipelineData.rFocusConfidence}
+                    r2FocusConfidence={cognitivePipelineData.r2FocusConfidence}
+                    totalResponses={activeAnalytics.totalResponses}
+                  />
 
-                      {/* Panah Transmisi Jalur A */}
-                      <div className="flex flex-col items-center justify-center space-y-1.5 px-2">
-                        <span className="text-[11px] font-bold text-amber-800 bg-amber-50 px-3 py-1 rounded-full border border-amber-200 shadow-2xs">
-                          Jalur a: Konversi {Math.round(cognitivePipelineData.rConsistencyFocus * 100)}%
-                        </span>
-                        <div className="w-full flex items-center my-1">
-                          <div className="h-1.5 bg-gradient-to-r from-emerald-500 via-amber-400 to-amber-500 flex-1 rounded-full shadow-2xs" />
-                          <ArrowRight className="h-5 w-5 text-amber-600 -ml-1 shrink-0 animate-pulse" />
-                        </div>
-                        <span className="text-[10px] text-slate-500 font-medium">Latihan Inhibisi Distraksi (r = {cognitivePipelineData.rConsistencyFocus.toFixed(3)})</span>
-                      </div>
-
-                      {/* Box Tahap 2: Mediator Fokus */}
-                      <div className="p-5 rounded-2xl border-2 border-amber-300 bg-amber-50/50 text-center space-y-2 shadow-2xs hover:shadow-md transition-all">
-                        <Badge className="bg-amber-500 text-slate-950 font-bold text-[10px]">Tahap 2: Mediator Atensi</Badge>
-                        <h3 className="text-sm font-bold text-slate-800">Fokus Belajar &amp; Regulasi (M)</h3>
-                        <div className="text-3xl font-black text-amber-700 font-mono">{cognitivePipelineData.focusPct}%</div>
-                        <p className="text-[11px] text-slate-500">Selektif + Terbuka + Eksekutif (21 Butir)</p>
-                      </div>
-                    </div>
-
-                    {/* Transmisi Jalur B ke Tahap 3 (Output Confidency) */}
-                    <div className="max-w-xl mx-auto p-5 rounded-2xl border-2 border-teal-300 bg-gradient-to-b from-teal-50/70 via-white to-white text-center space-y-3 shadow-xs">
-                      <div className="inline-flex items-center gap-1.5 text-xs font-bold text-teal-900 bg-teal-100/70 px-3 py-1 rounded-full border border-teal-200">
-                        <ArrowDown className="h-4 w-4 text-teal-600 animate-bounce" />
-                        <span>Jalur b: Konversi {Math.round(cognitivePipelineData.rFocusConfidence * 100)}% (Regulasi Logika &amp; Emosi, r = {cognitivePipelineData.rFocusConfidence.toFixed(3)})</span>
-                      </div>
-                      <div className="p-4 bg-white rounded-xl border border-teal-200/90 shadow-2xs">
-                        <Badge className="bg-teal-700 text-white text-[10px] font-bold">Tahap 3: Output Perilaku</Badge>
-                        <h3 className="text-base font-extrabold text-slate-900 mt-1">Kepercayaan Diri Nyata / Confidency (Y)</h3>
-                        <div className="text-3xl font-black text-teal-800 font-mono">{cognitivePipelineData.confidencePct}%</div>
-                        <p className="text-xs text-slate-500 mt-1 max-w-md mx-auto">Keberanian Tampil Bicara, Memimpin Forum &amp; Menyampaikan Argumen Kritis</p>
-                      </div>
-                      <div className="text-[11px] text-slate-500 italic">
-                        *Jalur c&apos; (Efek langsung sisa tanpa lewat fokus) hanya berkontribusi {directEffect}%
-                      </div>
-                    </div>
-                  </Card>
-
-                  {/* 3. DUA DIAGRAM DONAT PERSEN KORELASI KOGNITIF (GRADASI HALUS ELEGAN & TIDAK SOLID GELAP) */}
-                  <div className="rounded-2xl border border-slate-700/70 bg-gradient-to-b from-[#141f36] via-[#0d1629] to-[#070c16] p-6 sm:p-8 shadow-2xl text-white">
-                    <div className="text-center max-w-2xl mx-auto mb-7">
-                      <div className="inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wider text-amber-400 bg-amber-400/10 px-3 py-1 rounded-full border border-amber-400/25 mb-2 shadow-2xs">
-                        <Sparkles className="h-4 w-4 text-amber-400" />
-                        <span>Diagram Donat Persen Korelasi Kognitif</span>
-                      </div>
-                      <h3 className="text-lg sm:text-xl font-black text-white tracking-tight">
-                        Kekuatan Hubungan Kausalitas Antar-Variabel
-                      </h3>
-                      <p className="text-xs text-slate-300 mt-1">
-                        Nilai korelasi Pearson (r) dinyatakan dalam persentase kekuatan transmisi kognitif santri.
-                      </p>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
-                      {/* DONAT 1: KONSISTENSI DENGAN FOKUS */}
-                      <div className="flex flex-col items-center text-center p-6 sm:p-7 rounded-2xl bg-gradient-to-b from-[#192640]/90 via-[#101a2e]/95 to-[#0b101c] border border-emerald-500/35 shadow-xl hover:border-emerald-400/60 hover:shadow-[0_16px_36px_-6px_rgba(16,185,129,0.22)] hover:-translate-y-1 transition-all duration-300">
-                        <span className="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 mb-3">
-                          Diagram Donat 1: Konsistensi ➔ Fokus
-                        </span>
-
-                        {/* SVG Donat 1 */}
-                        <div className="relative my-3 w-40 h-40">
-                          <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                            {/* Dark Subtle Base Track */}
-                            <circle
-                              cx="50"
-                              cy="50"
-                              r="36"
-                              stroke="#223049"
-                              strokeWidth="13"
-                              fill="transparent"
-                            />
-                            {/* Active Percentage Arc with Crisp Flat Cut (strokeLinecap="butt") */}
-                            <circle
-                              cx="50"
-                              cy="50"
-                              r="36"
-                              stroke="#34d399"
-                              strokeWidth="13"
-                              fill="transparent"
-                              strokeDasharray={2 * Math.PI * 36}
-                              strokeDashoffset={(2 * Math.PI * 36) * (1 - (cognitivePipelineData.rConsistencyFocus * 100) / 100)}
-                              strokeLinecap="butt"
-                              strokeOpacity={cognitivePipelineData.rConsistencyFocus > 0 ? 1 : 0}
-                              className="transition-all duration-1000 ease-out"
-                            />
-                          </svg>
-                          {/* Center Typography (Clean, Balanced Sans Font) */}
-                          <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                            <span className="text-2xl sm:text-[26px] font-black text-white font-sans tracking-tight drop-shadow-sm tabular-nums">
-                              {(cognitivePipelineData.rConsistencyFocus * 100).toFixed(1)}%
-                            </span>
-                            <span className="text-xs font-semibold text-slate-300 mt-1 font-sans tracking-tight">
-                              r = {cognitivePipelineData.rConsistencyFocus.toFixed(3)}
-                            </span>
-                          </div>
-                        </div>
-
-                        <h4 className="text-sm sm:text-base font-extrabold text-white mt-2">
-                          Korelasi Konsistensi dengan Fokus
-                        </h4>
-                        <p className="text-xs text-slate-300 mt-1 max-w-xs leading-relaxed">
-                          Tingkat pengaruh disiplin rutinitas fisik terhadap pembentukan ketahanan fokus dan inhibisi distraksi di kelas.
-                        </p>
-
-                        <div className="mt-5 pt-3.5 border-t border-slate-700/60 w-full space-y-2 text-xs">
-                          <div className="flex justify-between items-center text-slate-300">
-                            <span>Koefisien Determinasi (R²):</span>
-                            <span className="font-bold text-white font-sans tabular-nums">{cognitivePipelineData.r2ConsistencyFocus}%</span>
-                          </div>
-                          <div className="flex justify-between items-center text-slate-300">
-                            <span>Kategori Korelasi:</span>
-                            <span className={cognitivePipelineData.total === 0 ? "font-bold text-slate-500" : "font-bold text-emerald-400"}>
-                              {cognitivePipelineData.total === 0 ? "0% (Belum Ada Respon)" : "Sangat Kuat & Signifikan"}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* DONAT 2: FOKUS DENGAN CONFIDENCY */}
-                      <div className="flex flex-col items-center text-center p-6 sm:p-7 rounded-2xl bg-gradient-to-b from-[#192640]/90 via-[#101a2e]/95 to-[#0b101c] border border-amber-500/35 shadow-xl hover:border-amber-400/60 hover:shadow-[0_16px_36px_-6px_rgba(245,158,11,0.22)] hover:-translate-y-1 transition-all duration-300">
-                        <span className="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-500/15 text-amber-300 border border-amber-500/30 mb-3">
-                          Diagram Donat 2: Fokus ➔ Confidency
-                        </span>
-
-                        {/* SVG Donat 2 */}
-                        <div className="relative my-3 w-40 h-40">
-                          <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                            {/* Dark Subtle Base Track */}
-                            <circle
-                              cx="50"
-                              cy="50"
-                              r="36"
-                              stroke="#223049"
-                              strokeWidth="13"
-                              fill="transparent"
-                            />
-                            {/* Active Percentage Arc with Crisp Flat Cut (strokeLinecap="butt") */}
-                            <circle
-                              cx="50"
-                              cy="50"
-                              r="36"
-                              stroke="#fbbf24"
-                              strokeWidth="13"
-                              fill="transparent"
-                              strokeDasharray={2 * Math.PI * 36}
-                              strokeDashoffset={(2 * Math.PI * 36) * (1 - (cognitivePipelineData.rFocusConfidence * 100) / 100)}
-                              strokeLinecap="butt"
-                              strokeOpacity={cognitivePipelineData.rFocusConfidence > 0 ? 1 : 0}
-                              className="transition-all duration-1000 ease-out"
-                            />
-                          </svg>
-                          {/* Center Typography (Clean, Balanced Sans Font) */}
-                          <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                            <span className="text-2xl sm:text-[26px] font-black text-white font-sans tracking-tight drop-shadow-sm tabular-nums">
-                              {(cognitivePipelineData.rFocusConfidence * 100).toFixed(1)}%
-                            </span>
-                            <span className="text-xs font-semibold text-slate-300 mt-1 font-sans tracking-tight">
-                              r = {cognitivePipelineData.rFocusConfidence.toFixed(3)}
-                            </span>
-                          </div>
-                        </div>
-
-                        <h4 className="text-sm sm:text-base font-extrabold text-white mt-2">
-                          Korelasi Fokus dengan Confidency
-                        </h4>
-                        <p className="text-xs text-slate-300 mt-1 max-w-xs leading-relaxed">
-                          Tingkat pengaruh kapasitas regulasi atensi dan logika terhadap kemantapan santri berbicara dan unjuk karya di depan publik.
-                        </p>
-
-                        <div className="mt-5 pt-3.5 border-t border-slate-700/60 w-full space-y-2 text-xs">
-                          <div className="flex justify-between items-center text-slate-300">
-                            <span>Koefisien Determinasi (R²):</span>
-                            <span className="font-bold text-white font-sans tabular-nums">{cognitivePipelineData.r2FocusConfidence}%</span>
-                          </div>
-                          <div className="flex justify-between items-center text-slate-300">
-                            <span>Kategori Korelasi:</span>
-                            <span className={cognitivePipelineData.total === 0 ? "font-bold text-slate-500" : "font-bold text-amber-400"}>
-                              {cognitivePipelineData.total === 0 ? "0% (Belum Ada Respon)" : "Sangat Kuat & Signifikan"}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* 4. DIAGRAM RINCIAN CAPAIAN MASING-MASING VARIABEL */}
-                  <div>
-                    <div className="mb-4">
-                      <h4 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
-                        <Activity className="h-4 w-4 text-emerald-700" />
-                        Diagram Rincian Capaian Masing-Masing Variabel
-                      </h4>
-                      <p className="text-xs text-slate-500">
-                        Pengukuran indikator penyusun pada Konsistensi (7 Butir), Fokus Belajar (3 Dimensi Atensi), dan Confidency (7 Butir).
-                      </p>
-                    </div>
-
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-                      {/* VARIABEL 1: KONSISTENSI (7 Butir Aksi) */}
-                      <Card className="border-slate-200 bg-white shadow-2xs rounded-xl overflow-hidden hover:shadow-md transition-all">
-                        <CardHeader className="p-4 pb-3 border-b border-slate-100 bg-emerald-50/50">
-                          <div className="flex items-center justify-between">
-                            <span className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-800">
-                              Variabel 1 (X)
-                            </span>
-                            <Badge className="bg-emerald-100 text-emerald-900 border-emerald-300 font-mono text-[10px]">
-                              {cognitivePipelineData.consistencyPct}% ({cognitivePipelineData.avgConsistency} / 4.0)
-                            </Badge>
-                          </div>
-                          <CardTitle className="text-sm font-bold text-slate-900 mt-1">
-                            Konsistensi Tindakan (7 Butir Aksi)
-                          </CardTitle>
-                          <CardDescription className="text-[11px] text-slate-500">
-                            Rutinitas fisik harian asrama &amp; kedisiplinan jadwal sekolah.
-                          </CardDescription>
-                        </CardHeader>
-                        <CardContent className="p-4 space-y-2.5">
-                          {cognitivePipelineData.consistencyItems.map((item, idx) => (
-                            <div key={idx} className="space-y-1">
-                              <div className="flex items-center justify-between text-[11px]">
-                                <span className="font-medium text-slate-700 truncate max-w-[180px]">{item.name}</span>
-                                <span className="font-mono font-bold text-emerald-800">{item.pct}% ({item.val})</span>
-                              </div>
-                              <div className="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
-                                <div
-                                  className="bg-emerald-600 h-1.5 rounded-full transition-all duration-500"
-                                  style={{ width: `${item.pct}%` }}
-                                />
-                              </div>
-                            </div>
-                          ))}
-                        </CardContent>
-                      </Card>
-
-                      {/* VARIABEL 2: FOKUS BELAJAR (3 Dimensi Atensi Kognitif) */}
-                      <Card className="border-slate-200 bg-white shadow-2xs rounded-xl overflow-hidden hover:shadow-md transition-all">
-                        <CardHeader className="p-4 pb-3 border-b border-slate-100 bg-amber-50/50">
-                          <div className="flex items-center justify-between">
-                            <span className="text-[10px] font-extrabold uppercase tracking-wider text-amber-800">
-                              Variabel 2 (Mediator)
-                            </span>
-                            <Badge className="bg-amber-100 text-amber-900 border-amber-300 font-mono text-[10px]">
-                              {cognitivePipelineData.focusPct}% ({cognitivePipelineData.avgFocus} / 4.0)
-                            </Badge>
-                          </div>
-                          <CardTitle className="text-sm font-bold text-slate-900 mt-1">
-                            Fokus Belajar (21 Butir Atensi)
-                          </CardTitle>
-                          <CardDescription className="text-[11px] text-slate-500">
-                            Kapasitas kendali atensi otak &amp; regulasi kognitif prefrontal.
-                          </CardDescription>
-                        </CardHeader>
-                        <CardContent className="p-4 space-y-4">
-                          {cognitivePipelineData.focusDimensions.map((dim, idx) => (
-                            <div key={idx} className="p-3 rounded-lg border border-slate-100 bg-slate-50/70 space-y-2">
-                              <div className="flex items-center justify-between text-xs">
-                                <span className="font-bold text-slate-800">{dim.name}</span>
-                                <span className="font-mono font-extrabold text-amber-800">{dim.pct}% ({dim.score})</span>
-                              </div>
-                              <div className="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
-                                <div
-                                  className="bg-amber-500 h-2 rounded-full transition-all duration-500"
-                                  style={{ width: `${dim.pct}%` }}
-                                />
-                              </div>
-                              <p className="text-[10px] text-slate-500 leading-relaxed">
-                                {dim.desc}
-                              </p>
-                            </div>
-                          ))}
-                        </CardContent>
-                      </Card>
-
-                      {/* VARIABEL 3: CONFIDENCY NYATA (7 Butir Unjuk Diri) */}
-                      <Card className="border-slate-200 bg-white shadow-2xs rounded-xl overflow-hidden hover:shadow-md transition-all">
-                        <CardHeader className="p-4 pb-3 border-b border-slate-100 bg-sky-50/50">
-                          <div className="flex items-center justify-between">
-                            <span className="text-[10px] font-extrabold uppercase tracking-wider text-sky-800">
-                              Variabel 3 (Luaran Y)
-                            </span>
-                            <Badge className="bg-sky-100 text-sky-900 border-sky-300 font-mono text-[10px]">
-                              {cognitivePipelineData.confidencePct}% ({cognitivePipelineData.avgConfidence} / 4.0)
-                            </Badge>
-                          </div>
-                          <CardTitle className="text-sm font-bold text-slate-900 mt-1">
-                            Confidency Nyata (7 Butir Unjuk Diri)
-                          </CardTitle>
-                          <CardDescription className="text-[11px] text-slate-500">
-                            Keberanian tampil di hadapan publik &amp; forum musyawarah santri.
-                          </CardDescription>
-                        </CardHeader>
-                        <CardContent className="p-4 space-y-2.5">
-                          {cognitivePipelineData.confidenceItems.map((item, idx) => (
-                            <div key={idx} className="space-y-1">
-                              <div className="flex items-center justify-between text-[11px]">
-                                <span className="font-medium text-slate-700 truncate max-w-[180px]">{item.name}</span>
-                                <span className="font-mono font-bold text-sky-800">{item.pct}% ({item.val})</span>
-                              </div>
-                              <div className="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
-                                <div
-                                  className="bg-sky-600 h-1.5 rounded-full transition-all duration-500"
-                                  style={{ width: `${item.pct}%` }}
-                                />
-                              </div>
-                            </div>
-                          ))}
-                        </CardContent>
-                      </Card>
-                    </div>
-                  </div>
+                  {/* 4. DIAGRAM RINCIAN CAPAIAN DENGAN FITUR SORTING TOGGLE TITIK LEMAH */}
+                  <VariableDetailsBreakdown
+                    consistencyItems={cognitivePipelineData.consistencyItems}
+                    consistencySummary={{
+                      pct: cognitivePipelineData.consistencyPct,
+                      avg: cognitivePipelineData.avgConsistency,
+                    }}
+                    focusDimensions={cognitivePipelineData.focusDimensions}
+                    focusSummary={{
+                      pct: cognitivePipelineData.focusPct,
+                      avg: cognitivePipelineData.avgFocus,
+                    }}
+                    confidenceItems={cognitivePipelineData.confidenceItems}
+                    confidenceSummary={{
+                      pct: cognitivePipelineData.confidencePct,
+                      avg: cognitivePipelineData.avgConfidence,
+                    }}
+                  />
 
                   {/* 5. EARLY WARNING BK & MUSYRIF: 2 KARTU DETEKSI PERSONA SANTRI KRITIS */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     {/* Kartu 1: The Quiet Hafidz */}
-                    <Card className="border-blue-200/90 bg-gradient-to-br from-blue-50/40 via-white to-white p-5 sm:p-6 rounded-2xl shadow-xs hover:shadow-md transition-all duration-300 hover:border-blue-400">
+                    <Card className="border-blue-200/90 dark:border-zinc-800 bg-gradient-to-br from-blue-50/40 via-white to-white dark:from-blue-950/20 dark:via-zinc-900/60 dark:to-zinc-900/80 p-5 sm:p-6 rounded-2xl shadow-xs hover:shadow-md transition-all duration-300 hover:border-blue-400">
                       <div className="flex items-start gap-3.5">
-                        <div className="p-2.5 rounded-xl bg-blue-100 text-blue-800 shrink-0 shadow-2xs">
+                        <div className="p-2.5 rounded-xl bg-blue-100 dark:bg-blue-950 text-blue-800 dark:text-blue-300 shrink-0 shadow-2xs">
                           <Sparkles className="h-5 w-5" />
                         </div>
                         <div className="space-y-2.5 flex-1">
                           <div className="flex items-center justify-between gap-2">
                             <div>
-                              <h4 className="text-sm sm:text-base font-extrabold text-slate-900 flex items-center gap-1.5">
+                              <h4 className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5">
                                 <span>💎 The Quiet Hafidz</span>
                               </h4>
-                              <span className="text-[11px] font-semibold text-blue-700 block">Potensi Emas Terpendam • Butuh Panggung</span>
+                              <span className="text-[11px] font-semibold text-blue-700 dark:text-blue-400 block">Potensi Emas Terpendam • Butuh Panggung</span>
                             </div>
                             <Badge className="bg-blue-600 text-white font-extrabold text-xs px-2.5 py-0.5 shadow-2xs shrink-0">
                               {personaCounts.quietHafidz} Santri Terdeteksi
                             </Badge>
                           </div>
 
-                          <p className="text-xs text-slate-600 leading-relaxed">
+                          <p className="text-xs text-slate-600 dark:text-zinc-400 leading-relaxed">
                             Santri memiliki hafalan Al-Qur&apos;an dan atensi belajar sangat tinggi (≥ 70%), namun skor Confidency rendah (&lt; 65%). Mengalami kecemasan unjuk diri (<em>social performance anxiety</em>).
                           </p>
 
                           {/* Daftar Nama Santri Quiet Hafidz yang Terdeteksi */}
                           {extendedStudents.filter((s) => s.persona === "quiet_hafidz").length > 0 ? (
-                            <div className="p-2.5 rounded-xl bg-blue-50/80 border border-blue-200/90 space-y-1.5">
+                            <div className="p-2.5 rounded-xl bg-blue-50/80 dark:bg-zinc-950/60 border border-blue-200/90 dark:border-blue-900/40 space-y-1.5">
                               <div className="flex items-center justify-between text-[11px]">
-                                <span className="font-bold uppercase tracking-wider text-blue-900">
+                                <span className="font-bold uppercase tracking-wider text-blue-900 dark:text-blue-300">
                                   Daftar Santri Teridentifikasi:
                                 </span>
                                 <button
@@ -2026,7 +1734,7 @@ function SuperAdminDashboard() {
                                     setSelectedConfidenceCategory("persona_quiet_hafidz");
                                     setActiveTab("tabel");
                                   }}
-                                  className="text-[10px] font-extrabold text-blue-700 hover:text-blue-900 underline cursor-pointer"
+                                  className="text-[10px] font-extrabold text-blue-700 dark:text-blue-400 hover:underline cursor-pointer"
                                 >
                                   Buka di Tabel ➔
                                 </button>
@@ -2037,24 +1745,24 @@ function SuperAdminDashboard() {
                                   .map((s) => (
                                     <span
                                       key={s.id}
-                                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white border border-blue-200 text-xs font-semibold text-slate-800 shadow-2xs"
+                                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white dark:bg-zinc-900 border border-blue-200 dark:border-zinc-800 text-xs font-semibold text-slate-800 dark:text-zinc-200 shadow-2xs"
                                     >
                                       <span>{s.nama}</span>
-                                      <span className="text-[10px] text-blue-700 font-mono font-bold">({s.kategori})</span>
+                                      <span className="text-[10px] text-blue-700 dark:text-blue-400 font-mono font-bold">({s.kategori})</span>
                                     </span>
                                   ))}
                               </div>
                             </div>
                           ) : (
-                            <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-500 italic">
+                            <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 text-xs text-slate-500 italic">
                               {responses.length === 0
                                 ? "Belum ada respon santri yang terekam."
                                 : "Belum ada santri terdeteksi pada profil ini (Tingkat confidency seimbang dengan fokus)."}
                             </div>
                           )}
 
-                          <div className="pt-2 border-t border-blue-100 text-[11px] font-semibold text-blue-950 flex items-start gap-1.5">
-                            <CheckCircle2 className="h-3.5 w-3.5 text-blue-700 shrink-0 mt-0.5" />
+                          <div className="pt-2 border-t border-blue-100 dark:border-zinc-800 text-[11px] font-semibold text-blue-950 dark:text-blue-300 flex items-start gap-1.5">
+                            <CheckCircle2 className="h-3.5 w-3.5 text-blue-700 dark:text-blue-400 shrink-0 mt-0.5" />
                             <span><strong>Rekomendasi Musyrif &amp; BK:</strong> Latih panggung bertahap mulai dari halaqah kecil, kultum kamar, hingga forum angkatan tanpa paksaan.</span>
                           </div>
                         </div>
@@ -2062,33 +1770,33 @@ function SuperAdminDashboard() {
                     </Card>
 
                     {/* Kartu 2: The Fragile Performer */}
-                    <Card className="border-red-200/90 bg-gradient-to-br from-red-50/40 via-white to-white p-5 sm:p-6 rounded-2xl shadow-xs hover:shadow-md transition-all duration-300 hover:border-red-400">
+                    <Card className="border-red-200/90 dark:border-zinc-800 bg-gradient-to-br from-red-50/40 via-white to-white dark:from-red-950/20 dark:via-zinc-900/60 dark:to-zinc-900/80 p-5 sm:p-6 rounded-2xl shadow-xs hover:shadow-md transition-all duration-300 hover:border-red-400">
                       <div className="flex items-start gap-3.5">
-                        <div className="p-2.5 rounded-xl bg-red-100 text-red-700 shrink-0 shadow-2xs">
+                        <div className="p-2.5 rounded-xl bg-red-100 dark:bg-red-950 text-red-700 dark:text-red-300 shrink-0 shadow-2xs">
                           <AlertTriangle className="h-5 w-5" />
                         </div>
                         <div className="space-y-2.5 flex-1">
                           <div className="flex items-center justify-between gap-2">
                             <div>
-                              <h4 className="text-sm sm:text-base font-extrabold text-slate-900 flex items-center gap-1.5">
+                              <h4 className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5">
                                 <span>⚠️ The Fragile Performer</span>
                               </h4>
-                              <span className="text-[11px] font-semibold text-red-700 block">Pede Tinggi • Jam Tidur Kritis • Waspada Burnout</span>
+                              <span className="text-[11px] font-semibold text-red-700 dark:text-red-400 block">Pede Tinggi • Jam Tidur Kritis • Waspada Burnout</span>
                             </div>
                             <Badge className="bg-red-600 text-white font-extrabold text-xs px-2.5 py-0.5 shadow-2xs shrink-0">
                               {personaCounts.fragilePerformer} Santri Terdeteksi
                             </Badge>
                           </div>
 
-                          <p className="text-xs text-slate-600 leading-relaxed">
+                          <p className="text-xs text-slate-600 dark:text-zinc-400 leading-relaxed">
                             Percaya diri tinggi dan suka tampil (≥ 70%), namun skor Tier 3 (Jam Tidur K6 &amp; Pemulihan) anjlok di bawah 55%. Gejala sindrom <em>ngalong</em> (begadang asrama) yang memicu kelelahan kortikal.
                           </p>
 
                           {/* Daftar Nama Santri Fragile Performer yang Terdeteksi */}
                           {extendedStudents.filter((s) => s.persona === "fragile_performer").length > 0 ? (
-                            <div className="p-2.5 rounded-xl bg-red-50/80 border border-red-200/90 space-y-1.5">
+                            <div className="p-2.5 rounded-xl bg-red-50/80 dark:bg-zinc-950/60 border border-red-200/90 dark:border-red-900/40 space-y-1.5">
                               <div className="flex items-center justify-between text-[11px]">
-                                <span className="font-bold uppercase tracking-wider text-red-900">
+                                <span className="font-bold uppercase tracking-wider text-red-900 dark:text-red-300">
                                   Daftar Santri Teridentifikasi:
                                 </span>
                                 <button
@@ -2097,7 +1805,7 @@ function SuperAdminDashboard() {
                                     setSelectedConfidenceCategory("persona_fragile_performer");
                                     setActiveTab("tabel");
                                   }}
-                                  className="text-[10px] font-extrabold text-red-700 hover:text-red-900 underline cursor-pointer"
+                                  className="text-[10px] font-extrabold text-red-700 dark:text-red-400 hover:underline cursor-pointer"
                                 >
                                   Buka di Tabel ➔
                                 </button>
@@ -2108,23 +1816,23 @@ function SuperAdminDashboard() {
                                   .map((s) => (
                                     <span
                                       key={s.id}
-                                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white border border-red-200 text-xs font-semibold text-slate-800 shadow-2xs"
+                                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white dark:bg-zinc-900 border border-red-200 dark:border-zinc-800 text-xs font-semibold text-slate-800 dark:text-zinc-200 shadow-2xs"
                                     >
                                       <span>{s.nama}</span>
-                                      <span className="text-[10px] text-red-700 font-mono font-bold">({s.kategori})</span>
+                                      <span className="text-[10px] text-red-700 dark:text-red-400 font-mono font-bold">({s.kategori})</span>
                                     </span>
                                   ))}
                               </div>
                             </div>
                           ) : (
-                            <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-500 italic">
+                            <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 text-xs text-slate-500 italic">
                               {responses.length === 0
                                 ? "Belum ada respon santri yang terekam."
                                 : "Belum ada santri terdeteksi pada profil ini (Seluruh santri menjaga kecukupan jam tidur)."}
                             </div>
                           )}
 
-                          <div className="pt-2 border-t border-red-100 text-[11px] font-semibold text-red-950 flex items-start gap-1.5">
+                          <div className="pt-2 border-t border-red-100 dark:border-zinc-800 text-[11px] font-semibold text-red-950 dark:text-red-300 flex items-start gap-1.5">
                             <AlertCircle className="h-3.5 w-3.5 text-red-600 shrink-0 mt-0.5" />
                             <span><strong>Rekomendasi Musyrif &amp; BK:</strong> Restrukturisasi jam tidur malam wajib ditegakkan sebelum santri diberi beban hafalan tambahan.</span>
                           </div>
@@ -2133,203 +1841,59 @@ function SuperAdminDashboard() {
                     </Card>
                   </div>
 
-                  {/* 6. PAPAN SPOTLIGHT: SANTRI BERKARAKTER KUAT (ROLE MODELS LEADERBOARD) */}
-                  <div className="space-y-4">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-1 border-b border-amber-200/80">
-                      <div className="flex items-center gap-2">
-                        <div className="rounded-xl bg-amber-100 p-2 text-amber-800 shadow-2xs">
-                          <Star className="h-4 w-4 fill-amber-500 text-amber-500" />
-                        </div>
-                        <div>
-                          <h3 className="text-base font-extrabold text-slate-900">
-                            Papan Spotlight Santri Berkarakter Kuat (Role Models)
-                          </h3>
-                          <p className="text-xs text-slate-500">
-                            Daftar santri dengan keselarasan disiplin harian, ketahanan fokus, dan kemantapan confidency tertinggi
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Badge variant="gold" className="text-xs font-bold bg-amber-200 text-slate-950">
-                          {extendedStudents.filter((s) => s.persona === "anchored_leader").length} Anchored Leaders Terdeteksi
-                        </Badge>
-                      </div>
-                    </div>
-
-                    {extendedStudents.length === 0 ? (
-                      <Card className="p-10 text-center bg-white border-2 border-dashed border-amber-200 rounded-xl space-y-3">
-                        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-amber-100 text-amber-800">
-                          <Star className="h-6 w-6 fill-amber-500 text-amber-500" />
-                        </div>
-                        <div className="space-y-1">
-                          <p className="text-base font-extrabold text-slate-900">
-                            Papan Leaderboard Masih Kosong / Telah Dikosongkan
-                          </p>
-                          <p className="text-xs text-slate-500 max-w-md mx-auto leading-relaxed">
-                            Seluruh data santri pada leaderboard telah dibersihkan. Santri yang baru menyelesaikan kuesioner 7 KAIH akan otomatis dihitung skor kepercayaandirinya dan tampil di papan peringkat ini.
-                          </p>
-                        </div>
-                        <div className="pt-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                              fetchAnalytics();
-                              fetchResponses();
-                            }}
-                            className="gap-1.5 text-xs font-bold text-emerald-800 border-emerald-300 hover:bg-emerald-50 cursor-pointer"
-                          >
-                            <RefreshCw className="h-3.5 w-3.5 text-emerald-600" />
-                            Segarkan Papan Leaderboard
-                          </Button>
-                        </div>
-                      </Card>
-                    ) : (
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {[...extendedStudents]
-                          .sort((a, b) => b.confidenceScore - a.confidenceScore || b.totalScore - a.totalScore)
-                          .slice(0, 9)
-                          .map((student, idx) => {
-                            const isIkhwan = student.jenisKelamin !== "Akhwat";
-
-                            return (
-                              <Card
-                                key={student.id}
-                                className="relative overflow-hidden border-2 border-amber-200/90 bg-gradient-to-b from-white to-amber-50/30 p-5 shadow-xs rounded-xl transition-all duration-300 hover:border-amber-400 hover:shadow-[0_14px_30px_-6px_rgba(245,158,11,0.3),0_0_15px_1px_rgba(251,191,36,0.2)] hover:-translate-y-1.5 group"
-                              >
-                                <div className="absolute top-0 right-0 z-20 flex items-center">
-                                  <button
-                                    type="button"
-                                    onClick={(e) => {
-                                      e.preventDefault();
-                                      e.stopPropagation();
-                                      handleDeleteResponse(student.id, student.nama);
-                                    }}
-                                    title={`Hapus ${student.nama} dari Leaderboard & Reset Limit`}
-                                    className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-bl-lg transition-all duration-200 cursor-pointer active:scale-90"
-                                  >
-                                    <Trash2 className="h-4 w-4 text-red-500 hover:text-red-700" />
-                                  </button>
-                                  <div className="bg-gradient-to-l from-amber-400 to-amber-300 px-3 py-0.5 rounded-bl-lg font-mono text-[10px] font-black text-slate-950 shadow-xs">
-                                    Rank #{idx + 1}
-                                  </div>
-                                </div>
-
-                                <div className="flex items-start gap-3 mt-1">
-                                  <div
-                                    className={`h-11 w-11 rounded-full flex items-center justify-center font-bold text-sm shrink-0 border-2 ${
-                                      isIkhwan
-                                        ? "bg-emerald-100 text-emerald-800 border-emerald-300"
-                                        : "bg-amber-100 text-amber-800 border-amber-300"
-                                    }`}
-                                  >
-                                    {student.nama.charAt(0).toUpperCase()}
-                                  </div>
-                                  <div className="space-y-0.5 min-w-0 pr-10">
-                                    <h4 className="font-extrabold text-slate-900 text-sm truncate" title={student.nama}>
-                                      {student.nama}
-                                    </h4>
-                                    <div className="flex items-center gap-1.5 text-[11px] text-slate-500">
-                                      <span>{student.kategori}</span>
-                                      <span>•</span>
-                                      <span className="font-medium text-slate-700">{student.jenisKelamin}</span>
-                                      {student.nomorId && student.nomorId !== "-" && (
-                                        <>
-                                          <span>•</span>
-                                          <span className="font-mono text-[10px] text-slate-400">NIS: {student.nomorId}</span>
-                                        </>
-                                      )}
-                                    </div>
-                                  </div>
-                                </div>
-
-                                <div className="mt-4 pt-3 border-t border-amber-100 space-y-2">
-                                  <div className="flex items-center justify-between">
-                                    <span className="text-xs font-bold text-slate-700">Skor Confidency:</span>
-                                    <div className="flex items-baseline gap-1">
-                                      <span className="text-lg font-black text-emerald-800 font-mono">
-                                        {student.confidenceScore}
-                                      </span>
-                                      <span className="text-xs text-slate-400">/ 4.0</span>
-                                      <span className="text-xs font-bold text-amber-700">({student.confidencePercentage}%)</span>
-                                    </div>
-                                  </div>
-
-                                  {/* Rantai 3 Indikator Mini */}
-                                  <div className="grid grid-cols-3 gap-1.5 text-center text-[10px] pt-1">
-                                    <div className="bg-emerald-50 rounded-lg p-1 border border-emerald-200">
-                                      <span className="text-emerald-700 block text-[9px]">IK (Aksi)</span>
-                                      <span className="font-bold text-emerald-900 font-mono">{student.ikPct}%</span>
-                                    </div>
-                                    <div className="bg-amber-50 rounded-lg p-1 border border-amber-200">
-                                      <span className="text-amber-700 block text-[9px]">IF (Fokus)</span>
-                                      <span className="font-bold text-amber-900 font-mono">{student.ifPct}%</span>
-                                    </div>
-                                    <div className="bg-teal-50 rounded-lg p-1 border border-teal-200">
-                                      <span className="text-teal-700 block text-[9px]">IC (Pede)</span>
-                                      <span className="font-bold text-teal-900 font-mono">{student.icPct}%</span>
-                                    </div>
-                                  </div>
-
-                                  <div className="flex items-center justify-between pt-1">
-                                    <Badge className={`text-[10px] py-0.5 px-2 ${student.personaBadgeClass}`}>
-                                      {student.personaLabel}
-                                    </Badge>
-                                    <span className="text-[10px] text-slate-400 font-mono">
-                                      {student.topKaihFactor}
-                                    </span>
-                                  </div>
-                                </div>
-                              </Card>
-                            );
-                          })}
-                      </div>
-                    )}
-                  </div>
+                  {/* 6. PAPAN SPOTLIGHT: SANTRI BERKARAKTER KUAT (PODIUM TOP 3 & RADAR DRILL-DOWN) */}
+                  <RoleModelsSpotlight
+                    students={extendedStudents}
+                    onDeleteStudent={handleDeleteResponse}
+                    onRefresh={() => {
+                      fetchAnalytics();
+                      fetchResponses();
+                    }}
+                  />
 
                   {/* 7. PANEL TRANSPARANSI: CARA MENDAPATKAN DATA KORELASI */}
-                  <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-xs space-y-4">
+                  <div className="rounded-2xl border border-slate-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 backdrop-blur-md p-6 shadow-xs space-y-4">
                     <div className="flex items-start gap-3">
-                      <div className="p-2 rounded-xl bg-amber-100 text-amber-800 shrink-0">
+                      <div className="p-2 rounded-xl bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 shrink-0">
                         <Info className="h-5 w-5" />
                       </div>
                       <div className="space-y-1">
-                        <h4 className="text-sm font-bold text-slate-900">
+                        <h4 className="text-sm font-bold text-slate-900 dark:text-white">
                           Transparansi Metodologi: Cara Mendapatkan Data Korelasi &amp; Mediasi
                         </h4>
-                        <p className="text-xs text-slate-500 leading-relaxed">
+                        <p className="text-xs text-slate-500 dark:text-zinc-400 leading-relaxed">
                           Sistem VERTIKAL IF menggunakan instrumen 35 butir terstruktur untuk memverifikasi hipotesis bahwa ketahanan atensi (Fokus) bertindak sebagai mediator penuh (<em>Full Mediator</em>) yang mengonversi kedisiplinan fisik harian menjadi kemantapan rasa percaya diri santri.
                         </p>
                       </div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2 text-xs">
-                      <div className="p-4 rounded-xl border border-slate-100 bg-slate-50 space-y-1.5">
-                        <span className="font-bold text-slate-800 flex items-center gap-1.5">
+                      <div className="p-4 rounded-xl border border-slate-100 dark:border-zinc-800 bg-slate-50/70 dark:bg-zinc-950/60 space-y-1.5">
+                        <span className="font-bold text-slate-800 dark:text-zinc-200 flex items-center gap-1.5">
                           <CheckCircle2 className="h-4 w-4 text-emerald-600" />
                           1. Pemetaan 35 Butir
                         </span>
-                        <p className="text-[11px] text-slate-500 leading-relaxed">
+                        <p className="text-[11px] text-slate-500 dark:text-zinc-400 leading-relaxed">
                           Butir #1 memetakan <strong>Konsistensi Aksi</strong> (IK), Butir #2, #3, #4 memetakan <strong>Fokus Belajar</strong> (IF), dan Butir #5 memetakan <strong>Unjuk Diri</strong>. Skor Confidency Akhir dikalibrasi adil (50% Fokus + 50% Unjuk Diri).
                         </p>
                       </div>
 
-                      <div className="p-4 rounded-xl border border-slate-100 bg-slate-50 space-y-1.5">
-                        <span className="font-bold text-slate-800 flex items-center gap-1.5">
+                      <div className="p-4 rounded-xl border border-slate-100 dark:border-zinc-800 bg-slate-50/70 dark:bg-zinc-950/60 space-y-1.5">
+                        <span className="font-bold text-slate-800 dark:text-zinc-200 flex items-center gap-1.5">
                           <CheckCircle2 className="h-4 w-4 text-amber-600" />
                           2. Rumus Korelasi Pearson (r)
                         </span>
-                        <p className="text-[11px] text-slate-500 leading-relaxed">
+                        <p className="text-[11px] text-slate-500 dark:text-zinc-400 leading-relaxed">
                           Kovarians dihitung antara vektor skor santri dibagi akar perkalian varians untuk mengukur kekuatan linier murni (skala -1.00 hingga +1.00).
                         </p>
                       </div>
 
-                      <div className="p-4 rounded-xl border border-slate-100 bg-slate-50 space-y-1.5">
-                        <span className="font-bold text-slate-800 flex items-center gap-1.5">
+                      <div className="p-4 rounded-xl border border-slate-100 dark:border-zinc-800 bg-slate-50/70 dark:bg-zinc-950/60 space-y-1.5">
+                        <span className="font-bold text-slate-800 dark:text-zinc-200 flex items-center gap-1.5">
                           <CheckCircle2 className="h-4 w-4 text-blue-600" />
                           3. Jalur Mediasi (a × b)
                         </span>
-                        <p className="text-[11px] text-slate-500 leading-relaxed">
+                        <p className="text-[11px] text-slate-500 dark:text-zinc-400 leading-relaxed">
                           Perkalian koefisien jalur a dan b menghasilkan rasio transmisi transmisi kognitif, membuktikan bahwa fokus belajar adalah prasyarat utama lahirnya confidency sejati.
                         </p>
                       </div>
