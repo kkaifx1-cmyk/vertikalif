@@ -64,6 +64,10 @@ import {
 } from "@/lib/session-helper";
 import { CalendarDays, Calendar, Clock, Check } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { BentoKpiGrid } from "@/components/super-admin/bento-kpi-grid";
+import { RadarKaihChart } from "@/components/super-admin/radar-kaih-chart";
+import { CohortCorrelationMatrix } from "@/components/super-admin/cohort-correlation-matrix";
+import { LiveActivityFeed } from "@/components/super-admin/live-activity-feed";
 
 const THEME_COLORS = ["#15803d", "#d97706", "#0284c7", "#7c3aed", "#059669", "#ea580c", "#4f46e5"];
 const LIKERT_COLORS = ["#ef4444", "#f59e0b", "#10b981", "#15803d"];
@@ -164,6 +168,19 @@ function SuperAdminDashboard() {
     () => EVALUATION_SESSIONS.find((s) => s.id === selectedSessionId) || EVALUATION_SESSIONS[0],
     [selectedSessionId]
   );
+
+  const activeSessionSummary = useMemo(() => {
+    return sessionSummaries.find((s) => s.session.id === selectedSessionId) || sessionSummaries[0];
+  }, [sessionSummaries, selectedSessionId]);
+
+  const anomaliesCount = useMemo(() => {
+    return activeResponses.filter((r) => {
+      const isTooFast = typeof r.durationSeconds === "number" && r.durationSeconds > 0 && r.durationSeconds < 45;
+      const answers = Object.values(r.answers || {});
+      const isFlatline = answers.length >= 10 && answers.every((val) => val === answers[0]);
+      return isTooFast || isFlatline;
+    }).length;
+  }, [activeResponses]);
 
   // Chart View States (Default Diagram Garis)
   const [kaihChartType, setKaihChartType] = useState<"line" | "bar">("line");
@@ -895,7 +912,7 @@ function SuperAdminDashboard() {
       pageTitle="Portal Super Admin"
       pageDescription="Pusat Kendali Data & Analisis Hasil Survei Santri"
     >
-      <div className="min-h-screen bg-slate-50/60 dark:bg-black pb-16 transition-colors duration-300">
+      <div className="min-h-screen bg-slate-50/80 dark:bg-zinc-950 pb-16 transition-colors duration-300">
         <div className="mx-auto max-w-[1600px] px-4 sm:px-6 lg:px-8 pt-8 space-y-6">
           {/* Header Dashboard */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-slate-200/90 dark:border-emerald-500/40">
@@ -1374,166 +1391,41 @@ function SuperAdminDashboard() {
                 </Card>
               ) : (
                 <>
-                  {/* 1. EXECUTIVE MASTER HEALTH BANNER (TIMBUL 3D EMERALD-EMAS) */}
-                  <div className="relative overflow-hidden rounded-2xl border border-emerald-500/40 bg-gradient-to-br from-emerald-900 via-emerald-800 to-teal-950 p-6 sm:p-8 text-white shadow-[0_16px_36px_-8px_rgba(21,128,61,0.35)] transition-all duration-300 hover:shadow-[0_20px_42px_-6px_rgba(21,128,61,0.45)]">
-                    {/* Ambient Glow */}
-                    <div className="absolute -right-20 -top-20 w-80 h-80 bg-amber-400/10 rounded-full blur-3xl pointer-events-none" />
-                    <div className="absolute -left-20 -bottom-20 w-80 h-80 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none" />
+                  {/* 1. DYNAMIC BENTO KPI GRID (Command Center Executive Bento) */}
+                  <BentoKpiGrid
+                    isLoading={loadingAnalytics}
+                    totalResponses={activeAnalytics.totalResponses}
+                    participationPct={activeSessionSummary.participationPct}
+                    ikvScore={ikvData.ikvScore}
+                    avgWeightedScore={ikvData.avgWeightedScore}
+                    ikvStatus={ikvData.ikvStatus}
+                    consistencyPct={cognitivePipelineData.consistencyPct}
+                    focusPct={cognitivePipelineData.focusPct}
+                    confidencePct={cognitivePipelineData.confidencePct}
+                    highestTheme={activeAnalytics.highestTheme}
+                    lowestTheme={activeAnalytics.lowestTheme}
+                    anomaliesCount={anomaliesCount}
+                  />
 
-                    <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-                      <div className="space-y-2">
-                        <div className="inline-flex items-center gap-2 rounded-full border border-amber-300/40 bg-amber-400/20 px-3 py-1 text-xs font-bold text-amber-200">
-                          <ShieldCheck className="h-3.5 w-3.5 text-amber-300" />
-                          <span>Executive Health Summary • Tahun Ajaran 2026/2027</span>
-                        </div>
-                        <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-                          Indeks Komposit Vertikal (IKV): {ikvData.ikvScore}%
-                        </h2>
-                        <p className="text-xs sm:text-sm text-emerald-100/90 max-w-2xl leading-relaxed">
-                          Karakter angkatan tergolong <strong>{ikvData.ikvStatus}</strong>. Dihitung menggunakan bobot multi-tier (Tier 1: ×3, Tier 2: ×2, Tier 3: ×1) dari 35 butir instrumen terintegrasi SMAIT Ihsanul Fikri.
-                        </p>
-                      </div>
-
-                      {/* Skor Lingkar Gauge IKV */}
-                      <div className="shrink-0 flex items-center gap-4 bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20 shadow-inner">
-                        <div className="text-center px-2">
-                          <span className="text-[10px] uppercase font-bold text-emerald-200 tracking-wider block">Status Mutu</span>
-                          <div className="text-3xl font-black text-amber-300 font-mono">{ikvData.ikvScore}%</div>
-                          <Badge className="bg-amber-400 text-slate-950 font-extrabold text-[10px] mt-1 shadow-xs">
-                            {ikvData.ikvStatus}
-                          </Badge>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* 3 Metrik Kunci Transmisi (Mini Strip) */}
-                    <div className="relative z-10 grid grid-cols-1 sm:grid-cols-3 gap-3 mt-6 pt-5 border-t border-emerald-700/60">
-                      <div className="bg-white/10 backdrop-blur-xs rounded-xl p-3 border border-white/10 flex items-center justify-between">
-                        <div>
-                          <span className="text-[11px] text-emerald-200 block font-medium">1. Konsistensi Tindakan (IK)</span>
-                          <span className="text-lg font-bold text-white font-mono">{cognitivePipelineData.consistencyPct}%</span>
-                        </div>
-                        <Badge variant="outline" className="text-[10px] text-emerald-200 border-emerald-400/40 bg-emerald-900/30">Input</Badge>
-                      </div>
-                      <div className="bg-white/10 backdrop-blur-xs rounded-xl p-3 border border-white/10 flex items-center justify-between">
-                        <div>
-                          <span className="text-[11px] text-amber-200 block font-medium">2. Fokus Belajar &amp; Regulasi (IF)</span>
-                          <span className="text-lg font-bold text-amber-300 font-mono">{cognitivePipelineData.focusPct}%</span>
-                        </div>
-                        <Badge variant="outline" className="text-[10px] text-amber-200 border-amber-400/40 bg-amber-900/30">Mediator</Badge>
-                      </div>
-                      <div className="bg-white/10 backdrop-blur-xs rounded-xl p-3 border border-white/10 flex items-center justify-between">
-                        <div>
-                          <span className="text-[11px] text-teal-200 block font-medium">3. Kepercayaan Diri (IC)</span>
-                          <span className="text-lg font-bold text-teal-300 font-mono">{cognitivePipelineData.confidencePct}%</span>
-                        </div>
-                        <Badge variant="outline" className="text-[10px] text-teal-200 border-teal-400/40 bg-teal-900/30">Output</Badge>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* 4 KPI SUMMARY CARDS (TIMBUL 3D & GLOWING HOVER) */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-                    {/* Total Respon */}
-                    <Card className="border-slate-200 bg-white shadow-xs rounded-xl transition-all duration-300 hover:-translate-y-1.5 hover:border-emerald-500 hover:shadow-[0_14px_30px_-6px_rgba(21,128,61,0.25),0_0_15px_1px_rgba(34,197,94,0.18)]">
-                      <CardHeader className="p-5 pb-2">
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                            Total Responden
-                          </span>
-                          <div className="rounded-xl bg-emerald-100 p-2.5 text-emerald-800 shadow-2xs">
-                            <Users className="h-4 w-4" />
-                          </div>
-                        </div>
-                      </CardHeader>
-                      <CardContent className="p-5 pt-0">
-                        <div className="text-3xl font-extrabold text-slate-900 font-mono">
-                          {activeAnalytics.totalResponses}
-                        </div>
-                        <p className="text-[11px] text-slate-400 mt-1">
-                          Santri Ikhwan &amp; Akhwat terverifikasi
-                        </p>
-                      </CardContent>
-                    </Card>
-
-                    {/* Skor IKV Rata-rata */}
-                    <Card className="border-slate-200 bg-white shadow-xs rounded-xl transition-all duration-300 hover:-translate-y-1.5 hover:border-emerald-500 hover:shadow-[0_14px_30px_-6px_rgba(21,128,61,0.25),0_0_15px_1px_rgba(34,197,94,0.18)]">
-                      <CardHeader className="p-5 pb-2">
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                            Skor IKV Terbobot
-                          </span>
-                          <div className="rounded-xl bg-amber-100 p-2.5 text-amber-800 shadow-2xs">
-                            <Award className="h-4 w-4" />
-                          </div>
-                        </div>
-                      </CardHeader>
-                      <CardContent className="p-5 pt-0">
-                        <div className="text-3xl font-extrabold text-emerald-800 font-mono">
-                          {ikvData.ikvScore}%{" "}
-                          <span className="text-sm font-normal text-slate-400">({ikvData.avgWeightedScore} / 4.0)</span>
-                        </div>
-                        <p className="text-[11px] text-emerald-700 font-medium mt-1">
-                          Status Mutu: {ikvData.ikvStatus}
-                        </p>
-                      </CardContent>
-                    </Card>
-
-                    {/* Highest Theme */}
-                    <Card className="border-slate-200 bg-white shadow-xs rounded-xl transition-all duration-300 hover:-translate-y-1.5 hover:border-emerald-500 hover:shadow-[0_14px_30px_-6px_rgba(21,128,61,0.25),0_0_15px_1px_rgba(34,197,94,0.18)]">
-                      <CardHeader className="p-5 pb-2">
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                            Pilar Tertinggi
-                          </span>
-                          <div className="rounded-xl bg-blue-100 p-2.5 text-blue-800 shadow-2xs">
-                            <TrendingUp className="h-4 w-4" />
-                          </div>
-                        </div>
-                      </CardHeader>
-                      <CardContent className="p-5 pt-0">
-                        <div className="text-lg font-bold text-slate-900 truncate" title={activeAnalytics.highestTheme.title}>
-                          {activeAnalytics.highestTheme.title}
-                        </div>
-                        <div className="text-xs text-blue-700 font-semibold mt-1 font-mono">
-                          Skor: {activeAnalytics.highestTheme.score} / 4.0
-                        </div>
-                      </CardContent>
-                    </Card>
-
-                    {/* Lowest Theme (Evaluasi) */}
-                    <Card className="border-slate-200 bg-white shadow-xs rounded-xl transition-all duration-300 hover:-translate-y-1.5 hover:border-emerald-500 hover:shadow-[0_14px_30px_-6px_rgba(21,128,61,0.25),0_0_15px_1px_rgba(34,197,94,0.18)]">
-                      <CardHeader className="p-5 pb-2">
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                            Prioritas Evaluasi
-                          </span>
-                          <div className="rounded-xl bg-orange-100 p-2.5 text-orange-800 shadow-2xs">
-                            <Layers className="h-4 w-4" />
-                          </div>
-                        </div>
-                      </CardHeader>
-                      <CardContent className="p-5 pt-0">
-                        <div className="text-lg font-bold text-slate-900 truncate" title={activeAnalytics.lowestTheme.title}>
-                          {activeAnalytics.lowestTheme.title}
-                        </div>
-                        <div className="text-xs text-orange-700 font-semibold mt-1 font-mono">
-                          Skor: {activeAnalytics.lowestTheme.score} / 4.0
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </div>
+                  {/* 2. REAL-TIME RESPONSE FEED & ANOMALY SENTINEL (<45s & Flatline Alert) */}
+                  <LiveActivityFeed
+                    responses={activeResponses}
+                    onInspectResponse={(res) => {
+                      setSearchQuery(res.nama);
+                      setActiveTab("tabel");
+                    }}
+                  />
 
                   {/* Demographics: Ikhwan vs Akhwat & Tingkat Kelas (Timbul 3D) */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     {/* Gender Breakdown (Ikhwan vs Akhwat) */}
-                    <Card className="border-slate-200 bg-white shadow-xs rounded-xl transition-all duration-300 hover:-translate-y-1 hover:border-emerald-500 hover:shadow-[0_12px_28px_-6px_rgba(21,128,61,0.2),0_0_15px_1px_rgba(34,197,94,0.12)]">
+                    <Card className="border-slate-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 backdrop-blur-md shadow-sm dark:shadow-[0_4px_20px_rgba(0,0,0,0.3)] rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:border-emerald-500/40">
                       <CardHeader className="pb-3">
-                        <CardTitle className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                          <UserCheck2 className="h-4 w-4 text-emerald-700" />
+                        <CardTitle className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                          <UserCheck2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                           Komposisi Santri (Ikhwan vs Akhwat)
                         </CardTitle>
-                        <CardDescription className="text-xs">
+                        <CardDescription className="text-xs text-slate-500 dark:text-zinc-400">
                           Distribusi demografi responden berdasarkan asrama
                         </CardDescription>
                       </CardHeader>
@@ -1543,22 +1435,22 @@ function SuperAdminDashboard() {
                           return (
                             <div key={item.gender} className="space-y-1.5">
                               <div className="flex items-center justify-between text-xs">
-                                <span className="font-semibold text-slate-700 flex items-center gap-1.5">
+                                <span className="font-semibold text-slate-700 dark:text-zinc-300 flex items-center gap-1.5">
                                   <span
                                     className={`h-2.5 w-2.5 rounded-full ${
-                                      isIkhwan ? "bg-emerald-600" : "bg-amber-500"
+                                      isIkhwan ? "bg-emerald-500" : "bg-amber-500"
                                     }`}
                                   />
                                   {item.gender}
                                 </span>
-                                <span className="font-bold text-slate-900 font-mono">
+                                <span className="font-bold text-slate-900 dark:text-white font-mono">
                                   {item.count} Santri ({item.percentage}%)
                                 </span>
                               </div>
-                              <div className="h-2 w-full overflow-hidden rounded-full bg-slate-100">
+                              <div className="h-2 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-zinc-800">
                                 <div
                                   className={`h-full rounded-full transition-all duration-500 ${
-                                    isIkhwan ? "bg-emerald-600" : "bg-amber-500"
+                                    isIkhwan ? "bg-emerald-500" : "bg-amber-500"
                                   }`}
                                   style={{ width: `${item.percentage}%` }}
                                 />
@@ -1570,29 +1462,29 @@ function SuperAdminDashboard() {
                     </Card>
 
                     {/* Tingkat Kelas (Rombel) */}
-                    <Card className="border-slate-200 bg-white shadow-xs rounded-xl transition-all duration-300 hover:-translate-y-1 hover:border-emerald-500 hover:shadow-[0_12px_28px_-6px_rgba(21,128,61,0.2),0_0_15px_1px_rgba(34,197,94,0.12)]">
+                    <Card className="border-slate-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 backdrop-blur-md shadow-sm dark:shadow-[0_4px_20px_rgba(0,0,0,0.3)] rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:border-emerald-500/40">
                       <CardHeader className="pb-3">
-                        <CardTitle className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                          <Users className="h-4 w-4 text-emerald-700" />
+                        <CardTitle className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                          <Users className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                           Tingkat Kelas (Jenjang Pendidikan)
                         </CardTitle>
-                        <CardDescription className="text-xs">
+                        <CardDescription className="text-xs text-slate-500 dark:text-zinc-400">
                           Sebaran partisipasi dari Kelas X, XI, dan XII
                         </CardDescription>
                       </CardHeader>
                       <CardContent className="space-y-4">
                         {activeAnalytics.categoryBreakdown.map((item, idx) => {
-                          const colors = ["bg-emerald-700", "bg-amber-500", "bg-blue-600"];
+                          const colors = ["bg-emerald-500", "bg-amber-500", "bg-blue-500"];
                           const barColor = colors[idx % colors.length];
                           return (
                             <div key={item.kategori} className="space-y-1.5">
                               <div className="flex items-center justify-between text-xs">
-                                <span className="font-semibold text-slate-700">{item.kategori}</span>
-                                <span className="font-bold text-slate-900 font-mono">
+                                <span className="font-semibold text-slate-700 dark:text-zinc-300">{item.kategori}</span>
+                                <span className="font-bold text-slate-900 dark:text-white font-mono">
                                   {item.count} Santri ({item.percentage}%)
                                 </span>
                               </div>
-                              <div className="h-2 w-full overflow-hidden rounded-full bg-slate-100">
+                              <div className="h-2 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-zinc-800">
                                 <div
                                   className={`h-full rounded-full transition-all duration-500 ${barColor}`}
                                   style={{ width: `${item.percentage}%` }}
@@ -1605,128 +1497,17 @@ function SuperAdminDashboard() {
                     </Card>
                   </div>
 
-                  {/* DIAGRAM PROFIL CAPAIAN 7 KAIH (LINE / BAR TOGGLE) */}
-                  <Card className="border-slate-200 bg-white shadow-xs rounded-xl transition-all duration-300 hover:border-emerald-500 hover:shadow-[0_12px_30px_-6px_rgba(21,128,61,0.25),0_0_15px_1px_rgba(34,197,94,0.15)]">
-                    <CardHeader className="pb-2">
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                        <div>
-                          <CardTitle className="text-base font-extrabold text-slate-900 flex items-center gap-2">
-                            <TrendingUp className="h-4 w-4 text-emerald-700" />
-                            Diagram Profil Capaian Karakter 7 KAIH Santri
-                          </CardTitle>
-                          <CardDescription className="text-xs text-slate-500">
-                            Grafik komparasi rata-rata nilai per pilar KAIH (Skala 1.00 - 4.00)
-                          </CardDescription>
-                        </div>
+                  {/* 3. RADAR / SPIDER CHART 7 KAIH (Multi-Layer Comparison: Aktual vs Target vs Baseline) */}
+                  <RadarKaihChart
+                    themeAverages={activeAnalytics.themeAverages}
+                    schoolTarget={3.5}
+                    baselineScore={2.85}
+                  />
 
-                        {/* Chart View Toggle (Garis / Batang) */}
-                        <div className="inline-flex rounded-lg border border-slate-200 p-0.5 bg-slate-50 shrink-0">
-                          <button
-                            type="button"
-                            onClick={() => setKaihChartType("line")}
-                            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-md transition-all cursor-pointer ${
-                              kaihChartType === "line"
-                                ? "bg-white text-emerald-800 shadow-xs border border-emerald-200 font-bold"
-                                : "text-slate-500 hover:text-slate-900"
-                            }`}
-                          >
-                            <TrendingUp className="h-3.5 w-3.5 text-emerald-600" />
-                            Diagram Garis
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setKaihChartType("bar")}
-                            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-md transition-all cursor-pointer ${
-                              kaihChartType === "bar"
-                                ? "bg-white text-emerald-800 shadow-xs border border-emerald-200 font-bold"
-                                : "text-slate-500 hover:text-slate-900"
-                            }`}
-                          >
-                            <BarChart3 className="h-3.5 w-3.5 text-emerald-600" />
-                            Diagram Batang
-                          </button>
-                        </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent className="pt-4">
-                      <div className="h-[320px] w-full">
-                        <ResponsiveContainer width="100%" height="100%">
-                          {kaihChartType === "line" ? (
-                            <LineChart data={activeAnalytics.themeAverages} margin={{ top: 15, right: 30, left: 0, bottom: 25 }}>
-                              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                              <XAxis
-                                dataKey="title"
-                                tick={{ fontSize: 11, fill: "#475569" }}
-                                tickLine={false}
-                                axisLine={{ stroke: "#cbd5e1" }}
-                                angle={-15}
-                                textAnchor="end"
-                                height={60}
-                              />
-                              <YAxis
-                                domain={[1, 4]}
-                                tick={{ fontSize: 11, fill: "#475569" }}
-                                tickLine={false}
-                                axisLine={{ stroke: "#cbd5e1" }}
-                              />
-                              <Tooltip
-                                contentStyle={{
-                                  backgroundColor: "#ffffff",
-                                  borderRadius: "0.75rem",
-                                  border: "1px solid #cbd5e1",
-                                  boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
-                                  fontSize: "12px",
-                                }}
-                                formatter={(value: any) => [`${value} / 4.0`, "Skor Rata-Rata"]}
-                              />
-                              <Line
-                                type="monotone"
-                                dataKey="average"
-                                stroke="#15803d"
-                                strokeWidth={3}
-                                dot={{ fill: "#15803d", r: 5, strokeWidth: 2, stroke: "#ffffff" }}
-                                activeDot={{ r: 7, stroke: "#15803d", strokeWidth: 2, fill: "#d97706" }}
-                              />
-                            </LineChart>
-                          ) : (
-                            <BarChart data={activeAnalytics.themeAverages} margin={{ top: 15, right: 30, left: 0, bottom: 25 }}>
-                              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                              <XAxis
-                                dataKey="title"
-                                tick={{ fontSize: 11, fill: "#475569" }}
-                                tickLine={false}
-                                axisLine={{ stroke: "#cbd5e1" }}
-                                angle={-15}
-                                textAnchor="end"
-                                height={60}
-                              />
-                              <YAxis
-                                domain={[1, 4]}
-                                tick={{ fontSize: 11, fill: "#475569" }}
-                                tickLine={false}
-                                axisLine={{ stroke: "#cbd5e1" }}
-                              />
-                              <Tooltip
-                                contentStyle={{
-                                  backgroundColor: "#ffffff",
-                                  borderRadius: "0.75rem",
-                                  border: "1px solid #cbd5e1",
-                                  boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
-                                  fontSize: "12px",
-                                }}
-                                formatter={(value: any) => [`${value} / 4.0`, "Skor Rata-Rata"]}
-                              />
-                              <Bar dataKey="average" radius={[6, 6, 0, 0]} maxBarSize={45}>
-                                {activeAnalytics.themeAverages.map((entry, index) => (
-                                  <Cell key={`cell-${index}`} fill={THEME_COLORS[index % THEME_COLORS.length]} />
-                                ))}
-                              </Bar>
-                            </BarChart>
-                          )}
-                        </ResponsiveContainer>
-                      </div>
-                    </CardContent>
-                  </Card>
+                  {/* 4. CROSS-FILTER COHORT CORRELATION MATRIX & SCATTER PLOT */}
+                  <CohortCorrelationMatrix
+                    responses={activeResponses}
+                  />
 
                   {/* TABEL RINCIAN EVALUASI 35 BUTIR PERTANYAAN */}
                   <Card className="border-slate-200 bg-white overflow-hidden shadow-xs rounded-xl transition-all duration-300 hover:border-emerald-500 hover:shadow-[0_12px_30px_-6px_rgba(21,128,61,0.2),0_0_15px_1px_rgba(34,197,94,0.12)]">
