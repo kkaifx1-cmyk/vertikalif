@@ -3,6 +3,7 @@
 import React from "react";
 import { Sparkles, BrainCircuit, ArrowRight, ShieldCheck, CheckCircle2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { NumberTicker } from "./number-ticker";
 
 interface MediationTriangleProps {
   consistencyPct: number;
@@ -60,7 +61,7 @@ export function MediationTriangle({
         <div className="shrink-0 flex items-center gap-2 bg-slate-50 dark:bg-zinc-950/80 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-zinc-800">
           <span className="text-[10px] uppercase font-bold text-slate-500 dark:text-zinc-400">Status Model:</span>
           <Badge className="bg-emerald-600 text-white font-extrabold text-[10px]">
-            Mediasi Penuh ({mediationPct}%)
+            Mediasi Penuh (<NumberTicker value={mediationPct} suffix="%" />)
           </Badge>
         </div>
       </div>
@@ -81,10 +82,10 @@ export function MediationTriangle({
                 Konsistensi 7 KAIH
               </h4>
               <div className="text-3xl sm:text-4xl font-black text-emerald-600 dark:text-emerald-400 font-mono tracking-tight">
-                {consistencyPct}%
+                <NumberTicker value={consistencyPct} suffix="%" />
               </div>
               <div className="text-xs font-mono text-slate-500 dark:text-zinc-400">
-                Skor: <strong>{avgConsistency}</strong> / 4.00
+                Skor: <strong><NumberTicker value={avgConsistency} decimalPlaces={2} /></strong> / 4.00
               </div>
               <p className="text-[11px] text-slate-500 dark:text-zinc-400 pt-1 border-t border-slate-100 dark:border-zinc-800">
                 Kedisiplinan ibadah harian, qiyamul lail, tahfidz &amp; ritme fisik asrama (Butir #1)
@@ -98,8 +99,8 @@ export function MediationTriangle({
           <div className="flex flex-col items-center">
             {/* Jalur A Indicator Pill (X -> M) */}
             <div className="hidden md:flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-700 dark:text-amber-300 text-xs font-bold font-mono mb-3 shadow-xs">
-              <span>Jalur a: r = +{rA}</span>
-              <span className="text-[10px] opacity-75">({convA}%)</span>
+              <span>Jalur a: r = +<NumberTicker value={rA} decimalPlaces={3} /></span>
+              <span className="text-[10px] opacity-75">(<NumberTicker value={convA} suffix="%" />)</span>
             </div>
 
             <div className="w-full p-5 sm:p-6 rounded-2xl border-2 border-amber-500/40 bg-gradient-to-b from-amber-50/70 via-white to-white dark:from-amber-950/40 dark:via-zinc-900/90 dark:to-zinc-900 text-center space-y-2.5 shadow-sm hover:shadow-md transition-all duration-300 ring-2 ring-amber-400/20">
@@ -110,10 +111,10 @@ export function MediationTriangle({
                 Fokus Belajar &amp; Regulasi Diri
               </h4>
               <div className="text-3xl sm:text-4xl font-black text-amber-500 font-mono tracking-tight">
-                {focusPct}%
+                <NumberTicker value={focusPct} suffix="%" />
               </div>
               <div className="text-xs font-mono text-slate-500 dark:text-zinc-400">
-                Skor: <strong>{avgFocus}</strong> / 4.00
+                Skor: <strong><NumberTicker value={avgFocus} decimalPlaces={2} /></strong> / 4.00
               </div>
               <p className="text-[11px] text-slate-500 dark:text-zinc-400 pt-1 border-t border-slate-100 dark:border-zinc-800">
                 Inhibisi distraksi, kendali atensi selektif saat KBM, dan ketahanan kognitif (21 Butir)
@@ -122,8 +123,8 @@ export function MediationTriangle({
 
             {/* Jalur B Indicator Pill (M -> Y) */}
             <div className="hidden md:flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-500/15 border border-teal-500/30 text-teal-700 dark:text-teal-300 text-xs font-bold font-mono mt-3 shadow-xs">
-              <span>Jalur b: r = +{rB}</span>
-              <span className="text-[10px] opacity-75">({convB}%)</span>
+              <span>Jalur b: r = +<NumberTicker value={rB} decimalPlaces={3} /></span>
+              <span className="text-[10px] opacity-75">(<NumberTicker value={convB} suffix="%" />)</span>
             </div>
           </div>
 
@@ -139,10 +140,10 @@ export function MediationTriangle({
                 Confidency Nyata Santri
               </h4>
               <div className="text-3xl sm:text-4xl font-black text-teal-600 dark:text-teal-400 font-mono tracking-tight">
-                {confidencePct}%
+                <NumberTicker value={confidencePct} suffix="%" />
               </div>
               <div className="text-xs font-mono text-slate-500 dark:text-zinc-400">
-                Skor: <strong>{avgConfidence}</strong> / 4.00
+                Skor: <strong><NumberTicker value={avgConfidence} decimalPlaces={2} /></strong> / 4.00
               </div>
               <p className="text-[11px] text-slate-500 dark:text-zinc-400 pt-1 border-t border-slate-100 dark:border-zinc-800">
                 Keberanian memimpin musyawarah, tampil berbicara di panggung, &amp; kemantapan argumen
@@ -167,7 +168,7 @@ export function MediationTriangle({
             <div className="flex items-center gap-2 font-mono font-bold">
               <span className="text-slate-400 dark:text-zinc-500 line-through">Langsung</span>
               <span className="text-amber-600 dark:text-amber-400 font-extrabold">
-                {directEffect}% (Sisa Lemah)
+                <NumberTicker value={directEffect} suffix="%" /> (Sisa Lemah)
               </span>
             </div>
           </div>

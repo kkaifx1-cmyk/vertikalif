@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useRef } from "react";
 
 interface NumberTickerProps {
-  value: number;
+  value: number | string;
   decimalPlaces?: number;
   durationMs?: number;
   prefix?: string;
@@ -19,13 +19,14 @@ export function NumberTicker({
   suffix = "",
   className = "",
 }: NumberTickerProps) {
+  const numericValue = typeof value === "number" ? value : parseFloat(String(value)) || 0;
   const [displayValue, setDisplayValue] = useState<number>(0);
   const prevValueRef = useRef<number>(0);
 
   useEffect(() => {
     let startTimestamp: number | null = null;
     const startValue = prevValueRef.current;
-    const endValue = value;
+    const endValue = numericValue;
     let animationFrameId: number;
 
     const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
@@ -54,7 +55,7 @@ export function NumberTicker({
         cancelAnimationFrame(animationFrameId);
       }
     };
-  }, [value, durationMs]);
+  }, [numericValue, durationMs]);
 
   const formatted = displayValue.toLocaleString("id-ID", {
     minimumFractionDigits: decimalPlaces,

@@ -3,6 +3,7 @@
 import React from "react";
 import { Sparkles, TrendingUp, CheckCircle2, ShieldCheck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { NumberTicker } from "./number-ticker";
 
 interface PathDonutsProps {
   rConsistencyFocus: number;
@@ -75,10 +76,10 @@ export function PathDonuts({
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
               <span className="text-2xl sm:text-[26px] font-black text-slate-900 dark:text-white font-sans tracking-tight tabular-nums">
-                {pctA}%
+                <NumberTicker value={pctA} decimalPlaces={1} suffix="%" />
               </span>
               <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 mt-0.5 font-mono">
-                r = +{rConsistencyFocus.toFixed(3)}
+                r = +<NumberTicker value={rConsistencyFocus} decimalPlaces={3} />
               </span>
             </div>
           </div>
@@ -93,7 +94,9 @@ export function PathDonuts({
           <div className="mt-5 pt-3.5 border-t border-slate-200 dark:border-zinc-800 w-full space-y-2 text-xs">
             <div className="flex justify-between items-center text-slate-600 dark:text-zinc-400">
               <span>Koefisien Determinasi ($R^2$):</span>
-              <span className="font-bold text-slate-900 dark:text-white font-mono">{r2ConsistencyFocus}%</span>
+              <span className="font-bold text-slate-900 dark:text-white font-mono">
+                <NumberTicker value={r2ConsistencyFocus} suffix="%" />
+              </span>
             </div>
             <div className="flex justify-between items-center text-slate-600 dark:text-zinc-400">
               <span>Signifikansi Hubungan:</span>
@@ -137,10 +140,10 @@ export function PathDonuts({
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
               <span className="text-2xl sm:text-[26px] font-black text-slate-900 dark:text-white font-sans tracking-tight tabular-nums">
-                {pctB}%
+                <NumberTicker value={pctB} decimalPlaces={1} suffix="%" />
               </span>
               <span className="text-xs font-semibold text-amber-600 dark:text-amber-400 mt-0.5 font-mono">
-                r = +{rFocusConfidence.toFixed(3)}
+                r = +<NumberTicker value={rFocusConfidence} decimalPlaces={3} />
               </span>
             </div>
           </div>
@@ -155,7 +158,9 @@ export function PathDonuts({
           <div className="mt-5 pt-3.5 border-t border-slate-200 dark:border-zinc-800 w-full space-y-2 text-xs">
             <div className="flex justify-between items-center text-slate-600 dark:text-zinc-400">
               <span>Koefisien Determinasi ($R^2$):</span>
-              <span className="font-bold text-slate-900 dark:text-white font-mono">{r2FocusConfidence}%</span>
+              <span className="font-bold text-slate-900 dark:text-white font-mono">
+                <NumberTicker value={r2FocusConfidence} suffix="%" />
+              </span>
             </div>
             <div className="flex justify-between items-center text-slate-600 dark:text-zinc-400">
               <span>Signifikansi Hubungan:</span>

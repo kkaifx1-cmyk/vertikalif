@@ -21,6 +21,7 @@ import {
 } from "recharts";
 import { Compass, TrendingUp, BarChart3, Target, Sparkles, Award, ShieldCheck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { NumberTicker } from "./number-ticker";
 
 interface ThemeAverage {
   id?: string;
@@ -389,7 +390,7 @@ export function RadarKaihChart({
                 Rerata 7 KAIH
               </span>
               <span className="font-extrabold text-slate-900 dark:text-white truncate block">
-                {avgComposite} / 4.00
+                <NumberTicker value={avgComposite} decimalPlaces={2} /> / 4.00
               </span>
             </div>
           </div>

@@ -72,6 +72,7 @@ import { MediationTriangle } from "@/components/super-admin/mediation-triangle";
 import { PathDonuts } from "@/components/super-admin/path-donuts";
 import { VariableDetailsBreakdown } from "@/components/super-admin/variable-details-breakdown";
 import { RoleModelsSpotlight } from "@/components/super-admin/role-models-spotlight";
+import { NumberTicker } from "@/components/super-admin/number-ticker";
 
 const THEME_COLORS = ["#15803d", "#d97706", "#0284c7", "#7c3aed", "#059669", "#ea580c", "#4f46e5"];
 const LIKERT_COLORS = ["#ef4444", "#f59e0b", "#10b981", "#15803d"];
@@ -1305,7 +1306,7 @@ function SuperAdminDashboard() {
                       </h2>
                     </div>
                     <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
-                      {activeSession.description} • Terverifikasi: <strong className="text-emerald-800 font-mono font-bold">{activeResponses.length} santri</strong>
+                      {activeSession.description} • Terverifikasi: <strong className="text-emerald-800 dark:text-emerald-300 font-mono font-bold"><NumberTicker value={activeResponses.length} /> santri</strong>
                     </p>
                   </div>
                 </div>
@@ -1371,7 +1372,7 @@ function SuperAdminDashboard() {
                     activeTab === "tabel" ? "bg-amber-400 text-slate-950 font-bold" : "bg-slate-200 text-slate-700"
                   }`}
                 >
-                  {activeResponses.length}
+                  <NumberTicker value={activeResponses.length} />
                 </span>
               )}
             </button>
@@ -1605,7 +1606,7 @@ function SuperAdminDashboard() {
                           <span>Skema Pengaruh &amp; Mediasi Kognitif 2026 • Versi 2.0</span>
                         </div>
                         <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-                          Terbukti {mediationPct}% Kepercayaan Diri Santri Dibentuk Secara Mediasi Oleh Fokus
+                          Terbukti <NumberTicker value={mediationPct} suffix="%" /> Kepercayaan Diri Santri Dibentuk Secara Mediasi Oleh Fokus
                         </h2>
                         <p className="text-xs sm:text-sm text-emerald-100/90 max-w-3xl leading-relaxed">
                           Disiplin fisik harian (7 Butir Konsistensi) tidak langsung loncat menjadi keberanian tampil, melainkan ditempa terlebih dahulu melalui <strong>ketahanan fokus &amp; inhibisi distraksi</strong> di kelas.
@@ -1614,7 +1615,9 @@ function SuperAdminDashboard() {
                       <div className="shrink-0 flex items-center gap-2 bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20 shadow-inner">
                         <div className="text-center px-2">
                           <span className="text-[10px] uppercase font-bold text-amber-200 tracking-wider block">Kekuatan Jalur</span>
-                          <div className="text-2xl font-black text-amber-300 font-mono">a × b = {pathStrength}</div>
+                          <div className="text-2xl font-black text-amber-300 font-mono">
+                            a × b = <NumberTicker value={pathStrength} decimalPlaces={3} />
+                          </div>
                           <Badge className="bg-amber-400 text-slate-950 font-extrabold text-[10px] mt-1 shadow-xs">
                             Mediasi Signifikan
                           </Badge>
@@ -1627,27 +1630,31 @@ function SuperAdminDashboard() {
                       <div className="bg-white/10 backdrop-blur-xs rounded-xl p-3 border border-white/10">
                         <span className="text-slate-300 block text-[11px]">Indeks Fokus Belajar (IF)</span>
                         <span className="text-base sm:text-lg font-bold text-amber-300 font-mono">
-                          {cognitivePipelineData.focusPct}%{" "}
-                          <span className="text-xs font-normal text-slate-300">(Efisiensi {Math.round(cognitivePipelineData.rConsistencyFocus * 100)}%)</span>
+                          <NumberTicker value={cognitivePipelineData.focusPct} suffix="%" />{" "}
+                          <span className="text-xs font-normal text-slate-300">
+                            (Efisiensi <NumberTicker value={Math.round(cognitivePipelineData.rConsistencyFocus * 100)} suffix="%" />)
+                          </span>
                         </span>
                       </div>
                       <div className="bg-white/10 backdrop-blur-xs rounded-xl p-3 border border-white/10">
                         <span className="text-slate-300 block text-[11px]">Indeks Confidency (IC)</span>
                         <span className="text-base sm:text-lg font-bold text-teal-300 font-mono">
-                          {cognitivePipelineData.confidencePct}%{" "}
-                          <span className="text-xs font-normal text-slate-300">(Efisiensi {Math.round(cognitivePipelineData.rFocusConfidence * 100)}%)</span>
+                          <NumberTicker value={cognitivePipelineData.confidencePct} suffix="%" />{" "}
+                          <span className="text-xs font-normal text-slate-300">
+                            (Efisiensi <NumberTicker value={Math.round(cognitivePipelineData.rFocusConfidence * 100)} suffix="%" />)
+                          </span>
                         </span>
                       </div>
                       <div className="bg-white/10 backdrop-blur-xs rounded-xl p-3 border border-white/10">
                         <span className="text-slate-300 block text-[11px]">Kekuatan Mediasi (a × b)</span>
                         <span className="text-base sm:text-lg font-bold text-amber-200 font-mono">
-                          {mediationPct}% <span className="text-xs font-normal text-slate-300">Konversi Total</span>
+                          <NumberTicker value={mediationPct} suffix="%" /> <span className="text-xs font-normal text-slate-300">Konversi Total</span>
                         </span>
                       </div>
                       <div className="bg-white/10 backdrop-blur-xs rounded-xl p-3 border border-white/10">
                         <span className="text-slate-300 block text-[11px]">Santri Role Model</span>
                         <span className="text-base sm:text-lg font-bold text-white font-mono">
-                          {personaCounts.anchoredLeader} Santri <span className="text-xs font-normal text-emerald-300">Anchored</span>
+                          <NumberTicker value={personaCounts.anchoredLeader} /> Santri <span className="text-xs font-normal text-emerald-300">Anchored</span>
                         </span>
                       </div>
                     </div>

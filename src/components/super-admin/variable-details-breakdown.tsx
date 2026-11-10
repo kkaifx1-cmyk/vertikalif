@@ -4,6 +4,7 @@ import React, { useState, useMemo } from "react";
 import { Activity, ArrowUpDown, ArrowDown, ArrowUp, AlertCircle, CheckCircle2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { NumberTicker } from "./number-ticker";
 
 interface ItemData {
   name: string;
@@ -130,7 +131,7 @@ export function VariableDetailsBreakdown({
                 Variabel 1 (X: Input)
               </span>
               <Badge className="bg-emerald-600 text-white font-mono text-[10px]">
-                {consistencySummary.pct}% ({consistencySummary.avg} / 4.0)
+                <NumberTicker value={consistencySummary.pct} suffix="%" /> (<NumberTicker value={consistencySummary.avg} decimalPlaces={2} /> / 4.0)
               </Badge>
             </div>
             <CardTitle className="text-sm font-bold text-slate-900 dark:text-white mt-1">
@@ -151,7 +152,7 @@ export function VariableDetailsBreakdown({
                       {item.name}
                     </span>
                     <span className="font-mono font-bold text-slate-900 dark:text-white">
-                      {item.pct}% <span className="text-[10px] text-slate-400">({item.val})</span>
+                      <NumberTicker value={item.pct} suffix="%" /> <span className="text-[10px] text-slate-400">(<NumberTicker value={item.val} decimalPlaces={2} />)</span>
                     </span>
                   </div>
                   <div className="w-full bg-slate-100 dark:bg-zinc-800 rounded-full h-1.5 overflow-hidden">
@@ -178,7 +179,7 @@ export function VariableDetailsBreakdown({
                 Variabel 2 (M: Mediator)
               </span>
               <Badge className="bg-amber-500 text-slate-950 font-mono text-[10px] font-black">
-                {focusSummary.pct}% ({focusSummary.avg} / 4.0)
+                <NumberTicker value={focusSummary.pct} suffix="%" /> (<NumberTicker value={focusSummary.avg} decimalPlaces={2} /> / 4.0)
               </Badge>
             </div>
             <CardTitle className="text-sm font-bold text-slate-900 dark:text-white mt-1">
@@ -195,7 +196,7 @@ export function VariableDetailsBreakdown({
                 <div className="flex items-center justify-between text-xs">
                   <span className="font-bold text-slate-800 dark:text-zinc-200">{dim.name}</span>
                   <span className="font-mono font-extrabold text-amber-600 dark:text-amber-400">
-                    {dim.pct}% <span className="text-[10px] text-slate-400">({dim.score})</span>
+                    <NumberTicker value={dim.pct} suffix="%" /> <span className="text-[10px] text-slate-400">(<NumberTicker value={dim.score} decimalPlaces={2} />)</span>
                   </span>
                 </div>
                 <div className="w-full bg-slate-200 dark:bg-zinc-800 rounded-full h-2 overflow-hidden">
@@ -222,7 +223,7 @@ export function VariableDetailsBreakdown({
                 Variabel 3 (Y: Output)
               </span>
               <Badge className="bg-teal-600 text-white font-mono text-[10px]">
-                {confidenceSummary.pct}% ({confidenceSummary.avg} / 4.0)
+                <NumberTicker value={confidenceSummary.pct} suffix="%" /> (<NumberTicker value={confidenceSummary.avg} decimalPlaces={2} /> / 4.0)
               </Badge>
             </div>
             <CardTitle className="text-sm font-bold text-slate-900 dark:text-white mt-1">
@@ -243,7 +244,7 @@ export function VariableDetailsBreakdown({
                       {item.name}
                     </span>
                     <span className="font-mono font-bold text-slate-900 dark:text-white">
-                      {item.pct}% <span className="text-[10px] text-slate-400">({item.val})</span>
+                      <NumberTicker value={item.pct} suffix="%" /> <span className="text-[10px] text-slate-400">(<NumberTicker value={item.val} decimalPlaces={2} />)</span>
                     </span>
                   </div>
                   <div className="w-full bg-slate-100 dark:bg-zinc-800 rounded-full h-1.5 overflow-hidden">

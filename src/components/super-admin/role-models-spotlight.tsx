@@ -28,6 +28,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { NumberTicker } from "./number-ticker";
 
 export interface ExtendedStudentData {
   id: string;
@@ -280,11 +281,11 @@ export function RoleModelsSpotlight({
                       </span>
                       <div className="flex items-baseline gap-1">
                         <span className="text-xl font-black text-emerald-600 dark:text-emerald-400 font-mono">
-                          {student.confidenceScore.toFixed(2)}
+                          <NumberTicker value={student.confidenceScore} decimalPlaces={2} />
                         </span>
                         <span className="text-xs text-slate-400">/ 4.0</span>
                         <span className="text-xs font-bold text-amber-500">
-                          ({student.confidencePercentage}%)
+                          (<NumberTicker value={student.confidencePercentage} suffix="%" />)
                         </span>
                       </div>
                     </div>
@@ -293,15 +294,21 @@ export function RoleModelsSpotlight({
                     <div className="grid grid-cols-3 gap-1.5 text-center text-[10px]">
                       <div className="bg-emerald-50 dark:bg-emerald-950/40 rounded-lg p-1 border border-emerald-200/60 dark:border-emerald-800/40">
                         <span className="text-emerald-700 dark:text-emerald-400 block text-[9px] font-semibold">IK (Aksi)</span>
-                        <span className="font-bold font-mono text-emerald-900 dark:text-emerald-200">{student.ikPct}%</span>
+                        <span className="font-bold font-mono text-emerald-900 dark:text-emerald-200">
+                          <NumberTicker value={student.ikPct} suffix="%" />
+                        </span>
                       </div>
                       <div className="bg-amber-50 dark:bg-amber-950/40 rounded-lg p-1 border border-amber-200/60 dark:border-amber-800/40">
                         <span className="text-amber-700 dark:text-amber-400 block text-[9px] font-semibold">IF (Fokus)</span>
-                        <span className="font-bold font-mono text-amber-900 dark:text-amber-200">{student.ifPct}%</span>
+                        <span className="font-bold font-mono text-amber-900 dark:text-amber-200">
+                          <NumberTicker value={student.ifPct} suffix="%" />
+                        </span>
                       </div>
                       <div className="bg-teal-50 dark:bg-teal-950/40 rounded-lg p-1 border border-teal-200/60 dark:border-teal-800/40">
                         <span className="text-teal-700 dark:text-teal-400 block text-[9px] font-semibold">IC (Pede)</span>
-                        <span className="font-bold font-mono text-teal-900 dark:text-teal-200">{student.icPct}%</span>
+                        <span className="font-bold font-mono text-teal-900 dark:text-teal-200">
+                          <NumberTicker value={student.icPct} suffix="%" />
+                        </span>
                       </div>
                     </div>
 
