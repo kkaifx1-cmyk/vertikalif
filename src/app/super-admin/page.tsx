@@ -1045,7 +1045,7 @@ function SuperAdminDashboard() {
                               Konsolidasi 4 Hari
                             </h4>
                             <p className={`text-[10px] ${isSelected ? "text-slate-300" : "text-slate-500"}`}>
-                              02 - 12 Nov 2026
+                              {consolidatedSummary?.session.formattedDate || "02 - 14 Nov 2026"}
                             </p>
                           </div>
                           <div className="text-right">
@@ -1054,7 +1054,7 @@ function SuperAdminDashboard() {
                                 isSelected ? "text-white" : "text-emerald-900"
                               }`}
                             >
-                              {consolidatedSummary?.ikvPct || 0}%
+                              {consolidatedSummary?.participationPct || 0}%
                             </span>
                             <span className={`block text-[9px] ${isSelected ? "text-slate-300" : "text-slate-500"}`}>
                               IKV: {consolidatedSummary?.avgIkv || 0} / 4.0
@@ -1090,7 +1090,7 @@ function SuperAdminDashboard() {
                     <span className="text-[10px] font-normal text-slate-400">Pilih untuk audit</span>
                   </div>
 
-                  {/* 2. DAFTAR 4 KARTU SESI (Senin 2 Nov, Kamis 5 Nov, Senin 9 Nov, Kamis 12 Nov) */}
+                  {/* 2. DAFTAR 4 KARTU SESI (Senin 2 Nov, Kamis 5 Nov, Rabu 11 Nov, Sabtu 14 Nov) */}
                   <div className="space-y-2">
                     {sessionSummaries
                       .filter((s) => s.session.id !== "all")
@@ -1152,7 +1152,7 @@ function SuperAdminDashboard() {
                                       : "text-slate-400"
                                   }`}
                                 >
-                                  {item.totalCount > 0 ? `${item.ikvPct}%` : "0%"}
+                                  {item.totalCount > 0 ? `${item.participationPct}%` : "0%"}
                                 </span>
                                 <span className={`text-[10px] ${isSelected ? "text-slate-400" : "text-slate-500"}`}>
                                   ({item.totalCount > 0 ? item.avgIkv : "0.00"})
@@ -1166,7 +1166,7 @@ function SuperAdminDashboard() {
                                 className={`h-full rounded-full transition-all duration-500 ${
                                   item.totalCount > 0 ? "bg-emerald-500" : "bg-slate-200"
                                 }`}
-                                style={{ width: `${item.totalCount > 0 ? item.ikvPct : 0}%` }}
+                                style={{ width: `${item.totalCount > 0 ? item.participationPct : 0}%` }}
                               />
                             </div>
                           </div>
@@ -1217,7 +1217,7 @@ function SuperAdminDashboard() {
                       <tr>
                         <th className="py-1.5 px-2.5">Sesi</th>
                         <th className="py-1.5 px-2 text-center">N</th>
-                        <th className="py-1.5 px-2 text-center">IKV</th>
+                        <th className="py-1.5 px-2 text-center">% Santri</th>
                         <th className="py-1.5 px-2.5 text-right">Ik • If • Ic</th>
                       </tr>
                     </thead>
@@ -1249,7 +1249,7 @@ function SuperAdminDashboard() {
                             </td>
                             <td className="py-1.5 px-2 text-center font-mono">
                               <span className={s.totalCount > 0 ? "text-emerald-700 font-bold" : "text-slate-400"}>
-                                {s.totalCount > 0 ? `${s.ikvPct}%` : "-"}
+                                {s.totalCount > 0 ? `${s.participationPct}%` : "0%"}
                               </span>
                             </td>
                             <td className="py-1.5 px-2.5 text-right font-mono text-[9px] text-slate-600">

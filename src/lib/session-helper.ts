@@ -17,9 +17,11 @@ export interface EvaluationSession {
 export const OFFICIAL_SESSION_DATES = [
   "2026-11-02",
   "2026-11-05",
-  "2026-11-10",
+  "2026-11-11",
   "2026-11-14",
 ] as const;
+
+export const TOTAL_IHSANUL_FIKRI_STUDENTS = 777;
 
 export const EVALUATION_SESSIONS: EvaluationSession[] = [
   {
@@ -63,12 +65,12 @@ export const EVALUATION_SESSIONS: EvaluationSession[] = [
   },
   {
     id: "sesi_3",
-    dateKey: "2026-11-10",
+    dateKey: "2026-11-11",
     sesiNumber: 3,
-    name: "Sesi 3: Selasa, 10 Nov 2026",
-    dayName: "Selasa",
-    formattedDate: "10 Nov 2026",
-    fullLabel: "Selasa, 10 November 2026",
+    name: "Sesi 3: Rabu, 11 Nov 2026",
+    dayName: "Rabu",
+    formattedDate: "11 Nov 2026",
+    fullLabel: "Rabu, 11 November 2026",
     badge: "Sesi 3",
     badgeColor: "bg-indigo-600 text-white",
     description: "Evaluasi awal pekan ke-2 untuk mengukur retensi fokus pasca awal pekan.",
@@ -151,6 +153,8 @@ export function filterResponsesBySession(
 export interface SessionMetricsSummary {
   session: EvaluationSession;
   totalCount: number;
+  participationPct: number; // Persentase santri yang mengisi dari total 777 santri Ihsanul Fikri (100% = 777 siswa)
+  uniqueCount: number;
   avgIkv: number;
   ikvPct: number;
   avgIk: number;
@@ -187,6 +191,8 @@ export function computeSessionMetrics(
     return {
       session,
       totalCount: 0,
+      participationPct: 0,
+      uniqueCount: 0,
       avgIkv: 0,
       ikvPct: 0,
       avgIk: 0,
@@ -197,6 +203,14 @@ export function computeSessionMetrics(
       status,
     };
   }
+
+  // Persentase terhadap 100% akumulasi seluruh santri SMAIT Ihsanul Fikri (Total: 777 Siswa)
+  const uniqueNames = new Set(sessionResponses.map((r) => r.nama.trim().toLowerCase()));
+  const uniqueCount = uniqueNames.size;
+  const participationPct =
+    session.id === "all"
+      ? Math.min(100, Math.round((uniqueCount / TOTAL_IHSANUL_FIKRI_STUDENTS) * 100))
+      : Math.min(100, Math.round((totalCount / TOTAL_IHSANUL_FIKRI_STUDENTS) * 100));
 
   const sumTotalScore = sessionResponses.reduce((acc, r) => acc + (r.totalScore || 0), 0);
   const avgIkv = Number((sumTotalScore / totalCount).toFixed(2));
@@ -261,6 +275,8 @@ export function computeSessionMetrics(
   return {
     session,
     totalCount,
+    participationPct,
+    uniqueCount,
     avgIkv,
     ikvPct,
     avgIk,
