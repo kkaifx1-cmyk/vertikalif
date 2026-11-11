@@ -781,7 +781,7 @@ export default function SurveyPage() {
                 className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-emerald-700 transition-colors"
               >
                 <ArrowLeft className="h-3.5 w-3.5" />
-                Kembali ke Profil
+                Kembali ke Beranda
               </Link>
             )}
             <Badge variant="gold" className="text-xs font-bold">

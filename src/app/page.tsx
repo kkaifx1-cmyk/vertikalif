@@ -21,6 +21,7 @@ import {
   Award,
   ChevronRight,
   Home,
+  Lock,
 } from "lucide-react";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -162,19 +163,46 @@ function HomeInner() {
   const router = useRouter();
   const tabFromQuery = searchParams.get("tab") as TabKey | null;
 
+  // Status Kunci Profil Pembuat (Dinonaktifkan sementara)
+  const IS_PROFILE_LOCKED = true;
+
   const [activeTab, setActiveTab] = useState<TabKey>("beranda");
 
   useEffect(() => {
     if (tabFromQuery === "kaih") {
       setActiveTab("kaih");
     } else if (tabFromQuery === "profil") {
-      setActiveTab("profil");
+      if (IS_PROFILE_LOCKED) {
+        setActiveTab("beranda");
+        router.replace("/", { scroll: false });
+      } else {
+        setActiveTab("profil");
+      }
     } else {
       setActiveTab("beranda");
     }
-  }, [tabFromQuery]);
+  }, [tabFromQuery, router]);
+
+  useEffect(() => {
+    const handleCustomTab = (e: Event) => {
+      const customEvent = e as CustomEvent<TabKey>;
+      if (customEvent.detail) {
+        if (customEvent.detail === "profil" && IS_PROFILE_LOCKED) {
+          return;
+        }
+        setActiveTab(customEvent.detail);
+      }
+    };
+    window.addEventListener("vertikalif_switch_tab", handleCustomTab);
+    return () => {
+      window.removeEventListener("vertikalif_switch_tab", handleCustomTab);
+    };
+  }, []);
 
   const switchTab = (tab: TabKey) => {
+    if (tab === "profil" && IS_PROFILE_LOCKED) {
+      return;
+    }
     setActiveTab(tab);
     router.push(`/?tab=${tab}`, { scroll: false });
   };
@@ -563,7 +591,35 @@ function HomeInner() {
       {/* TAB 3: PROFIL PEMBUAT                                                     */}
       {/* ========================================================================= */}
       {activeTab === "profil" && (
-        <main className="flex-1 py-12 sm:py-16 bg-white/40 dark:bg-black/80 backdrop-blur-xs transition-colors duration-300">
+        IS_PROFILE_LOCKED ? (
+          <main className="flex-1 py-20 sm:py-28 bg-white/40 dark:bg-black/80 backdrop-blur-xs flex items-center justify-center px-4 transition-colors duration-300">
+            <div className="max-w-md w-full rounded-3xl border border-amber-500/40 dark:border-amber-500/30 bg-white/95 dark:bg-zinc-950/95 p-8 text-center shadow-2xl space-y-5 animate-in fade-in zoom-in-95 duration-200">
+              <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-500 mx-auto shadow-inner">
+                <Lock className="h-8 w-8 stroke-[2.2]" />
+              </div>
+              <div className="space-y-2">
+                <span className="inline-block text-[11px] font-black uppercase tracking-wider px-3 py-1 rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-400 font-mono border border-amber-500/30">
+                  Akses Dibatasi
+                </span>
+                <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">
+                  Profil Ditutup Sementara
+                </h2>
+                <p className="text-xs sm:text-sm text-slate-500 dark:text-zinc-400 leading-relaxed">
+                  Halaman profil tim pembuat dan guru pembimbing sedang dinonaktifkan sementara oleh pengelola instrumen VERTIKALIF.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => switchTab("beranda")}
+                className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm py-3 shadow-md shadow-emerald-900/30 hover:shadow-lg transition-all cursor-pointer"
+              >
+                <Home className="h-4 w-4" />
+                <span>Kembali ke Beranda</span>
+              </button>
+            </div>
+          </main>
+        ) : (
+          <main className="flex-1 py-12 sm:py-16 bg-white/40 dark:bg-black/80 backdrop-blur-xs transition-colors duration-300">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             {/* Tab Header */}
             <div className="text-center max-w-3xl mx-auto space-y-3 mb-12">
@@ -659,6 +715,7 @@ function HomeInner() {
             </div>
           </div>
         </main>
+        )
       )}
     </div>
   );
