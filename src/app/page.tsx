@@ -164,8 +164,9 @@ function HomeInner() {
   const router = useRouter();
   const tabFromQuery = searchParams.get("tab") as TabKey | null;
 
-  // Status Kunci Profil Pembuat (Dibuka kembali)
-  const IS_PROFILE_LOCKED = false;
+  // Status Kunci Profil Pembuat (Ditutup kembali sesuai instruksi pengelola)
+  // ATURAN PENGUBAHAN: Jika ingin mengubah profil/foto di masa mendatang, permintaan WAJIB menyertakan NAMA BELAKANG lengkap anggota terkait.
+  const IS_PROFILE_LOCKED = true;
 
   const [activeTab, setActiveTab] = useState<TabKey>("beranda");
 

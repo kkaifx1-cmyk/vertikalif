@@ -16,8 +16,8 @@ function NavbarContent() {
   const isHome = pathname === "/";
   const currentTab = isHome ? (searchParams.get("tab") || "beranda") : null;
 
-  // Status Kunci Profil Pembuat (Dibuka kembali)
-  const IS_PROFILE_LOCKED = false;
+  // Status Kunci Profil Pembuat (Ditutup kembali sesuai instruksi)
+  const IS_PROFILE_LOCKED = true;
   const [lockedNotice, setLockedNotice] = useState(false);
 
   const handleSwitchTab = (tab: "beranda" | "kaih" | "profil") => {
@@ -151,15 +151,15 @@ function NavbarContent() {
           <button
             type="button"
             onClick={() => handleSwitchTab("profil")}
-            aria-label="Profil Tim Pembuat & Pembimbing"
-            title="Profil Tim Pembuat & Pembimbing"
+            aria-label={IS_PROFILE_LOCKED ? "Profil Tim Pembuat & Pembimbing (Ditutup Sementara)" : "Profil Tim Pembuat & Pembimbing"}
+            title={IS_PROFILE_LOCKED ? "Akses profil ditutup sementara" : "Profil Tim Pembuat & Pembimbing"}
             className={cn(
-              "group/btn relative inline-flex items-center justify-center h-9 w-9 sm:h-10 sm:w-10 rounded-xl transition-all duration-200 cursor-pointer active:scale-95",
+              "group/btn relative inline-flex items-center justify-center h-9 w-9 sm:h-10 sm:w-10 rounded-xl transition-all duration-200 active:scale-95",
               IS_PROFILE_LOCKED
                 ? "bg-slate-100 dark:bg-slate-900/80 text-slate-400 dark:text-slate-500 border border-dashed border-amber-500/50 hover:border-amber-400 shadow-xs cursor-not-allowed"
                 : currentTab === "profil"
-                ? "bg-gradient-to-b from-emerald-600 via-emerald-700 to-emerald-900 text-white font-black border-t-2 border-t-emerald-300/80 border-x border-emerald-600 border-b-[3.5px] border-b-emerald-950 -translate-y-0.5 shadow-[0_4px_0_0_#064e3b,0_8px_20px_rgba(16,185,129,0.5),0_0_18px_rgba(52,211,153,0.4)] active:translate-y-0.5 active:border-b-2 active:shadow-[0_2px_0_0_#064e3b]"
-                : "bg-gradient-to-b from-white via-slate-50 to-slate-200 dark:from-slate-800 dark:via-slate-850 dark:to-slate-900 text-slate-800 dark:text-slate-200 font-bold border-t border-t-white/90 dark:border-t-slate-700 border-x border-slate-300 dark:border-slate-800 border-b-[3px] border-b-slate-400 dark:border-b-slate-950 shadow-[0_3px_0_0_rgba(148,163,184,0.6)] dark:shadow-[0_3px_0_0_#020617] hover:-translate-y-0.5 hover:border-b-[3.5px] hover:border-b-emerald-700 dark:hover:border-b-emerald-500 hover:text-emerald-950 dark:hover:text-emerald-300 hover:shadow-[0_4px_0_0_#047857,0_6px_16px_rgba(16,185,129,0.35)] dark:hover:shadow-[0_4px_0_0_#064e3b,0_0_18px_rgba(16,185,129,0.4)] active:translate-y-0.5 active:border-b-2"
+                ? "cursor-pointer bg-gradient-to-b from-emerald-600 via-emerald-700 to-emerald-900 text-white font-black border-t-2 border-t-emerald-300/80 border-x border-emerald-600 border-b-[3.5px] border-b-emerald-950 -translate-y-0.5 shadow-[0_4px_0_0_#064e3b,0_8px_20px_rgba(16,185,129,0.5),0_0_18px_rgba(52,211,153,0.4)] active:translate-y-0.5 active:border-b-2 active:shadow-[0_2px_0_0_#064e3b]"
+                : "cursor-pointer bg-gradient-to-b from-white via-slate-50 to-slate-200 dark:from-slate-800 dark:via-slate-850 dark:to-slate-900 text-slate-800 dark:text-slate-200 font-bold border-t border-t-white/90 dark:border-t-slate-700 border-x border-slate-300 dark:border-slate-800 border-b-[3px] border-b-slate-400 dark:border-b-slate-950 shadow-[0_3px_0_0_rgba(148,163,184,0.6)] dark:shadow-[0_3px_0_0_#020617] hover:-translate-y-0.5 hover:border-b-[3.5px] hover:border-b-emerald-700 dark:hover:border-b-emerald-500 hover:text-emerald-950 dark:hover:text-emerald-300 hover:shadow-[0_4px_0_0_#047857,0_6px_16px_rgba(16,185,129,0.35)] dark:hover:shadow-[0_4px_0_0_#064e3b,0_0_18px_rgba(16,185,129,0.4)] active:translate-y-0.5 active:border-b-2"
             )}
           >
             <Users2
