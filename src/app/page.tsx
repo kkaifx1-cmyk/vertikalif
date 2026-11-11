@@ -164,8 +164,8 @@ function HomeInner() {
   const router = useRouter();
   const tabFromQuery = searchParams.get("tab") as TabKey | null;
 
-  // Status Kunci Profil Pembuat (Dinonaktifkan sementara)
-  const IS_PROFILE_LOCKED = true;
+  // Status Kunci Profil Pembuat (Dibuka kembali)
+  const IS_PROFILE_LOCKED = false;
 
   const [activeTab, setActiveTab] = useState<TabKey>("beranda");
 
@@ -639,32 +639,29 @@ function HomeInner() {
             {/* Members Grid: Hitam Pekat, Outline Hijau Default, Berubah Emas saat Kursor Hover */}
             <div className="flex flex-wrap justify-center items-stretch gap-6">
               {WHITELIST_MEMBERS.map((member) => {
-                // Arbi, Fatahillah, Abyan, & Faiq memiliki foto & kartu berdimensi lebih besar dan dominan
-                const isSpecialLarge =
-                  ["2089", "4010", "2054", "3942"].includes(member.nis) ||
-                  member.nama.toLowerCase().includes("arbi") ||
-                  member.nama.toLowerCase().includes("fatahillah") ||
-                  member.nama.toLowerCase().includes("abyan") ||
-                  member.nama.toLowerCase().includes("faiq");
+                // Gus Ubay ("ubay") dibuat lebih besar & heroik dari yang lain, sedangkan Arbi, Fatahillah, Abyan, & Faiq sama dengan yang lain
+                const isUbay =
+                  member.nis === "4014" ||
+                  member.nama.toLowerCase().includes("ubay");
 
                 return (
                   <div
                     key={member.nis}
                     className={cn(
-                      "group w-full sm:w-[calc(50%-12px)] rounded-2xl border bg-white/95 dark:bg-black/95 backdrop-blur-xs flex flex-col justify-between transition-all duration-300 hover:-translate-y-2 hover:border-emerald-500 dark:hover:border-amber-400 hover:shadow-[0_16px_32px_-8px_rgba(21,128,61,0.28)] cursor-default",
-                      isSpecialLarge
-                        ? "lg:w-[calc(50%-16px)] xl:w-[calc(25%-18px)] max-w-sm border-emerald-500/70 dark:border-emerald-500/80 shadow-md dark:shadow-[0_0_24px_rgba(16,185,129,0.35)] dark:hover:shadow-[0_0_40px_rgba(245,158,11,0.7)] ring-1 ring-emerald-500/20"
-                        : "lg:w-[calc(33.333%-16px)] xl:w-[calc(25%-18px)] max-w-xs border-slate-200/90 dark:border-emerald-500/50 shadow-sm dark:shadow-[0_0_15px_rgba(16,185,129,0.18)] dark:hover:shadow-[0_0_25px_rgba(245,158,11,0.45)] opacity-95"
+                      "group w-full sm:w-[calc(50%-12px)] rounded-2xl border bg-white/95 dark:bg-black/95 backdrop-blur-xs flex flex-col justify-between transition-all duration-300 hover:-translate-y-2 cursor-default",
+                      isUbay
+                        ? "lg:w-[calc(50%-16px)] xl:w-[calc(33.333%-18px)] max-w-md border-amber-400/90 dark:border-amber-400 shadow-xl dark:shadow-[0_0_35px_rgba(245,158,11,0.45)] hover:border-amber-300 dark:hover:border-amber-300 hover:shadow-[0_20px_40px_-8px_rgba(245,158,11,0.35)] dark:hover:shadow-[0_0_50px_rgba(245,158,11,0.7)] ring-2 ring-amber-400/30"
+                        : "lg:w-[calc(33.333%-16px)] xl:w-[calc(25%-18px)] max-w-sm border-slate-200/90 dark:border-emerald-500/60 shadow-md dark:shadow-[0_0_20px_rgba(16,185,129,0.2)] hover:border-emerald-500 dark:hover:border-amber-400 hover:shadow-[0_16px_32px_-8px_rgba(21,128,61,0.28)] dark:hover:shadow-[0_0_35px_rgba(245,158,11,0.55),0_0_15px_rgba(251,191,36,0.35)]"
                     )}
                   >
                     <div className="pt-6 pb-2 text-center flex flex-col items-center">
-                      {/* Pas Foto Formal 3x4: Ukuran Lebih Besar untuk Arbi, Fatahillah, Abyan, Faiq */}
+                      {/* Pas Foto Formal: Gus Ubay Lebih Besar dari Anggota Lain */}
                       <div
                         className={cn(
-                          "relative shrink-0 overflow-hidden rounded-2xl border-2 border-emerald-600 dark:border-emerald-500 group-hover:dark:border-amber-400 bg-slate-100 dark:bg-black mb-4 transition-all duration-300",
-                          isSpecialLarge
-                            ? "w-48 h-64 sm:w-56 sm:h-72 shadow-xl dark:shadow-[0_0_30px_rgba(16,185,129,0.5)] group-hover:dark:shadow-[0_0_40px_rgba(245,158,11,0.8)]"
-                            : "w-32 h-44 sm:w-36 sm:h-48 shadow-md dark:shadow-[0_0_16px_rgba(16,185,129,0.3)] group-hover:dark:shadow-[0_0_24px_rgba(245,158,11,0.5)]"
+                          "relative shrink-0 overflow-hidden rounded-2xl bg-slate-100 dark:bg-black mb-4 transition-all duration-300",
+                          isUbay
+                            ? "w-48 h-64 sm:w-56 sm:h-76 border-2 border-amber-400 shadow-2xl dark:shadow-[0_0_32px_rgba(245,158,11,0.65)] group-hover:dark:shadow-[0_0_45px_rgba(245,158,11,0.85)] group-hover:scale-[1.02]"
+                            : "w-36 h-48 sm:w-40 sm:h-52 border-2 border-emerald-600 dark:border-emerald-500 group-hover:dark:border-amber-400 shadow-md dark:shadow-[0_0_20px_rgba(16,185,129,0.4)] group-hover:dark:shadow-[0_0_28px_rgba(245,158,11,0.65)]"
                         )}
                       >
                         <Image
@@ -672,9 +669,9 @@ function HomeInner() {
                           alt={member.nama}
                           fill
                           sizes={
-                            isSpecialLarge
+                            isUbay
                               ? "(max-width: 640px) 192px, 224px"
-                              : "(max-width: 640px) 128px, 144px"
+                              : "(max-width: 640px) 144px, 160px"
                           }
                           className={`object-cover ${member.avatarPosition || "object-top"}`}
                         />
@@ -683,8 +680,10 @@ function HomeInner() {
                       <div className="space-y-1.5 px-4 w-full">
                         <h3
                           className={cn(
-                            "font-bold text-slate-900 dark:text-white group-hover:dark:text-amber-300 leading-snug transition-colors",
-                            isSpecialLarge ? "text-lg sm:text-xl font-extrabold" : "text-base sm:text-lg"
+                            "leading-snug transition-colors",
+                            isUbay
+                              ? "text-lg sm:text-xl font-black text-amber-600 dark:text-amber-300 drop-shadow-xs"
+                              : "text-base sm:text-lg font-bold text-slate-900 dark:text-white group-hover:dark:text-amber-300"
                           )}
                         >
                           {member.nama}
@@ -692,7 +691,10 @@ function HomeInner() {
                         <div>
                           <Badge
                             variant="gold"
-                            className={cn("px-3 py-0.5 font-semibold shadow-xs", isSpecialLarge ? "text-xs" : "text-[11px]")}
+                            className={cn(
+                              "px-3 py-0.5 font-semibold shadow-xs",
+                              isUbay ? "text-xs font-bold border-amber-400" : "text-[11px]"
+                            )}
                           >
                             {member.peran}
                           </Badge>
@@ -704,7 +706,7 @@ function HomeInner() {
                             </>
                           ) : (
                             <>
-                              NIS: <span className="font-semibold text-emerald-800 dark:text-emerald-400 group-hover:dark:text-amber-400 transition-colors">{member.nis}</span> • Kelas {member.kelas}
+                              NIS: <span className={cn("font-semibold transition-colors", isUbay ? "text-amber-600 dark:text-amber-400" : "text-emerald-800 dark:text-emerald-400 group-hover:dark:text-amber-400")}>{member.nis}</span> • Kelas {member.kelas}
                             </>
                           )}
                         </p>
