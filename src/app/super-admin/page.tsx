@@ -197,6 +197,14 @@ function SuperAdminDashboard() {
   useEffect(() => {
     fetchAnalytics();
     fetchResponses();
+
+    // Auto-poll setiap 20 detik agar data respon santri hari ini otomatis terupdate live
+    const interval = setInterval(() => {
+      fetchResponses();
+      fetchAnalytics();
+    }, 20000);
+
+    return () => clearInterval(interval);
   }, []);
 
   // Komputasi Rantai Kausalitas & Korelasi (Konsistensi -> Fokus -> Confidency)
@@ -927,6 +935,13 @@ function SuperAdminDashboard() {
             </div>
 
             <div className="flex items-center gap-2.5">
+              <div className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-xs font-bold text-emerald-700 dark:text-emerald-400 font-mono shadow-2xs">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                </span>
+                <span>Live Sync (20s)</span>
+              </div>
               <ThemeToggle variant="dropdown" />
               <Button
                 variant="outline"
@@ -984,8 +999,8 @@ function SuperAdminDashboard() {
                     const todayWib = extractWibDate(new Date());
                     const todaySession =
                       EVALUATION_SESSIONS.find((s) => s.dateKey === todayWib) ||
-                      EVALUATION_SESSIONS.find((s) => s.id === "sesi_2") ||
-                      EVALUATION_SESSIONS[2];
+                      EVALUATION_SESSIONS.find((s) => s.id === "sesi_3") ||
+                      EVALUATION_SESSIONS[3];
                     const isTodaySelected = selectedSessionId === todaySession.id;
 
                     return (
@@ -2036,14 +2051,14 @@ function SuperAdminDashboard() {
                         <Clock className="h-6 w-6 text-emerald-600 animate-pulse" />
                       </div>
                       <p className="text-sm font-bold text-slate-800 dark:text-white">
-                        {selectedSessionId === "sesi_2"
-                          ? "Belum ada respon yang masuk untuk Sesi 2 (Kamis, 05 Nov 2026)."
-                          : "Tidak ada data respon santri yang sesuai filter."}
+                        {activeSession.dateKey === extractWibDate(new Date())
+                          ? `Belum ada respon yang masuk untuk ${activeSession.name}.`
+                          : `Tidak ada data respon santri yang sesuai filter untuk ${activeSession.name}.`}
                       </p>
                       <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto">
-                        {selectedSessionId === "sesi_2"
-                          ? "Pengambilan data siswa hari ini sedang berlangsung. Respon santri yang mengisi kuesioner akan otomatis terekam dan muncul di sini secara real-time saat disubmit."
-                          : "Coba sesuaikan kata kunci pencarian atau bersihkan filter dropdown Anda."}
+                        {activeSession.dateKey === extractWibDate(new Date())
+                          ? "Pengambilan data siswa hari ini sedang berlangsung. Respon santri yang mengisi kuesioner akan otomatis terekam dan muncul di sini secara terstruktur dan real-time saat disubmit."
+                          : "Coba sesuaikan kata kunci pencarian atau buka Rekapan Gabungan."}
                       </p>
                       {selectedSessionId !== "all" && (
                         <button
