@@ -17,7 +17,7 @@ function NavbarContent() {
   const currentTab = isHome ? (searchParams.get("tab") || "beranda") : null;
 
   // Status Kunci Profil Pembuat (Ditutup kembali sesuai instruksi)
-  const IS_PROFILE_LOCKED = true;
+  const IS_PROFILE_LOCKED = false;
   const [lockedNotice, setLockedNotice] = useState(false);
 
   const handleSwitchTab = (tab: "beranda" | "kaih" | "profil") => {
