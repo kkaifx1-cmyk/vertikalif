@@ -528,7 +528,8 @@ export const WHITELIST_MEMBERS: WhitelistProfile[] = [
     nis: "4010",
     kelas: "XI-4",
     peran: "Dashboard Lead UI/UX & Desain Sistem",
-    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=300&q=80",
+    avatar: "/muhammad-fatahillah.jpg",
+    avatarPosition: "object-[50%_62%]",
     bio: "Merancang arsitektur antarmuka dashboard responsif berbasis shadcn/ui, tata visual bertema identitas SMAIT Ihsanul Fikri, serta pengalaman pengguna yang interaktif.",
   },
   {
