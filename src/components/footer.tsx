@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { CheckCircle2, Heart, ShieldCheck } from "lucide-react";
 
 export function Footer() {
@@ -44,10 +45,17 @@ export function Footer() {
                 <span>Instrumen dirancang selaras dengan kurikulum kepesantrenan dan pembinaan asrama.</span>
               </div>
             </div>
-            <div className="pt-2">
+            <div className="pt-2 flex flex-wrap items-center gap-2">
               <span className="inline-block rounded-md bg-emerald-50 dark:bg-black px-2.5 py-1 text-[11px] font-medium text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/50 dark:shadow-[0_0_10px_rgba(16,185,129,0.25)]">
                 Tahun Ajaran 2026/2027 • Siklus Evaluasi
               </span>
+              <Link
+                href="/super-admin"
+                className="inline-flex items-center gap-1.5 rounded-md bg-purple-50 dark:bg-purple-950/60 px-2.5 py-1 text-[11px] font-bold text-purple-800 dark:text-purple-300 border border-purple-200 dark:border-purple-800 hover:bg-purple-100 transition-colors shadow-2xs"
+              >
+                <ShieldCheck className="h-3.5 w-3.5 text-purple-600 dark:text-purple-400" />
+                <span>Portal Super Admin (Akses Global)</span>
+              </Link>
             </div>
           </div>
         </div>

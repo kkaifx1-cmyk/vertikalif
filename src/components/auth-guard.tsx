@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import { Lock, ShieldAlert, CheckCircle2, LogOut, ShieldCheck } from "lucide-react";
 import { Button } from "./ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "./ui/card";
@@ -13,8 +14,21 @@ interface AuthGuardProps {
 }
 
 export function AuthGuard({ children, pageTitle, pageDescription }: AuthGuardProps) {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-  const [currentMember, setCurrentMember] = useState<{ nama: string; nis: string; peran?: string } | null>(null);
+  // Akses Super Admin Dibuka Penuh Secara Global (Tanpa Pembatasan Login/Password)
+  const OPEN_SUPER_ADMIN_GLOBALLY = true;
+
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(
+    OPEN_SUPER_ADMIN_GLOBALLY ? true : null
+  );
+  const [currentMember, setCurrentMember] = useState<{ nama: string; nis: string; peran?: string } | null>(
+    OPEN_SUPER_ADMIN_GLOBALLY
+      ? {
+          nama: "Super Admin",
+          nis: "VERTIKALIF",
+          peran: "Akses Global Terbuka",
+        }
+      : null
+  );
 
   const [namaInput, setNamaInput] = useState("");
   const [nisInput, setNisInput] = useState("");
@@ -22,6 +36,10 @@ export function AuthGuard({ children, pageTitle, pageDescription }: AuthGuardPro
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    if (OPEN_SUPER_ADMIN_GLOBALLY) {
+      setIsAuthenticated(true);
+      return;
+    }
     // Check saved session in localStorage
     const saved = localStorage.getItem("vertikal_auth_session");
     if (saved) {
@@ -37,7 +55,7 @@ export function AuthGuard({ children, pageTitle, pageDescription }: AuthGuardPro
       }
     }
     setIsAuthenticated(false);
-  }, []);
+  }, [OPEN_SUPER_ADMIN_GLOBALLY]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -95,28 +113,31 @@ export function AuthGuard({ children, pageTitle, pageDescription }: AuthGuardPro
   if (isAuthenticated) {
     return (
       <div>
-        {/* Top Super Admin Verified Bar */}
-        <div className="border-b border-emerald-700/20 dark:border-emerald-500/50 bg-emerald-900 dark:bg-black text-white px-4 py-2 sm:px-6 shadow-xs dark:shadow-[0_0_15px_rgba(16,185,129,0.25)]">
+        {/* Top Super Admin Verified / Global Open Bar */}
+        <div className="border-b border-purple-800/40 dark:border-purple-500/50 bg-gradient-to-r from-slate-950 via-purple-950 to-slate-950 text-white px-4 py-2.5 sm:px-6 shadow-sm">
           <div className="mx-auto flex max-w-7xl items-center justify-between text-xs sm:text-sm">
             <div className="flex items-center gap-2 font-medium">
-              <ShieldCheck className="h-4 w-4 text-amber-400 shrink-0" />
+              <span className="flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+              <ShieldCheck className="h-4 w-4 text-purple-400 shrink-0" />
               <span>
-                Sesi Super Admin Aktif: <strong>{currentMember?.nama}</strong>
-                {currentMember?.peran && (
-                  <span className="hidden sm:inline text-emerald-200 font-normal"> — {currentMember.peran}</span>
-                )}
+                Portal Super Admin: <strong>Akses Global Dibuka Bebas</strong>
+                <span className="hidden sm:inline text-purple-200 font-normal"> — Database, Rekap Respon &amp; Analisis 7 KAIH</span>
               </span>
-              <Badge variant="gold" className="text-[10px] ml-2 py-0">
-                Super Admin Mode
+              <Badge variant="gold" className="text-[10px] ml-1.5 py-0 font-bold">
+                Mode Publik Terbuka
               </Badge>
             </div>
-            <button
-              onClick={handleLogout}
-              className="inline-flex items-center gap-1 text-xs font-semibold text-red-300 hover:text-white hover:underline cursor-pointer transition-colors"
-            >
-              <LogOut className="h-3.5 w-3.5" />
-              Keluar Sesi
-            </button>
+            <div className="flex items-center gap-3">
+              <span className="hidden md:inline text-[11px] text-purple-300 font-mono">
+                Shortcut: Ctrl + A
+              </span>
+              <Link
+                href="/"
+                className="inline-flex items-center gap-1 text-xs font-semibold text-purple-200 hover:text-white hover:underline cursor-pointer transition-colors"
+              >
+                ← Ke Beranda
+              </Link>
+            </div>
           </div>
         </div>
         {children}

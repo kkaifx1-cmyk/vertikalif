@@ -4,7 +4,7 @@ import React, { Suspense, useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
-import { ClipboardCheck, Home, Sparkles, Users2, Lock } from "lucide-react";
+import { ClipboardCheck, Home, Sparkles, Users2, Lock, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "./theme-toggle";
 
@@ -223,6 +223,41 @@ function NavbarContent() {
               )}
             </div>
           </button>
+
+          {/* 4. Tombol Super Admin (Akses Global Terbuka) */}
+          <Link
+            href="/super-admin"
+            aria-label="Super Admin Portal (Akses Global Terbuka)"
+            title="Portal Super Admin & Database (Shortcut: Ctrl + A)"
+            className={cn(
+              "group/btn relative inline-flex items-center justify-center h-9 w-9 sm:h-10 sm:w-10 rounded-xl transition-all duration-200 cursor-pointer active:scale-95",
+              pathname === "/super-admin"
+                ? "bg-gradient-to-b from-purple-600 via-purple-700 to-purple-900 text-white font-black border-t-2 border-t-purple-300/80 border-x border-purple-600 border-b-[3.5px] border-b-purple-950 -translate-y-0.5 shadow-[0_4px_0_0_#3b0764,0_8px_20px_rgba(168,85,247,0.5),0_0_18px_rgba(192,132,252,0.4)] active:translate-y-0.5 active:border-b-2"
+                : "bg-gradient-to-b from-white via-slate-50 to-slate-200 dark:from-slate-800 dark:via-slate-850 dark:to-slate-900 text-slate-800 dark:text-slate-200 font-bold border-t border-t-white/90 dark:border-t-slate-700 border-x border-slate-300 dark:border-slate-800 border-b-[3px] border-b-slate-400 dark:border-b-slate-950 shadow-[0_3px_0_0_rgba(148,163,184,0.6)] dark:shadow-[0_3px_0_0_#020617] hover:-translate-y-0.5 hover:border-b-[3.5px] hover:border-b-purple-700 dark:hover:border-b-purple-500 hover:text-purple-950 dark:hover:text-purple-300 hover:shadow-[0_4px_0_0_#581c87,0_6px_16px_rgba(168,85,247,0.35)] dark:hover:shadow-[0_4px_0_0_#3b0764,0_0_18px_rgba(168,85,247,0.4)] active:translate-y-0.5 active:border-b-2"
+            )}
+          >
+            <ShieldCheck
+              className={cn(
+                "h-4.5 w-4.5 sm:h-5 sm:w-5 shrink-0 transition-transform duration-200 group-hover/btn:scale-115",
+                pathname === "/super-admin"
+                  ? "text-purple-200 drop-shadow-[0_0_8px_rgba(192,132,252,1)]"
+                  : "text-purple-700 dark:text-purple-400"
+              )}
+            />
+
+            {/* Tooltip Mengambang - Muncul Saat Kursor Mendekat */}
+            <div className="absolute top-full mt-2.5 left-1/2 -translate-x-1/2 pointer-events-none opacity-0 scale-90 -translate-y-1 group-hover/btn:opacity-100 group-hover/btn:scale-100 group-hover/btn:translate-y-0 group-focus-visible/btn:opacity-100 group-focus-visible/btn:scale-100 group-focus-visible/btn:translate-y-0 transition-all duration-200 ease-out z-50 whitespace-nowrap">
+              <div className="relative rounded-xl border border-purple-500/50 dark:border-purple-400/60 bg-slate-950/95 dark:bg-black/95 text-white px-3 py-1.5 text-xs font-bold shadow-xl shadow-purple-950/40 backdrop-blur-md flex items-center gap-1.5">
+                <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-slate-950 dark:bg-black border-t border-l border-purple-500/50 dark:border-purple-400/60 rotate-45" />
+                <span className="text-purple-300 [text-shadow:_0_0_8px_rgba(192,132,252,0.8)]">
+                  Super Admin
+                </span>
+                <span className="text-[10px] font-mono text-purple-200 bg-purple-900/80 px-1 py-0.2 rounded border border-purple-700">
+                  Ctrl+A
+                </span>
+              </div>
+            </div>
+          </Link>
         </nav>
 
         {/* Floating Locked Notice Toast */}
@@ -235,10 +270,29 @@ function NavbarContent() {
         )}
 
         {/* ========================================================================= */}
-        {/* SISI KANAN: THEME TOGGLE & CTA MULAI SURVEI DENGAN EFEK TIMBUL           */}
+        {/* SISI KANAN: THEME TOGGLE, SHORTCUT SUPER ADMIN & CTA MULAI SURVEI         */}
         {/* ========================================================================= */}
         <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
           <ThemeToggle />
+
+          {/* Tombol Akses Cepat Super Admin di Navbar Sisi Kanan */}
+          <Link
+            href="/super-admin"
+            aria-label="Super Admin Portal (Global)"
+            title="Portal Super Admin & Database Terbuka (Shortcut: Ctrl + A)"
+            className={cn(
+              "hidden md:inline-flex items-center gap-1.5 rounded-xl px-2.5 sm:px-3 py-2 text-xs font-bold transition-all duration-200 cursor-pointer whitespace-nowrap active:scale-95 border",
+              pathname === "/super-admin"
+                ? "bg-purple-700 text-white border-purple-500 shadow-sm"
+                : "bg-purple-50 hover:bg-purple-100 dark:bg-purple-950/60 dark:hover:bg-purple-900/70 text-purple-900 dark:text-purple-200 border-purple-200 dark:border-purple-800 shadow-2xs hover:-translate-y-0.5"
+            )}
+          >
+            <ShieldCheck className="h-3.5 w-3.5 text-purple-600 dark:text-purple-400" />
+            <span>Super Admin</span>
+            <span className="text-[9px] font-mono bg-purple-200 dark:bg-purple-900 text-purple-800 dark:text-purple-300 px-1 py-0.2 rounded">
+              Ctrl+A
+            </span>
+          </Link>
 
           <Link
             href="/survei"
