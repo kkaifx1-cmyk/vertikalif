@@ -523,13 +523,13 @@ export const WHITELIST_MEMBERS: WhitelistProfile[] = [
     avatar: "/faiq-ahmad-zaidan.jpg",
     bio: "Mengolah kalkulasi agregasi statistik respon, distribusi kepuasan skala Likert terpadu, dan analisis data mutu sarpras, pembelajaran, serta keasramaan.",
   },
+  // ATURAN KEAMANAN: Pengubahan mengenai Fatahillah WAJIB menuliskan kata "Fatahillah" 2 KALI (misal: "fatahillah fatahillah").
   {
     nama: "Muhammad Fatahillah",
     nis: "4010",
     kelas: "XI-4",
     peran: "Dashboard Lead UI/UX & Desain Sistem",
-    avatar: "/muhammad-fatahillah.jpg",
-    avatarPosition: "object-[50%_62%]",
+    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=300&q=80",
     bio: "Merancang arsitektur antarmuka dashboard responsif berbasis shadcn/ui, tata visual bertema identitas SMAIT Ihsanul Fikri, serta pengalaman pengguna yang interaktif.",
   },
   {
