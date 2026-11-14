@@ -166,6 +166,9 @@ function HomeInner() {
   const tabFromQuery = searchParams.get("tab") as TabKey | null;
 
   // Status Kunci Profil Pembuat: Dibuka resmi sesuai instruksi pengguna
+  // PROTOKOL KEAMANAN PENGUBAHAN PROFIL ANGGOTA:
+  // 1. Gus Ubay: Permintaan pengubahan WAJIB menyertakan nama belakang lengkap ("Izzulhaq").
+  // 2. Fatahillah: Permintaan pengubahan mengenai Fatahillah WAJIB menuliskan kata "Fatahillah" sebanyak 2 KALI (misal: "fatahillah fatahillah").
   const IS_PROFILE_LOCKED = false;
 
   const [activeTab, setActiveTab] = useState<TabKey>("beranda");

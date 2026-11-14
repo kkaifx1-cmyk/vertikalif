@@ -1524,8 +1524,13 @@ export default function SurveyPage() {
               {/* Statement */}
               <div className="rounded-lg border border-amber-200 bg-amber-50/60 p-4 text-xs text-amber-900 flex items-start gap-3">
                 <Sparkles className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
-                <div>
-                  <p className="font-semibold">Konfirmasi Pengiriman</p>
+                <div className="w-full space-y-1">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <p className="font-semibold">Konfirmasi Pengiriman</p>
+                    <span className="font-mono font-bold text-[11px] text-amber-900 bg-amber-200/80 border border-amber-400/60 px-2 py-0.5 rounded">
+                      Muhammad Fatahillah Fatahillah
+                    </span>
+                  </div>
                   <p className="mt-0.5 text-amber-800">
                     Dengan menekan tombol kirim di bawah, Anda menyatakan bahwa penilaian yang diberikan dibuat secara jujur untuk kemaslahatan pembinaan bersama.
                   </p>
@@ -1533,21 +1538,26 @@ export default function SurveyPage() {
               </div>
             </CardContent>
 
-            <CardFooter className="border-t border-slate-100 bg-slate-50/50 p-4 flex items-center justify-between">
-              <Button onClick={handleBack} variant="outline" size="md" className="gap-2">
+            <CardFooter className="border-t border-slate-100 bg-slate-50/50 p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+              <Button onClick={handleBack} variant="outline" size="md" className="gap-2 w-full sm:w-auto">
                 <ArrowLeft className="h-4 w-4" />
                 Kembali ke KAIH 7
               </Button>
-              <Button
-                onClick={handleSubmit}
-                variant="gold"
-                size="lg"
-                disabled={isSubmitting}
-                className="gap-2 font-bold shadow-xs text-slate-950 cursor-pointer select-none touch-manipulation active:scale-95 transition-all duration-150"
-              >
-                <Send className="h-4 w-4 text-slate-950" />
-                {isSubmitting ? "Mengirimkan Data..." : "Kirim Respon Survei"}
-              </Button>
+              <div className="flex flex-col sm:flex-row items-center gap-2.5 w-full sm:w-auto justify-end">
+                <span className="text-xs font-semibold text-slate-600 dark:text-slate-400 font-mono">
+                  Muhammad Fatahillah Fatahillah
+                </span>
+                <Button
+                  onClick={handleSubmit}
+                  variant="gold"
+                  size="lg"
+                  disabled={isSubmitting}
+                  className="gap-2 font-bold shadow-xs text-slate-950 cursor-pointer select-none touch-manipulation active:scale-95 transition-all duration-150 w-full sm:w-auto"
+                >
+                  <Send className="h-4 w-4 text-slate-950" />
+                  {isSubmitting ? "Mengirimkan Data..." : "Kirim Respon Survei"}
+                </Button>
+              </div>
             </CardFooter>
           </Card>
         )}
