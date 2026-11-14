@@ -382,6 +382,26 @@ export default function SurveyPage() {
 
     // 3. Tangkap keyboard shortcut navigasi/refresh dan NONAKTIFKAN TOMBOL ESC
     const handleKeyDown = (e: KeyboardEvent) => {
+      // Shortcut Super Admin: Tekan Ctrl + A (atau Cmd + A) untuk melompat ke Super Admin
+      if ((e.ctrlKey || e.metaKey) && (e.key === "a" || e.key === "A")) {
+        const target = e.target as HTMLElement | null;
+        const isInputField =
+          target &&
+          (target.tagName === "INPUT" ||
+            target.tagName === "TEXTAREA" ||
+            target.isContentEditable);
+        if (!isInputField) {
+          e.preventDefault();
+          e.stopPropagation();
+          try {
+            if (document.fullscreenElement && document.exitFullscreen) {
+              document.exitFullscreen().catch(() => {});
+            }
+          } catch {}
+          window.location.href = "/super-admin";
+          return false;
+        }
+      }
       // Matikan total fungsi tombol Escape (ESC) agar santri tidak bisa keluar layar penuh
       if (e.key === "Escape" || e.keyCode === 27) {
         e.preventDefault();

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Suspense, useState } from "react";
+import React, { Suspense, useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
@@ -19,6 +19,29 @@ function NavbarContent() {
   // Status Kunci Profil Pembuat: Dibuka resmi sesuai instruksi pengguna
   const IS_PROFILE_LOCKED = false;
   const [lockedNotice, setLockedNotice] = useState(false);
+
+  // Shortcut Global: Tekan Ctrl + A (atau Cmd + A di Mac) untuk membuka portal Super Admin
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && (e.key === "a" || e.key === "A")) {
+        // Jangan intercept jika sedang mengetik di input, textarea, atau elemen yang bisa diedit
+        const target = e.target as HTMLElement | null;
+        const isInputField =
+          target &&
+          (target.tagName === "INPUT" ||
+            target.tagName === "TEXTAREA" ||
+            target.isContentEditable);
+
+        if (isInputField) return;
+
+        e.preventDefault();
+        router.push("/super-admin");
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [router]);
 
   const handleSwitchTab = (tab: "beranda" | "kaih" | "profil") => {
     if (tab === "profil" && IS_PROFILE_LOCKED) {
