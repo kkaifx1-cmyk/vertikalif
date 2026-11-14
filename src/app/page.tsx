@@ -327,6 +327,10 @@ function HomeInner() {
                           <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
                           <span>Hak Privasi & Kerahasiaan Data Santri Terjamin</span>
                         </div>
+                        <div className="flex items-center gap-2 text-slate-600 dark:text-slate-300">
+                          <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                          <span>Apakah kamu mengenal Fatahillah</span>
+                        </div>
                       </div>
                     </div>
                   </div>
