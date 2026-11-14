@@ -43,7 +43,7 @@ import {
   getKaihThemes,
   SurveyTheme,
 } from "@/lib/survey-data";
-import { extractWibDate, EVALUATION_SESSIONS } from "@/lib/session-helper";
+import { extractWibDate, EVALUATION_SESSIONS, getSessionIdForResponse } from "@/lib/session-helper";
 
 const THEME_ICONS: Record<string, React.ElementType> = {
   BookOpen,
@@ -266,10 +266,13 @@ export default function SurveyPage() {
     fetchSubmittedStudents();
   }, [fetchSubmittedStudents]);
 
-  // Sesi Aktif saat ini
+  // Sesi Aktif saat ini (Respon di luar sesi resmi dialokasikan ke Sesi 3: Rabu)
   const currentSession = useMemo(() => {
-    if (!todayWib) return EVALUATION_SESSIONS[2];
-    return EVALUATION_SESSIONS.find((s) => s.dateKey === todayWib) || EVALUATION_SESSIONS[2];
+    if (!todayWib) {
+      return EVALUATION_SESSIONS.find((s) => s.id === "sesi_3") || EVALUATION_SESSIONS[3];
+    }
+    const targetSessionId = getSessionIdForResponse(todayWib);
+    return EVALUATION_SESSIONS.find((s) => s.id === targetSessionId) || EVALUATION_SESSIONS[3];
   }, [todayWib]);
 
   // Set NIS dan Nama santri yang sudah mengisi sesi hari ini (O(1) Instant Hash Lookup)

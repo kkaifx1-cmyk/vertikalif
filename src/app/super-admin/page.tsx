@@ -61,6 +61,7 @@ import {
   OFFICIAL_SESSION_DATES,
   EvaluationSession,
   SessionMetricsSummary,
+  getSessionIdForResponse,
 } from "@/lib/session-helper";
 import { CalendarDays, Calendar, Clock, Check } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -113,14 +114,26 @@ function SuperAdminDashboard() {
   const [selectedConfidenceCategory, setSelectedConfidenceCategory] = useState("Semua");
   const [inspectedStudentModal, setInspectedStudentModal] = useState<ExtendedStudentData | null>(null);
 
+  // Tanggal WIB hari ini (di-set via useEffect agar aman dari evaluasi prerender Next.js)
+  const [todayDateStr, setTodayDateStr] = useState<string>("");
+
   // Filter Sesi Evaluasi 4 Hari & Rekapan Gabungan (Default otomatis ke Sesi Hari Ini jika sedang berlangsung)
-  const [selectedSessionId, setSelectedSessionId] = useState<string>(() => {
+  const [selectedSessionId, setSelectedSessionId] = useState<string>("all");
+
+  useEffect(() => {
+    const today = extractWibDate(new Date());
+    setTodayDateStr(today);
     const sesiParam = searchParams.get("sesi");
-    if (sesiParam) return sesiParam;
-    const todayWib = extractWibDate(new Date());
-    const todaySession = EVALUATION_SESSIONS.find((s) => s.dateKey === todayWib);
-    return todaySession ? todaySession.id : "all";
-  });
+    if (sesiParam) {
+      setSelectedSessionId(sesiParam);
+    } else {
+      const targetSessionId = getSessionIdForResponse(today);
+      const todaySession = EVALUATION_SESSIONS.find((s) => s.id === targetSessionId);
+      if (todaySession) {
+        setSelectedSessionId(todaySession.id);
+      }
+    }
+  }, [searchParams]);
 
   const activeResponses = useMemo(
     () => filterResponsesBySession(responses, selectedSessionId),
@@ -138,9 +151,9 @@ function SuperAdminDashboard() {
   );
 
   const otherResponsesCount = useMemo(() => {
-    const officialSet = new Set(OFFICIAL_SESSION_DATES as readonly string[]);
-    return responses.filter((r) => !officialSet.has(extractWibDate(r.createdAt))).length;
-  }, [responses]);
+    // Seluruh respon di luar 4 sesi resmi dialokasikan dan direkap langsung ke Hari Rabu (Sesi 3)
+    return 0;
+  }, []);
 
   const activeSession = useMemo(
     () => EVALUATION_SESSIONS.find((s) => s.id === selectedSessionId) || EVALUATION_SESSIONS[0],
@@ -535,10 +548,10 @@ function SuperAdminDashboard() {
         personaBadgeClass = "bg-amber-100 text-amber-950 border-amber-300 font-extrabold";
       }
 
-      const respDate = extractWibDate(r.createdAt);
-      const matchedSess = EVALUATION_SESSIONS.find((s) => s.dateKey === respDate);
-      const sessionName = matchedSess ? matchedSess.name : (respDate ? `Tgl ${respDate}` : "Respon");
-      const sessionBadge = matchedSess ? matchedSess.badge : (respDate === "2026-11-02" ? "Sesi 1" : "Uji Coba");
+      const targetSessionId = getSessionIdForResponse(r.createdAt);
+      const matchedSess = EVALUATION_SESSIONS.find((s) => s.id === targetSessionId) || EVALUATION_SESSIONS[3];
+      const sessionName = matchedSess.name;
+      const sessionBadge = matchedSess.badge;
 
       return {
         id: r.id,
@@ -996,10 +1009,9 @@ function SuperAdminDashboard() {
                 <CardContent className="p-3 space-y-2.5">
                   {/* Banner Sesi Aktif Hari Ini (Dinamis: Kamis 05 Nov 2026 / Sesi Berjalan) */}
                   {(() => {
-                    const todayWib = extractWibDate(new Date());
+                    const targetSessionId = todayDateStr ? getSessionIdForResponse(todayDateStr) : "sesi_3";
                     const todaySession =
-                      EVALUATION_SESSIONS.find((s) => s.dateKey === todayWib) ||
-                      EVALUATION_SESSIONS.find((s) => s.id === "sesi_3") ||
+                      EVALUATION_SESSIONS.find((s) => s.id === targetSessionId) ||
                       EVALUATION_SESSIONS[3];
                     const isTodaySelected = selectedSessionId === todaySession.id;
 
@@ -1147,7 +1159,7 @@ function SuperAdminDashboard() {
                                 <span className={`text-xs font-bold ${isSelected ? "text-white" : "text-slate-900"}`}>
                                   {item.session.dayName}, {item.session.formattedDate}
                                 </span>
-                                {(item.session.dateKey === extractWibDate(new Date()) || item.status === "Aktif Hari Ini") && (
+                                {(item.session.dateKey === todayDateStr || item.status === "Aktif Hari Ini") && (
                                   <span className="inline-flex items-center gap-1 text-[9px] font-black px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 border border-emerald-500/50 animate-pulse">
                                     <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-ping"></span>
                                     <span>Hari Ini</span>
@@ -2051,12 +2063,12 @@ function SuperAdminDashboard() {
                         <Clock className="h-6 w-6 text-emerald-600 animate-pulse" />
                       </div>
                       <p className="text-sm font-bold text-slate-800 dark:text-white">
-                        {activeSession.dateKey === extractWibDate(new Date())
+                        {activeSession.dateKey === todayDateStr
                           ? `Belum ada respon yang masuk untuk ${activeSession.name}.`
                           : `Tidak ada data respon santri yang sesuai filter untuk ${activeSession.name}.`}
                       </p>
                       <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto">
-                        {activeSession.dateKey === extractWibDate(new Date())
+                        {activeSession.dateKey === todayDateStr
                           ? "Pengambilan data siswa hari ini sedang berlangsung. Respon santri yang mengisi kuesioner akan otomatis terekam dan muncul di sini secara terstruktur dan real-time saat disubmit."
                           : "Coba sesuaikan kata kunci pencarian atau buka Rekapan Gabungan."}
                       </p>

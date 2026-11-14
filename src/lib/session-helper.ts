@@ -73,8 +73,8 @@ export const EVALUATION_SESSIONS: EvaluationSession[] = [
     fullLabel: "Rabu, 11 November 2026",
     badge: "Sesi 3",
     badgeColor: "bg-indigo-600 text-white",
-    description: "Evaluasi awal pekan ke-2 untuk mengukur retensi fokus pasca awal pekan.",
-    phase: "Retensi Pekan 2",
+    description: "Evaluasi pekan ke-2 (Rabu) terintegrasi dengan rekapan seluruh respon pengisian berkala.",
+    phase: "Retensi Pekan 2 & Rekap Respon",
   },
   {
     id: "sesi_4",
@@ -116,6 +116,25 @@ export function extractWibDate(dateStr: string | number | Date | undefined | nul
 }
 
 /**
+ * Menentukan alokasi sesi untuk setiap respon evaluasi:
+ * - 02 Nov 2026 -> sesi_1 (Senin)
+ * - 05 Nov 2026 -> sesi_2 (Kamis)
+ * - 14 Nov 2026 -> sesi_4 (Sabtu)
+ * - 11 Nov 2026 serta SEMUA respon pengisian di luar sesi resmi -> sesi_3 (Rabu)
+ *   (Seluruh respon di luar sesi dialokasikan dan direkap penuh ke Hari Rabu)
+ */
+export function getSessionIdForResponse(
+  dateStr: string | number | Date | undefined | null
+): "sesi_1" | "sesi_2" | "sesi_3" | "sesi_4" {
+  const d = extractWibDate(dateStr);
+  if (d === "2026-11-02") return "sesi_1";
+  if (d === "2026-11-05") return "sesi_2";
+  if (d === "2026-11-14") return "sesi_4";
+  // Respon tanggal 11 Nov maupun tanggal lainnya di luar sesi resmi dialokasikan ke Sesi 3 (Rabu)
+  return "sesi_3";
+}
+
+/**
  * Filter respon berdasarkan ID sesi pengisian
  */
 export function filterResponsesBySession(
@@ -124,27 +143,30 @@ export function filterResponsesBySession(
 ): ResponseRecord[] {
   if (!responses || responses.length === 0) return [];
 
-  // Jika Sesi 1 - 4 dipilih spesifik
-  const session = EVALUATION_SESSIONS.find((s) => s.id === sessionId);
-  if (session && session.dateKey) {
-    return responses.filter((r) => extractWibDate(r.createdAt) === session.dateKey);
+  // Sesi "all" (Rekapan Gabungan 4 Sesi): Mencakup seluruh data respon tanpa terkecuali
+  if (sessionId === "all") {
+    return responses;
   }
 
-  // Jika "other" dipilih (data di luar 4 tanggal resmi, misal data uji coba)
+  // Jika Sesi 1, Sesi 2, Sesi 3 (Rabu), atau Sesi 4 dipilih spesifik
+  if (
+    sessionId === "sesi_1" ||
+    sessionId === "sesi_2" ||
+    sessionId === "sesi_3" ||
+    sessionId === "sesi_4"
+  ) {
+    return responses.filter((r) => getSessionIdForResponse(r.createdAt) === sessionId);
+  }
+
+  // Jika "other" dipilih (karena data di luar sesi sudah direkap ke Hari Rabu, kembalikan Sesi 3)
   if (sessionId === "other") {
-    const officialSet = new Set(OFFICIAL_SESSION_DATES as readonly string[]);
-    return responses.filter((r) => !officialSet.has(extractWibDate(r.createdAt)));
+    return responses.filter((r) => getSessionIdForResponse(r.createdAt) === "sesi_3");
   }
 
-  // Sesi "all" (Rekapan Gabungan 4 Sesi):
-  // Cek apakah ada respon pada 4 tanggal resmi
-  const officialSet = new Set(OFFICIAL_SESSION_DATES as readonly string[]);
-  const officialResponses = responses.filter((r) => officialSet.has(extractWibDate(r.createdAt)));
-
-  // Jika data 4 sesi sudah terisi, prioritaskan 4 sesi resmi.
-  // Jika saat masa uji coba belum ada respon pada 4 tanggal tersebut, tampilkan semua respon agar tidak kosong.
-  if (officialResponses.length > 0) {
-    return officialResponses;
+  // Fallback pencocokan session
+  const session = EVALUATION_SESSIONS.find((s) => s.id === sessionId);
+  if (session && session.id) {
+    return responses.filter((r) => getSessionIdForResponse(r.createdAt) === session.id);
   }
 
   return responses;
@@ -175,7 +197,7 @@ export function computeSessionMetrics(
   const sessionResponses =
     session.id === "all"
       ? filterResponsesBySession(allResponses, "all")
-      : allResponses.filter((r) => extractWibDate(r.createdAt) === session.dateKey);
+      : filterResponsesBySession(allResponses, session.id);
 
   const totalCount = sessionResponses.length;
 
@@ -184,7 +206,14 @@ export function computeSessionMetrics(
     let status: SessionMetricsSummary["status"] = "Belum Berjalan";
     if (session.dateKey) {
       if (todayWib === session.dateKey) status = "Aktif Hari Ini";
-      else if (todayWib < session.dateKey) status = "Mendatang";
+      else if (
+        session.id === "sesi_3" &&
+        todayWib !== "2026-11-02" &&
+        todayWib !== "2026-11-05" &&
+        todayWib !== "2026-11-14"
+      ) {
+        status = "Aktif Hari Ini";
+      } else if (todayWib < session.dateKey) status = "Mendatang";
       else status = "Belum Berjalan";
     }
 
@@ -270,6 +299,13 @@ export function computeSessionMetrics(
   const todayWib = extractWibDate(new Date());
   let status: SessionMetricsSummary["status"] = "Terekam";
   if (session.dateKey && todayWib === session.dateKey) {
+    status = "Aktif Hari Ini";
+  } else if (
+    session.id === "sesi_3" &&
+    todayWib !== "2026-11-02" &&
+    todayWib !== "2026-11-05" &&
+    todayWib !== "2026-11-14"
+  ) {
     status = "Aktif Hari Ini";
   }
 
