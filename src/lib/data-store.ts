@@ -364,7 +364,7 @@ export async function clearAllResponses(): Promise<boolean> {
 }
 
 export async function saveResponse(
-  newResponse: Omit<ResponseRecord, "id" | "totalScore" | "createdAt">
+  newResponse: Omit<ResponseRecord, "id" | "totalScore" | "createdAt"> & { createdAt?: string }
 ): Promise<ResponseRecord> {
   const scores = Object.values(newResponse.answers);
   const total = scores.length > 0 ? scores.reduce((acc, curr) => acc + curr, 0) / scores.length : 0;
@@ -388,7 +388,7 @@ export async function saveResponse(
     topKaihFactor,
     focusScore,
     rawConfidenceScore,
-    createdAt: new Date().toISOString(),
+    createdAt: newResponse.createdAt || new Date().toISOString(),
   };
 
   responsesCache.unshift(record);

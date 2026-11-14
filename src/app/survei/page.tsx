@@ -266,22 +266,30 @@ export default function SurveyPage() {
     fetchSubmittedStudents();
   }, [fetchSubmittedStudents]);
 
-  // Sesi Aktif saat ini (Respon di luar sesi resmi dialokasikan ke Sesi 3: Rabu)
+  // Pemilihan Sesi Evaluasi (Default otomatis ke sesi hari ini, dapat dipilih bebas untuk seluruh Sesi 1 s.d. 4)
+  const [selectedSessionId, setSelectedSessionId] = useState<string>("");
+
+  // Sesi Aktif saat ini
   const currentSession = useMemo(() => {
+    if (selectedSessionId) {
+      const found = EVALUATION_SESSIONS.find((s) => s.id === selectedSessionId);
+      if (found) return found;
+    }
     if (!todayWib) {
-      return EVALUATION_SESSIONS.find((s) => s.id === "sesi_3") || EVALUATION_SESSIONS[3];
+      return EVALUATION_SESSIONS.find((s) => s.id === "sesi_4") || EVALUATION_SESSIONS[4] || EVALUATION_SESSIONS[3];
     }
     const targetSessionId = getSessionIdForResponse(todayWib);
-    return EVALUATION_SESSIONS.find((s) => s.id === targetSessionId) || EVALUATION_SESSIONS[3];
-  }, [todayWib]);
+    return EVALUATION_SESSIONS.find((s) => s.id === targetSessionId) || EVALUATION_SESSIONS[4] || EVALUATION_SESSIONS[3];
+  }, [todayWib, selectedSessionId]);
 
-  // Set NIS dan Nama santri yang sudah mengisi sesi hari ini (O(1) Instant Hash Lookup)
+  // Set NIS dan Nama santri yang sudah mengisi sesi hari ini (Hanya untuk indikator status info, 100% tidak memblokir)
   const todaySubmittedMap = useMemo(() => {
     const nisSet = new Set<string>();
     const nameSet = new Set<string>();
+    const targetDate = currentSession.dateKey || todayWib;
 
     for (const s of submittedList) {
-      if (todayWib && s.createdAt && extractWibDate(s.createdAt) !== todayWib) {
+      if (targetDate && s.createdAt && extractWibDate(s.createdAt) !== targetDate) {
         continue;
       }
       if (s.nomorId) nisSet.add(s.nomorId.trim());
@@ -289,10 +297,10 @@ export default function SurveyPage() {
     }
 
     return { nisSet, nameSet };
-  }, [submittedList, todayWib]);
+  }, [submittedList, todayWib, currentSession.dateKey]);
 
-  // Pemeriksa apakah siswa sudah mengisi kuesioner pada sesi hari ini (O(1) Complexity - 0ms freeze)
-  const isStudentAlreadySubmitted = useCallback(
+  // Indikator apakah santri pernah mengisi (Hanya status visual info, TIDAK MEMBLOKIR tombol / pengisian)
+  const hasStudentFilledToday = useCallback(
     (nis: string, name: string, _category?: string): boolean => {
       const cleanNis = (nis || "").trim();
       const cleanName = (name || "").trim().toLowerCase();
@@ -513,15 +521,8 @@ export default function SurveyPage() {
         nomorId: found.nis,
       }));
 
-      // Cek apakah santri sudah mengisi sebelumnya
-      const alreadyFilled = isStudentAlreadySubmitted(found.nis, found.nama, found.kelas);
-      if (alreadyFilled) {
-        setValidationError(
-          `Santri "${found.nama}" (NIS: ${found.nis}) telah menyelesaikan pengisian kuesioner ini sebelumnya. Kuota pengisian 1 kali telah tercapai dan tidak dapat diisi ulang demi integritas data.`
-        );
-      } else {
-        setValidationError("");
-      }
+      // Seluruh santri diizinkan mengisi dan pengisian ulang terbuka bebas
+      setValidationError("");
     }
   };
 
@@ -572,12 +573,6 @@ export default function SurveyPage() {
       }
       if (!identity.nama.trim()) {
         setValidationError("Mohon tentukan Nama Lengkap Anda dari daftar kelas yang sesuai.");
-        return false;
-      }
-      if (isStudentAlreadySubmitted(identity.nomorId, identity.nama, identity.kategori)) {
-        setValidationError(
-          `Santri "${identity.nama}" (${identity.nomorId ? `NIS: ${identity.nomorId}` : identity.kategori}) sudah pernah mengisi survei ini. Kuota pengisian dibatasi tepat 1 kali per santri demi menjaga validitas data.`
-        );
         return false;
       }
       return true;
@@ -651,6 +646,8 @@ export default function SurveyPage() {
           feedback,
           violationsCount,
           durationSeconds: durationSeconds > 0 ? durationSeconds : undefined,
+          sessionId: currentSession.id,
+          sessionDate: currentSession.dateKey,
         }),
       });
 
@@ -932,13 +929,63 @@ export default function SurveyPage() {
         {/* STEP 0: IDENTITAS RESPONDEN & PILIHAN PROGRAM/JURUSAN */}
         {currentStep === 0 && (
           <div className="space-y-4">
-            {/* Badge Sesi Evaluasi Aktif Hari Ini */}
-            <div className="inline-flex items-center gap-2 rounded-full border border-teal-500/50 bg-teal-50/95 dark:bg-black px-4 py-1.5 text-xs font-bold text-teal-800 dark:text-teal-300 shadow-xs dark:shadow-[0_0_15px_rgba(20,184,166,0.3)]">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-teal-500"></span>
-              </span>
-              <span>{currentSession.dayName}, {currentSession.formattedDate} • {currentSession.badge}: Pengisian Dibuka</span>
+            {/* Panel Status & Pemilihan Seluruh Sesi Pengisian (100% Dibuka Bebas) */}
+            <div className="rounded-2xl border border-emerald-300 bg-white/95 p-4 sm:p-5 shadow-sm space-y-3">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                <div className="flex items-center gap-2.5">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-600 text-white shadow-xs">
+                    <CheckCircle2 className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-bold uppercase tracking-wider text-slate-900">
+                        Izin Pengisian Seluruh Sesi Dibuka Penuh
+                      </span>
+                      <span className="rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 border border-emerald-300">
+                        100% Terbuka Bebas
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-500 mt-0.5">
+                      Seluruh 4 sesi pengisian aktif dan diizinkan. Silakan pilih sesi pengisian atau gunakan sesi aktif saat ini ({currentSession.badge}).
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Grid 4 Pilihan Sesi Evaluasi */}
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 pt-1">
+                {EVALUATION_SESSIONS.filter((s) => s.id !== "all").map((sesi) => {
+                  const isSelected = currentSession.id === sesi.id;
+                  const isToday = todayWib === sesi.dateKey;
+                  return (
+                    <button
+                      key={sesi.id}
+                      type="button"
+                      onClick={() => setSelectedSessionId(sesi.id)}
+                      className={`flex flex-col text-left p-3 rounded-xl border transition-all text-xs cursor-pointer ${
+                        isSelected
+                          ? "border-emerald-600 bg-emerald-50/80 shadow-xs ring-2 ring-emerald-500/20 text-emerald-950 font-bold"
+                          : "border-slate-200 bg-slate-50/60 hover:bg-white hover:border-emerald-300 text-slate-700"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-extrabold">{sesi.badge}</span>
+                        {isToday ? (
+                          <span className="text-[9px] bg-emerald-200 text-emerald-900 font-extrabold px-1.5 py-0.5 rounded">
+                            Hari Ini
+                          </span>
+                        ) : (
+                          <span className="text-[9px] text-emerald-700 font-semibold bg-white/80 border border-slate-200 px-1 rounded">
+                            Buka
+                          </span>
+                        )}
+                      </div>
+                      <span className="text-[11px] text-slate-600 mt-1 font-medium">{sesi.dayName}, {sesi.formattedDate}</span>
+                      <span className="text-[10px] text-emerald-700 mt-0.5 truncate">{sesi.phase}</span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
             <Card className="border-slate-200 bg-white shadow-sm rounded-2xl">
@@ -1198,15 +1245,14 @@ export default function SurveyPage() {
                           return (
                             <optgroup key={r} label={`Kelas ${r} (${studentsInRombel[0]?.jenisKelamin})`}>
                               {studentsInRombel.map((s) => {
-                                const alreadyFilled = isStudentAlreadySubmitted(s.nis, s.nama);
+                                const alreadyFilled = hasStudentFilledToday(s.nis, s.nama);
                                 return (
                                   <option
                                     key={s.id}
                                     value={s.id}
-                                    disabled={alreadyFilled}
-                                    className={alreadyFilled ? "text-slate-400 bg-slate-100 font-normal italic" : "text-slate-900 font-medium"}
+                                    className="text-slate-900 font-medium"
                                   >
-                                    {s.nama} ({s.nis}) {alreadyFilled ? "🔒 [Sudah Mengisi Sesi Hari Ini]" : ""}
+                                    {s.nama} ({s.nis}) {alreadyFilled ? "✓ [Telah Mengisi - Siap Pengisian Ulang]" : ""}
                                   </option>
                                 );
                               })}
@@ -1234,14 +1280,14 @@ export default function SurveyPage() {
                   </div>
                 )}
 
-                {/* Banner Peringatan jika nama santri sudah terkena limit kuota */}
-                {isStudentAlreadySubmitted(identity.nomorId, identity.nama, identity.kategori) && (
-                  <div className="rounded-xl border border-rose-300 bg-rose-50 p-4 text-rose-900 flex items-start gap-3 shadow-xs animate-in fade-in">
-                    <AlertTriangle className="h-5 w-5 text-rose-600 shrink-0 mt-0.5" />
+                {/* Banner Status Pengisian: Informasi Terbuka Bebas Tanpa Pemblokiran */}
+                {identity.nama.trim() && hasStudentFilledToday(identity.nomorId, identity.nama, identity.kategori) && (
+                  <div className="rounded-xl border border-emerald-300 bg-emerald-50/80 p-3.5 text-emerald-950 flex items-start gap-3 shadow-xs animate-in fade-in">
+                    <CheckCircle2 className="h-5 w-5 text-emerald-600 shrink-0 mt-0.5" />
                     <div>
-                      <p className="text-sm font-bold text-rose-950">Limit Pengisian Sesi Hari Ini Tercapai (1x per Sesi)</p>
-                      <p className="text-xs text-rose-800 mt-1 leading-relaxed">
-                        Santri <strong>{identity.nama}</strong> ({identity.nomorId ? `NIS: ${identity.nomorId}` : identity.kategori}) telah tercatat menyelesaikan instrumen survei pada sesi hari ini. Demi integritas dan objektivitas data instrumen, pengisian dibatasi tepat 1 kali per sesi.
+                      <p className="text-xs font-bold text-emerald-950">Izin Pengisian Terbuka Penuh ({currentSession.badge})</p>
+                      <p className="text-[11px] text-emerald-800 mt-0.5 leading-relaxed">
+                        Santri <strong>{identity.nama}</strong> ({identity.nomorId ? `NIS: ${identity.nomorId}` : identity.kategori}) telah tercatat di sistem. Seluruh sesi dan pengisian ulang dibuka bebas tanpa pemblokiran kuota.
                       </p>
                     </div>
                   </div>
@@ -1309,9 +1355,9 @@ export default function SurveyPage() {
 
             <CardFooter className="border-t border-slate-100 bg-slate-50/50 p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-b-2xl">
               <div className="text-xs text-slate-500">
-                {isStudentAlreadySubmitted(identity.nomorId, identity.nama, identity.kategori) ? (
-                  <span className="text-rose-700 font-bold flex items-center gap-1.5">
-                    <Lock className="h-4 w-4" /> Akun santri ini sudah menyelesaikan sesi hari ini (Limit 1x)
+                {identity.nama.trim() && hasStudentFilledToday(identity.nomorId, identity.nama, identity.kategori) ? (
+                  <span className="text-emerald-700 font-semibold flex items-center gap-1.5">
+                    <CheckCircle2 className="h-4 w-4" /> Izin Pengisian Dibuka: Silakan klik tombol untuk mulai pengerjaan.
                   </span>
                 ) : (
                   <span>Pastikan jenjang kelas dan nama santri sudah sesuai sebelum memulai.</span>
@@ -1321,28 +1367,11 @@ export default function SurveyPage() {
                 onClick={handleNext}
                 variant="primary"
                 size="md"
-                disabled={
-                  !identity.nama.trim() ||
-                  !identity.kategori ||
-                  isStudentAlreadySubmitted(identity.nomorId, identity.nama, identity.kategori)
-                }
-                className={`gap-2 font-semibold ${
-                  isStudentAlreadySubmitted(identity.nomorId, identity.nama, identity.kategori)
-                    ? "bg-slate-300 text-slate-500 cursor-not-allowed hover:bg-slate-300 shadow-none border-slate-300"
-                    : ""
-                }`}
+                disabled={!identity.nama.trim() || !identity.kategori}
+                className="gap-2 font-semibold shadow-md bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer"
               >
-                {isStudentAlreadySubmitted(identity.nomorId, identity.nama, identity.kategori) ? (
-                  <>
-                    <Lock className="h-4 w-4" />
-                    Terkunci (Sudah Mengisi Sesi Hari Ini)
-                  </>
-                ) : (
-                  <>
-                    Mulai Pengerjaan KAIH 1
-                    <ArrowRight className="h-4 w-4" />
-                  </>
-                )}
+                Mulai Pengerjaan KAIH 1
+                <ArrowRight className="h-4 w-4" />
               </Button>
             </CardFooter>
           </Card>

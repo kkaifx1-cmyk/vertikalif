@@ -45,7 +45,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { nama, kategori, jenisKelamin, nomorId, answers, feedback, violationsCount, durationSeconds } = body;
+    const { nama, kategori, jenisKelamin, nomorId, answers, feedback, violationsCount, durationSeconds, sessionId, sessionDate } = body;
 
     if (!nama || !kategori || !answers) {
       return NextResponse.json(
@@ -54,40 +54,22 @@ export async function POST(request: Request) {
       );
     }
 
-    // Pengecekan Limit Pengisian: 1 Santri hanya dapat mengisi 1 kali PER SESI / PER HARI EVALUASI
-    const todayWib = extractWibDate(new Date());
-    const existing = await getAllResponses();
-    const cleanName = nama.trim().toLowerCase();
-    const cleanNomorId = (nomorId || "").trim();
-
-    // Hanya tolak jika santri sudah pernah mengisi pada sesi/tanggal yang sama hari ini
-    const isDuplicateToday = existing.some((r) => {
-      const rDate = extractWibDate(r.createdAt);
-      if (rDate !== todayWib) return false;
-
-      // 1. Cek kecocokan nomor ID / NIS pada hari ini
-      if (cleanNomorId && r.nomorId && r.nomorId.trim() === cleanNomorId) {
-        return true;
+    // Penentuan target sesi evaluasi: Dukungan penuh pengisian seluruh sesi (Sesi 1 s.d. Sesi 4)
+    let targetCreatedAt: string | undefined = undefined;
+    if (sessionDate && /^\d{4}-\d{2}-\d{2}$/.test(sessionDate)) {
+      const nowIsoTime = new Date().toISOString().substring(10);
+      targetCreatedAt = `${sessionDate}${nowIsoTime}`;
+    } else if (sessionId) {
+      const sessionDateMap: Record<string, string> = {
+        sesi_1: "2026-11-02",
+        sesi_2: "2026-11-05",
+        sesi_3: "2026-11-11",
+        sesi_4: "2026-11-14",
+      };
+      if (sessionDateMap[sessionId]) {
+        const nowIsoTime = new Date().toISOString().substring(10);
+        targetCreatedAt = `${sessionDateMap[sessionId]}${nowIsoTime}`;
       }
-      // 2. Cek kecocokan nama lengkap dan kategori kelas pada hari ini
-      if (
-        r.nama.trim().toLowerCase() === cleanName &&
-        r.kategori.trim().toLowerCase() === kategori.trim().toLowerCase()
-      ) {
-        return true;
-      }
-      return false;
-    });
-
-    if (isDuplicateToday) {
-      return NextResponse.json(
-        {
-          success: false,
-          code: "STUDENT_LIMIT_EXCEEDED",
-          message: `Pengisian ditolak: Santri atas nama "${nama}" (${cleanNomorId ? `NIS: ${cleanNomorId}` : kategori}) sudah menyelesaikan pengisian survei pada sesi hari ini (${todayWib}). Kuota pengisian dibatasi tepat 1 kali per sesi demi integritas data instrumen.`,
-        },
-        { status: 409 }
-      );
     }
 
     // Format catatan masukan santri beserta log integritas jika ada
@@ -105,6 +87,7 @@ export async function POST(request: Request) {
       answers,
       feedback: finalFeedback,
       durationSeconds: typeof durationSeconds === "number" && durationSeconds > 0 ? Math.max(1, Math.round(durationSeconds)) : undefined,
+      createdAt: targetCreatedAt,
     });
 
     return NextResponse.json({
