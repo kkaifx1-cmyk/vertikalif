@@ -168,8 +168,8 @@ function HomeInner() {
   const router = useRouter();
   const tabFromQuery = searchParams.get("tab") as TabKey | null;
 
-  // Status Kunci Profil Pembuat: Dibuka kembali sesuai instruksi pengguna
-  const IS_PROFILE_LOCKED = false;
+  // Status Kunci Profil Pembuat: Dikunci sesuai instruksi pengelola
+  const IS_PROFILE_LOCKED = true;
 
   const [activeTab, setActiveTab] = useState<TabKey>("beranda");
 
