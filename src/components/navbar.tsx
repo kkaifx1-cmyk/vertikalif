@@ -16,10 +16,8 @@ function NavbarContent() {
   const isHome = pathname === "/";
   const currentTab = isHome ? (searchParams.get("tab") || "beranda") : null;
 
-  // Status Kunci Profil Pembuat:
-  // DIKUNCI SEMENTARA HINGGA USER MENGATAKAN KATA KUNCI "kunci1".
-  // JANGAN DIUBAH MENJADI false SEBELUM USER MENGIRIMKAN KATA KUNCI "kunci1"!
-  const IS_PROFILE_LOCKED = true;
+  // Status Kunci Profil Pembuat: Dibuka kembali sesuai instruksi pengguna
+  const IS_PROFILE_LOCKED = false;
   const [lockedNotice, setLockedNotice] = useState(false);
 
   const handleSwitchTab = (tab: "beranda" | "kaih" | "profil") => {
