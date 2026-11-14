@@ -536,8 +536,8 @@ export const WHITELIST_MEMBERS: WhitelistProfile[] = [
     nis: "4014",
     kelas: "XI-4",
     peran: "Gemini Insight Lead",
-    avatar: "/muhammad-gus-ubay-izzulhaq.jpg",
-    avatarPosition: "object-[78%_25%]",
+    avatar: "/logo-ihsanul-fikri.png",
+    avatarPosition: "object-contain p-3 bg-white/95 dark:bg-zinc-950",
     bio: "Mengembangkan integrasi analitik cerdas, penalaran wawasan komprehensif, dan interpretasi naratif rekomendasi mutu berbasis AI untuk kemajuan sekolah.",
   },
   {
