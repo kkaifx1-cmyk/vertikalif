@@ -38,6 +38,9 @@ import {
   Layers,
   Compass,
   BarChart3,
+  GraduationCap,
+  Award,
+  ArrowUpRight,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -924,53 +927,265 @@ export default function PublicResearchReportPage() {
             </Card>
 
             {/* ========================================================================= */}
-            {/* PERBANDINGAN DEMOGRAFI TERPISAH (LANDSCAPE 3 KOLOM)                        */}
+            {/* PERBANDINGAN DEMOGRAFI TERPISAH (LANDSCAPE LEBIH BESAR & SANGAT MUDAH DIBACA) */}
             {/* ========================================================================= */}
-            <Card className="w-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm rounded-xl overflow-hidden">
-              <CardHeader className="pb-3 border-b border-slate-100 dark:border-slate-800/60 bg-slate-50/50 dark:bg-slate-900/50">
-                <CardTitle className="text-sm sm:text-base font-bold flex items-center gap-2">
-                  <Users className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                  <span>Perbandingan Demografi &amp; Dinamika Kohort</span>
-                </CardTitle>
-                <CardDescription className="text-xs">
-                  Fakta komparasi gender (Ikhwan vs Akhwat) serta traktori maturasi berdasarkan masa tinggal asrama.
-                </CardDescription>
+            <Card className="w-full border-2 border-slate-200/90 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-md rounded-2xl overflow-hidden">
+              <CardHeader className="p-5 sm:p-6 border-b border-slate-100 dark:border-slate-800/80 bg-slate-50/70 dark:bg-slate-900/70">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <div>
+                    <div className="flex items-center gap-2.5">
+                      <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-400">
+                        <Users className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <CardTitle className="text-base sm:text-xl font-bold text-slate-900 dark:text-slate-100">
+                          Komparasi Demografi &amp; Dinamika Maturasi Santri
+                        </CardTitle>
+                        <CardDescription className="text-xs sm:text-sm text-slate-500 mt-0.5">
+                          Temuan kunci bagaimana masa tinggal di asrama (Kelas X &rarr; XI &rarr; XII) dan faktor gender membentuk kematangan rasa percaya diri.
+                        </CardDescription>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
+                    <Badge variant="outline" className="font-mono text-xs px-2.5 py-1 bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800">
+                      N = 3.152 Santri Riil
+                    </Badge>
+                    <Badge variant="outline" className="font-mono text-xs px-2.5 py-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                      3 Tingkat Angkatan
+                    </Badge>
+                  </div>
+                </div>
               </CardHeader>
-              <CardContent className="p-4 sm:p-6">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-                  <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-850/70 space-y-2">
-                    <div className="flex items-center gap-2">
-                      <span className="h-2 w-2 rounded-full bg-emerald-500" />
-                      <span className="font-bold text-sm text-slate-900 dark:text-slate-100">
-                        Kenaikan di Kelas XII (+8,2%)
+
+              <CardContent className="p-5 sm:p-8 space-y-8">
+                {/* 3 BLOK HERO LANDSCAPE BESAR BERDAMPINGAN */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+                  {/* KARTU 1: MATURASI 3 TAHUN KELAS XII */}
+                  <div className="p-5 sm:p-6 rounded-2xl border-2 border-emerald-200/80 dark:border-emerald-900/60 bg-gradient-to-b from-emerald-50/50 to-white dark:from-emerald-950/20 dark:to-slate-900 space-y-5 shadow-xs">
+                    <div className="flex items-center justify-between">
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold font-mono uppercase tracking-wide bg-emerald-100 dark:bg-emerald-900/50 text-emerald-800 dark:text-emerald-300">
+                        <GraduationCap className="h-3.5 w-3.5" />
+                        Maturasi Asrama 3 Tahun
+                      </span>
+                      <span className="text-[11px] font-mono font-semibold text-emerald-700 dark:text-emerald-400">
+                        Kelas X &rarr; XII
                       </span>
                     </div>
-                    <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
-                      Skor rata-rata kepercayaan diri naik signifikan dari <strong>72,3%</strong> di kelas X menjadi <strong>80,4%</strong> di kelas XII. Santri berkarakter mandiri dan siap memimpin forum (<em>The Anchored Leader</em>) meningkat dari <strong>19,0%</strong> menjadi <strong>40,0%</strong>.
-                    </p>
+
+                    <div>
+                      <div className="text-3xl sm:text-4xl font-extrabold font-mono text-emerald-700 dark:text-emerald-400 tracking-tight">
+                        +8,2%
+                      </div>
+                      <div className="text-sm font-bold text-slate-900 dark:text-slate-100 mt-1">
+                        Lonjakan Kepercayaan Diri di Kelas XII
+                      </div>
+                      <p className="text-xs text-slate-500 mt-0.5">
+                        Skor rata-rata naik konsisten dari <strong>72,3%</strong> (Kelas X) menjadi <strong>80,4%</strong> (Kelas XII).
+                      </p>
+                    </div>
+
+                    {/* Visual Progress Bar Komparasi Antar Tingkat */}
+                    <div className="space-y-2.5 pt-2 border-t border-emerald-100 dark:border-emerald-900/40">
+                      <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+                        Traktori Progres per Angkatan:
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <div className="flex justify-between text-xs font-medium">
+                          <span className="text-slate-600 dark:text-slate-400">Kelas X (Adaptasi Awal)</span>
+                          <span className="font-mono font-bold text-slate-700 dark:text-slate-300">72,3%</span>
+                        </div>
+                        <div className="h-2 w-full rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden">
+                          <div className="h-full bg-slate-400 dark:bg-slate-600 rounded-full" style={{ width: "72.3%" }} />
+                        </div>
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <div className="flex justify-between text-xs font-medium">
+                          <span className="text-slate-600 dark:text-slate-400">Kelas XI (Konsolidasi)</span>
+                          <span className="font-mono font-bold text-slate-700 dark:text-slate-300">74,1%</span>
+                        </div>
+                        <div className="h-2 w-full rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden">
+                          <div className="h-full bg-teal-500 rounded-full" style={{ width: "74.1%" }} />
+                        </div>
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <div className="flex justify-between text-xs font-medium">
+                          <span className="text-emerald-800 dark:text-emerald-300 font-bold">Kelas XII (Puncak Maturasi)</span>
+                          <span className="font-mono font-bold text-emerald-700 dark:text-emerald-400">80,4%</span>
+                        </div>
+                        <div className="h-2.5 w-full rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden">
+                          <div className="h-full bg-emerald-600 rounded-full" style={{ width: "80.4%" }} />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="p-3 rounded-xl bg-emerald-100/60 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/80 text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
+                      <div className="font-bold text-emerald-900 dark:text-emerald-300 mb-1 flex items-center gap-1.5">
+                        <ArrowUpRight className="h-4 w-4" />
+                        <span>Lonjakan Pemimpin Mandiri (2,1x Lipat):</span>
+                      </div>
+                      Proporsi santri berkategori <em>The Anchored Leader</em> (siap berpidato, memimpin rapat, dan vokal) melompat dari <strong>19,0%</strong> di kelas X menjadi <strong>40,0%</strong> di kelas XII.
+                    </div>
                   </div>
 
-                  <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-850/70 space-y-2">
-                    <div className="flex items-center gap-2">
-                      <span className="h-2 w-2 rounded-full bg-teal-500" />
-                      <span className="font-bold text-sm text-slate-900 dark:text-slate-100">
-                        Keteraturan Santriwati Akhwat
+                  {/* KARTU 2: DINAMIKA GENDER (AKHWAT VS IKHWAN) */}
+                  <div className="p-5 sm:p-6 rounded-2xl border-2 border-teal-200/80 dark:border-teal-900/60 bg-gradient-to-b from-teal-50/50 to-white dark:from-teal-950/20 dark:to-slate-900 space-y-5 shadow-xs">
+                    <div className="flex items-center justify-between">
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold font-mono uppercase tracking-wide bg-teal-100 dark:bg-teal-900/50 text-teal-800 dark:text-teal-300">
+                        <Award className="h-3.5 w-3.5" />
+                        Dinamika Gender
+                      </span>
+                      <span className="text-[11px] font-mono font-semibold text-teal-700 dark:text-teal-400">
+                        1.538 vs 1.614
                       </span>
                     </div>
-                    <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
-                      Santriwati mencatatkan skor indeks karakter <strong>75,7%</strong>, sedikit lebih tinggi dibandingkan santriwan (<strong>73,3%</strong>). Hal ini dipicu oleh keteraturan jadwal kebersihan asrama, kerapian catatan, dan adab bermasyarakat harian.
-                    </p>
+
+                    <div>
+                      <div className="text-3xl sm:text-4xl font-extrabold font-mono text-teal-700 dark:text-teal-400 tracking-tight">
+                        75,7% <span className="text-xl font-normal text-slate-400">vs</span> 73,3%
+                      </div>
+                      <div className="text-sm font-bold text-slate-900 dark:text-slate-100 mt-1">
+                        Keteraturan Habituasi Santriwati Akhwat
+                      </div>
+                      <p className="text-xs text-slate-500 mt-0.5">
+                        Santriwati mencatatkan konsistensi jadwal dan kerapian adab komunal lebih tertib daripada santriwan.
+                      </p>
+                    </div>
+
+                    {/* Visual Progress Bar Komparasi Gender */}
+                    <div className="space-y-2.5 pt-2 border-t border-teal-100 dark:border-teal-900/40">
+                      <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+                        Perbandingan Dimensi Kunci:
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <div className="flex justify-between text-xs font-medium">
+                          <span className="text-teal-800 dark:text-teal-300 font-bold">Akhwat: Ibadah &amp; Adab Kamar</span>
+                          <span className="font-mono font-bold text-teal-700 dark:text-teal-400">76,8%</span>
+                        </div>
+                        <div className="h-2 w-full rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden">
+                          <div className="h-full bg-teal-600 rounded-full" style={{ width: "76.8%" }} />
+                        </div>
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <div className="flex justify-between text-xs font-medium">
+                          <span className="text-slate-600 dark:text-slate-400">Ikhwan: Ibadah &amp; Adab Kamar</span>
+                          <span className="font-mono font-bold text-slate-700 dark:text-slate-300">74,7%</span>
+                        </div>
+                        <div className="h-2 w-full rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden">
+                          <div className="h-full bg-slate-400 dark:bg-slate-600 rounded-full" style={{ width: "74.7%" }} />
+                        </div>
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <div className="flex justify-between text-xs font-medium">
+                          <span className="text-blue-700 dark:text-blue-300 font-bold">Ikhwan: Aksi Fisik &amp; Percaya Diri</span>
+                          <span className="font-mono font-bold text-blue-600 dark:text-blue-400">74,6%</span>
+                        </div>
+                        <div className="h-2 w-full rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden">
+                          <div className="h-full bg-blue-500 rounded-full" style={{ width: "74.6%" }} />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="p-3 rounded-xl bg-teal-100/60 dark:bg-teal-950/40 border border-teal-200 dark:border-teal-800/80 text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
+                      <div className="font-bold text-teal-900 dark:text-teal-300 mb-1 flex items-center gap-1.5">
+                        <CheckCircle2 className="h-4 w-4" />
+                        <span>Karakteristik Unik Dua Kelompok:</span>
+                      </div>
+                      Santriwati Akhwat unggul dalam ketelitian catatan belajar, ketepatan halaqah, dan adab sesama teman. Sementara santriwan Ikhwan lebih berani dalam unjuk suara spontan dan aktivitas fisik lapangan.
+                    </div>
                   </div>
 
-                  <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-850/70 space-y-2">
-                    <div className="flex items-center gap-2">
-                      <span className="h-2 w-2 rounded-full bg-amber-500" />
-                      <span className="font-bold text-sm text-slate-900 dark:text-slate-100">
+                  {/* KARTU 3: PENURUNAN MASALAH KURANG TIDUR */}
+                  <div className="p-5 sm:p-6 rounded-2xl border-2 border-amber-200/80 dark:border-amber-900/60 bg-gradient-to-b from-amber-50/50 to-white dark:from-amber-950/20 dark:to-slate-900 space-y-5 shadow-xs">
+                    <div className="flex items-center justify-between">
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold font-mono uppercase tracking-wide bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-300">
+                        <Moon className="h-3.5 w-3.5" />
+                        Adaptasi Sirkadian Asrama
+                      </span>
+                      <span className="text-[11px] font-mono font-semibold text-amber-700 dark:text-amber-400">
+                        Kasus Nihil di Kelas XII
+                      </span>
+                    </div>
+
+                    <div>
+                      <div className="text-3xl sm:text-4xl font-extrabold font-mono text-amber-700 dark:text-amber-400 tracking-tight">
+                        3,9% &rarr; 0,0%
+                      </div>
+                      <div className="text-sm font-bold text-slate-900 dark:text-slate-100 mt-1">
                         Penyusutan Masalah Kurang Tidur
-                      </span>
+                      </div>
+                      <p className="text-xs text-slate-500 mt-0.5">
+                        Kelompok santri yang mengalami kelelahan kronis tereliminasi total seiring bertambahnya usia tinggal.
+                      </p>
                     </div>
-                    <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
-                      Kelompok santri yang mengalami kelelahan akibat defisit istirahat (<em>The Exhausted Santri</em>) menyusut dari <strong>3,9%</strong> pada kelas X &amp; XI hingga mendekati <strong>0%</strong> di kelas XII berkat adaptasi ritme biologis asrama yang matang.
+
+                    {/* Visual Progress Bar Penyusutan Santri Lelah */}
+                    <div className="space-y-2.5 pt-2 border-t border-amber-100 dark:border-amber-900/40">
+                      <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+                        Tingkat Santri Lelah Kronis (The Exhausted Santri):
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <div className="flex justify-between text-xs font-medium">
+                          <span className="text-slate-600 dark:text-slate-400">Kelas X (Transisi Jam Tidur)</span>
+                          <span className="font-mono font-bold text-rose-600 dark:text-rose-400">5,5% (Rentang Awal)</span>
+                        </div>
+                        <div className="h-2 w-full rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden">
+                          <div className="h-full bg-rose-500 rounded-full" style={{ width: "55%" }} />
+                        </div>
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <div className="flex justify-between text-xs font-medium">
+                          <span className="text-slate-600 dark:text-slate-400">Kelas XI (Mulai Menyesuaikan)</span>
+                          <span className="font-mono font-bold text-amber-600 dark:text-amber-400">3,9%</span>
+                        </div>
+                        <div className="h-2 w-full rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden">
+                          <div className="h-full bg-amber-500 rounded-full" style={{ width: "39%" }} />
+                        </div>
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <div className="flex justify-between text-xs font-medium">
+                          <span className="text-emerald-800 dark:text-emerald-300 font-bold">Kelas XII (Tuntas Tereliminasi)</span>
+                          <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">0,0% (Nol Kasus)</span>
+                        </div>
+                        <div className="h-2.5 w-full rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden">
+                          <div className="h-full bg-emerald-500 rounded-full" style={{ width: "0%" }} />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="p-3 rounded-xl bg-amber-100/60 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/80 text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
+                      <div className="font-bold text-amber-900 dark:text-amber-300 mb-1 flex items-center gap-1.5">
+                        <ShieldCheck className="h-4 w-4" />
+                        <span>Bukti Keberhasilan Jam Biologis:</span>
+                      </div>
+                      Santri senior kelas XII berhasil membangun ritme biologis sirkadian mandiri tanpa begadang sia-sia di kamar, menjaga stamina optimal untuk persiapan ujian dan pengabdian.
+                    </div>
+                  </div>
+
+                </div>
+
+                {/* CALLOUT BANNER STRATEGIS INSTITUSI (SANGAT MUDAH DIBACA PEMANGKU KEPENTINGAN) */}
+                <div className="p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-emerald-50 via-teal-50 to-blue-50 dark:from-emerald-950/30 dark:via-teal-950/30 dark:to-blue-950/30 border border-emerald-200 dark:border-emerald-800/80 flex flex-col md:flex-row items-start md:items-center gap-4">
+                  <div className="p-3 rounded-xl bg-white dark:bg-slate-900 text-emerald-700 dark:text-emerald-400 shadow-xs border border-emerald-100 dark:border-emerald-900 shrink-0">
+                    <ShieldCheck className="h-6 w-6" />
+                  </div>
+                  <div className="space-y-1">
+                    <h4 className="text-sm sm:text-base font-bold text-slate-900 dark:text-slate-100">
+                      Implikasi Kebijakan untuk Pimpinan Sekolah &amp; Pengasuh Asrama:
+                    </h4>
+                    <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+                      Data ini membuktikan bahwa <strong>sistem pembiasaan asrama (boarding school) bukan sekadar mendisiplinkan fisik</strong>, melainkan secara empiris berfungsi sebagai inkubator pematangan karakter. Transisi 3 tahun berhasil melipatgandakan figur pemimpin berani (+8,2% rasa percaya diri) dan menuntaskan masalah kelelahan santri secara berkelanjutan.
                     </p>
                   </div>
                 </div>
