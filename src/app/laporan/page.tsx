@@ -314,7 +314,7 @@ export default function PublicResearchReportPage() {
   const [selectedCohort, setSelectedCohort] = useState<string>("all");
   const [activePillar, setActivePillar] = useState<PillarTab>("all");
   const [simInhibitionBoost, setSimInhibitionBoost] = useState<number>(5);
-  const [categoryChartLayout, setCategoryChartLayout] = useState<"horizontal" | "vertical">("horizontal");
+  const [categoryChartLayout, setCategoryChartLayout] = useState<"horizontal" | "vertical">("vertical");
 
   const cohort = COHORT_DATA[selectedCohort];
 
@@ -687,226 +687,168 @@ export default function PublicResearchReportPage() {
             </div>
 
             {/* ========================================================================= */}
-            {/* DIAGRAM BATANG SEBARAN KATEGORI KEPERCAYAAN DIRI (LANDSCAPE DIPERBESAR)    */}
+            {/* FRAME 1: DIAGRAM BATANG SEBARAN KATEGORI (BERDIRI / PORTRAIT)             */}
             {/* ========================================================================= */}
-            <Card className="w-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm rounded-xl overflow-hidden">
-              <CardHeader className="pb-3 border-b border-slate-100 dark:border-slate-800/60 bg-slate-50/50 dark:bg-slate-900/50">
+            <Card className="w-full border-2 border-slate-200/90 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-md rounded-2xl overflow-hidden">
+              <CardHeader className="p-5 sm:p-6 border-b border-slate-100 dark:border-slate-800/80 bg-slate-50/70 dark:bg-slate-900/70">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                   <div>
-                    <div className="flex items-center gap-2">
-                      <BarChart3 className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
-                      <CardTitle className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100">
-                        Diagram Batang Sebaran Kategori Kepercayaan Diri ({cohort.name})
-                      </CardTitle>
+                    <div className="flex items-center gap-2.5">
+                      <div className="p-2 rounded-lg bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400">
+                        <BarChart3 className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <CardTitle className="text-base sm:text-xl font-bold text-slate-900 dark:text-slate-100">
+                          Diagram Batang Sebaran Kategori Kepercayaan Diri ({cohort.name})
+                        </CardTitle>
+                        <CardDescription className="text-xs sm:text-sm text-slate-500 mt-0.5">
+                          Visualisasi komparatif proporsi santri — Format Batang Berdiri (Portrait).
+                        </CardDescription>
+                      </div>
                     </div>
-                    <CardDescription className="text-xs text-slate-500 mt-1">
-                      Visualisasi komparatif proporsi santri pada tiap tingkatan kematangan unjuk diri — Format Landscape Diperbesar.
-                    </CardDescription>
                   </div>
 
                   <div className="flex items-center gap-2 self-start sm:self-auto">
                     <Badge variant="outline" className="font-mono text-xs px-2.5 py-1 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border-emerald-300 dark:border-emerald-700">
                       {positivePercentage}% Kategori Positif
                     </Badge>
-
-                    {/* Switcher Orientasi Landscape vs Kolom */}
-                    <div className="flex items-center rounded-lg border border-slate-200 dark:border-slate-800 p-0.5 bg-slate-100/70 dark:bg-slate-800 text-[11px] font-medium">
-                      <button
-                        type="button"
-                        onClick={() => setCategoryChartLayout("horizontal")}
-                        className={`px-2.5 py-1 rounded-md transition-all cursor-pointer ${
-                          categoryChartLayout === "horizontal"
-                            ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs font-semibold"
-                            : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-                        }`}
-                        title="Orientasi Batang Mendatar (Landscape)"
-                      >
-                        Landscape
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setCategoryChartLayout("vertical")}
-                        className={`px-2.5 py-1 rounded-md transition-all cursor-pointer ${
-                          categoryChartLayout === "vertical"
-                            ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs font-semibold"
-                            : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-                        }`}
-                        title="Orientasi Kolom Vertikal"
-                      >
-                        Kolom
-                      </button>
-                    </div>
                   </div>
                 </div>
               </CardHeader>
 
-              <CardContent className="p-4 sm:p-6 space-y-6">
-                {/* Visualisasi Diagram Batang Diperbesar */}
-                <div className="h-80 sm:h-96 w-full">
+              <CardContent className="p-5 sm:p-8">
+                {/* Visualisasi Diagram Batang Berdiri (Portrait) */}
+                <div className="h-[400px] sm:h-[460px] w-full pt-4">
                   <ResponsiveContainer width="100%" height="100%">
-                    {categoryChartLayout === "horizontal" ? (
-                      <BarChart
-                        data={confidenceCategoryData}
-                        layout="vertical"
-                        margin={{ top: 10, right: 130, left: 160, bottom: 10 }}
-                      >
-                        <CartesianGrid strokeDasharray="3 3" opacity={0.15} horizontal={false} />
-                        <XAxis
-                          type="number"
-                          stroke="#94a3b8"
-                          fontSize={12}
-                          tickFormatter={(v) => `${v}`}
-                        />
-                        <YAxis
-                          type="category"
-                          dataKey="category"
-                          stroke="#94a3b8"
-                          fontSize={12}
-                          fontWeight={600}
-                          tickLine={false}
-                          width={150}
-                        />
-                        <Tooltip
-                          content={({ active, payload }) => {
-                            if (active && payload && payload.length) {
-                              const data = payload[0].payload;
-                              return (
-                                <div className="bg-slate-950/95 backdrop-blur-md text-white p-3.5 rounded-xl shadow-2xl border border-slate-800 text-xs max-w-xs space-y-2">
-                                  <div className="flex items-center justify-between gap-2 border-b border-slate-800 pb-2">
-                                    <span className="font-bold text-sm text-slate-100">{data.category}</span>
-                                    <span className="font-mono text-[11px] px-2 py-0.5 rounded-full bg-slate-800 text-amber-400 font-semibold">
-                                      {data.range}
-                                    </span>
-                                  </div>
-                                  <div className="flex items-center justify-between font-mono pt-1">
-                                    <span className="text-slate-400">Populasi:</span>
-                                    <span className="font-bold text-sm text-emerald-400">
-                                      {data.count.toLocaleString("id-ID")} santri ({data.pct}%)
-                                    </span>
-                                  </div>
-                                  <p className="text-[11px] text-slate-300 leading-relaxed italic bg-slate-900/60 p-2 rounded border border-slate-800/80">
-                                    &ldquo;{data.desc}&rdquo;
-                                  </p>
+                    <BarChart
+                      data={confidenceCategoryData}
+                      layout="horizontal"
+                      margin={{ top: 35, right: 20, left: 20, bottom: 35 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" opacity={0.15} vertical={false} />
+                      <XAxis
+                        type="category"
+                        dataKey="shortLabel"
+                        stroke="#94a3b8"
+                        fontSize={13}
+                        fontWeight={600}
+                        tickLine={false}
+                        dy={10}
+                      />
+                      <YAxis
+                        type="number"
+                        domain={[0, 1650]}
+                        stroke="#94a3b8"
+                        fontSize={12}
+                        tickFormatter={(v) => `${v}`}
+                        dx={-5}
+                      />
+                      <Tooltip
+                        content={({ active, payload }) => {
+                          if (active && payload && payload.length) {
+                            const data = payload[0].payload;
+                            return (
+                              <div className="bg-slate-950/95 backdrop-blur-md text-white p-3.5 rounded-xl shadow-2xl border border-slate-800 text-xs max-w-xs space-y-2">
+                                <div className="flex items-center justify-between gap-2 border-b border-slate-800 pb-2">
+                                  <span className="font-bold text-sm text-slate-100">{data.category}</span>
+                                  <span className="font-mono text-[11px] px-2 py-0.5 rounded-full bg-slate-800 text-amber-400 font-semibold">
+                                    {data.range}
+                                  </span>
                                 </div>
-                              );
-                            }
-                            return null;
-                          }}
-                        />
-                        <Bar
-                          dataKey="count"
-                          radius={[0, 8, 8, 0]}
-                          barSize={38}
-                        >
-                          {confidenceCategoryData.map((entry) => (
-                            <Cell key={entry.key} fill={entry.color} />
-                          ))}
-                          <LabelList
-                            dataKey="count"
-                            position="right"
-                            formatter={(val: any) => {
-                              const item = confidenceCategoryData.find((c) => c.count === val);
-                              return item ? `  ${item.count.toLocaleString("id-ID")} santri (${item.pct}%)` : `  ${val}`;
-                            }}
-                            style={{ fontSize: 12, fontWeight: 700, fill: "#334155" }}
-                            className="dark:fill-slate-200"
-                          />
-                        </Bar>
-                      </BarChart>
-                    ) : (
-                      <BarChart
-                        data={confidenceCategoryData}
-                        layout="horizontal"
-                        margin={{ top: 25, right: 30, left: 10, bottom: 25 }}
-                      >
-                        <CartesianGrid strokeDasharray="3 3" opacity={0.15} vertical={false} />
-                        <XAxis
-                          type="category"
-                          dataKey="shortLabel"
-                          stroke="#94a3b8"
-                          fontSize={12}
-                          fontWeight={600}
-                          tickLine={false}
-                        />
-                        <YAxis
-                          type="number"
-                          stroke="#94a3b8"
-                          fontSize={12}
-                          tickFormatter={(v) => `${v}`}
-                        />
-                        <Tooltip
-                          content={({ active, payload }) => {
-                            if (active && payload && payload.length) {
-                              const data = payload[0].payload;
-                              return (
-                                <div className="bg-slate-950/95 backdrop-blur-md text-white p-3.5 rounded-xl shadow-2xl border border-slate-800 text-xs max-w-xs space-y-2">
-                                  <div className="flex items-center justify-between gap-2 border-b border-slate-800 pb-2">
-                                    <span className="font-bold text-sm text-slate-100">{data.category}</span>
-                                    <span className="font-mono text-[11px] px-2 py-0.5 rounded-full bg-slate-800 text-amber-400 font-semibold">
-                                      {data.range}
-                                    </span>
-                                  </div>
-                                  <div className="flex items-center justify-between font-mono pt-1">
-                                    <span className="text-slate-400">Populasi:</span>
-                                    <span className="font-bold text-sm text-emerald-400">
-                                      {data.count.toLocaleString("id-ID")} santri ({data.pct}%)
-                                    </span>
-                                  </div>
-                                  <p className="text-[11px] text-slate-300 leading-relaxed italic bg-slate-900/60 p-2 rounded border border-slate-800/80">
-                                    &ldquo;{data.desc}&rdquo;
-                                  </p>
+                                <div className="flex items-center justify-between font-mono pt-1">
+                                  <span className="text-slate-400">Populasi:</span>
+                                  <span className="font-bold text-sm text-emerald-400">
+                                    {data.count.toLocaleString("id-ID")} santri ({data.pct}%)
+                                  </span>
                                 </div>
-                              );
-                            }
-                            return null;
-                          }}
-                        />
-                        <Bar
+                                <p className="text-[11px] text-slate-300 leading-relaxed italic bg-slate-900/60 p-2 rounded border border-slate-800/80">
+                                  &ldquo;{data.desc}&rdquo;
+                                </p>
+                              </div>
+                            );
+                          }
+                          return null;
+                        }}
+                      />
+                      <Bar
+                        dataKey="count"
+                        radius={[10, 10, 0, 0]}
+                        barSize={64}
+                      >
+                        {confidenceCategoryData.map((entry) => (
+                          <Cell key={entry.key} fill={entry.color} />
+                        ))}
+                        <LabelList
                           dataKey="count"
-                          radius={[8, 8, 0, 0]}
-                          barSize={56}
-                        >
-                          {confidenceCategoryData.map((entry) => (
-                            <Cell key={entry.key} fill={entry.color} />
-                          ))}
-                          <LabelList
-                            dataKey="count"
-                            position="top"
-                            formatter={(val: any) => {
-                              const item = confidenceCategoryData.find((c) => c.count === val);
-                              return item ? `${item.count} (${item.pct}%)` : `${val}`;
-                            }}
-                            style={{ fontSize: 12, fontWeight: 700, fill: "#334155" }}
-                            className="dark:fill-slate-200"
-                          />
-                        </Bar>
-                      </BarChart>
-                    )}
+                          position="top"
+                          offset={10}
+                          formatter={(val: any) => {
+                            const item = confidenceCategoryData.find((c) => c.count === val);
+                            return item ? `${item.count.toLocaleString("id-ID")} santri (${item.pct}%)` : `${val}`;
+                          }}
+                          style={{ fontSize: 13, fontWeight: 700, fill: "#1e293b" }}
+                          className="dark:fill-slate-100"
+                        />
+                      </Bar>
+                    </BarChart>
                   </ResponsiveContainer>
                 </div>
+              </CardContent>
+            </Card>
 
-                {/* 4 Kartu Breakdown Terpisah di Bawah Grafik */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {/* ========================================================================= */}
+            {/* FRAME 2: RINCIAN 4 KARTU KATEGORI KEPERCAYAAN DIRI (TERPISAH SENDIRI)     */}
+            {/* ========================================================================= */}
+            <Card className="w-full border-2 border-slate-200/90 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-md rounded-2xl overflow-hidden">
+              <CardHeader className="p-5 sm:p-6 border-b border-slate-100 dark:border-slate-800/80 bg-slate-50/70 dark:bg-slate-900/70">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <div>
+                    <div className="flex items-center gap-2.5">
+                      <div className="p-2 rounded-lg bg-teal-100 dark:bg-teal-950/60 text-teal-700 dark:text-teal-400">
+                        <Users className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <CardTitle className="text-base sm:text-xl font-bold text-slate-900 dark:text-slate-100">
+                          Rincian Karakteristik 4 Kategori Kepercayaan Diri ({cohort.name})
+                        </CardTitle>
+                        <CardDescription className="text-xs sm:text-sm text-slate-500 mt-0.5">
+                          Populasi riil, persentase, dan profil psikokognitif santri berdasarkan tingkatan unjuk diri.
+                        </CardDescription>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 self-start sm:self-auto">
+                    <Badge variant="outline" className="font-mono text-xs px-2.5 py-1 bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-300 border-teal-300 dark:border-teal-700">
+                      Total Responden: {cohort.count.toLocaleString("id-ID")}
+                    </Badge>
+                  </div>
+                </div>
+              </CardHeader>
+
+              <CardContent className="p-5 sm:p-8 space-y-6">
+                {/* 4 Kartu Breakdown Terpisah */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                   {confidenceCategoryData.map((item) => (
                     <div
                       key={item.key}
-                      className={`p-3.5 rounded-lg border ${item.borderLight} ${item.bgLight} space-y-2 transition-all`}
+                      className={`p-4 sm:p-5 rounded-xl border-2 ${item.borderLight} ${item.bgLight} space-y-3 transition-all shadow-xs`}
                     >
                       <div className="flex items-center justify-between text-xs">
-                        <span className="font-semibold text-slate-800 dark:text-slate-200">{item.category}</span>
-                        <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-white/70 dark:bg-slate-900/70 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800">
+                        <span className="font-bold text-sm text-slate-900 dark:text-slate-100">{item.category}</span>
+                        <span className="font-mono text-[11px] px-2 py-0.5 rounded-md bg-white/80 dark:bg-slate-900/80 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 font-semibold">
                           {item.range}
                         </span>
                       </div>
                       <div className="flex items-baseline gap-2">
-                        <span className="text-xl sm:text-2xl font-bold font-mono text-slate-900 dark:text-slate-100">
+                        <span className="text-2xl sm:text-3xl font-extrabold font-mono text-slate-900 dark:text-slate-100">
                           {item.count.toLocaleString("id-ID")}
                         </span>
-                        <span className={`text-xs font-bold font-mono ${item.textColor}`}>
+                        <span className={`text-sm font-bold font-mono ${item.textColor}`}>
                           ({item.pct}%)
                         </span>
                       </div>
-                      <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-tight">
+                      <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
                         {item.desc}
                       </p>
                     </div>
@@ -914,10 +856,10 @@ export default function PublicResearchReportPage() {
                 </div>
 
                 {/* Kotak Fakta Deskriptif Kunci */}
-                <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-850 border border-slate-200 dark:border-slate-700/80 text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed space-y-1.5">
+                <div className="p-5 rounded-xl bg-slate-50 dark:bg-slate-850 border border-slate-200 dark:border-slate-700/80 text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed space-y-2">
                   <div className="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-                    <span>Fakta Deskriptif Kunci ({cohort.name}):</span>
+                    <CheckCircle2 className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                    <span className="text-sm sm:text-base">Fakta Deskriptif Kunci ({cohort.name}):</span>
                   </div>
                   <p>
                     Sebanyak <strong>{positivePercentage}% santri</strong> berada pada kategori percaya diri hingga sangat percaya diri (skor di atas 70%). Hanya <strong>{cohort.categories.perluBimbingan} santri ({Number(((cohort.categories.perluBimbingan / cohort.count) * 100).toFixed(1))}%)</strong> yang berada pada kategori perlu pendampingan khusus. Suasana komunal pesantren memberikan rasa aman dasar (<em>basic psychological safety</em>) sehingga santri tidak merasa terkucilkan dan terbiasa dengan interaksi harian.
