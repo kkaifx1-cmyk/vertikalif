@@ -1,0 +1,45 @@
+// This is your Prisma schema file for SMAIT Ihsanul Fikri Survey Platform
+// Learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model SurveyResponse {
+  id           String         @id @default(cuid())
+  nama         String
+  kategori     String         // "Siswa Kelas X", "Siswa Kelas XI", "Siswa Kelas XII", "Wali Murid", "Guru / Tendik"
+  nomorId      String?        // NIS / NISN / No. Identitas opsional
+  totalScore   Float          // Rata-rata skor pengisi
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  answers      SurveyAnswer[]
+}
+
+model SurveyAnswer {
+  id          String         @id @default(cuid())
+  responseId  String
+  themeId     String         // "sarpras", "pembelajaran", "keasramaan"
+  questionId  String
+  score       Int            // Skala Likert 1 - 5
+  response    SurveyResponse @relation(fields: [responseId], references: [id], onDelete: Cascade)
+
+  @@index([themeId])
+  @@index([responseId])
+}
+
+model WhitelistedMember {
+  id          String   @id @default(cuid())
+  nama        String
+  nis         String   @unique
+  kelas       String   // misal: "XII MIPA 1"
+  peran       String   // misal: "Ketua Proyek", "Lead Analyst", "Frontend Dev"
+  avatar      String?
+  createdAt   DateTime @default(now())
+}

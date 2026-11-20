@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "skills": {
+    "biopython": {
+      "source": "K-Dense-AI/scientific-agent-skills",
+      "commit": "ec59a29a03d5c40f73ab40878df04860bc00e876",
+      "sourceType": "github",
+      "skillPath": "skills/biopython/SKILL.md",
+      "computedHash": "7482f1394230a67f56bc1c9e7966de27b46ae3eac6b288f4ddbd64d067e24d74"
+    }
+  }
+}
