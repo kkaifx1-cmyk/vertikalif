@@ -14,6 +14,7 @@ import {
   LineChart,
   Line,
   Legend,
+  LabelList,
 } from "recharts";
 import {
   BookOpen,
@@ -36,6 +37,7 @@ import {
   Zap,
   Layers,
   Compass,
+  BarChart3,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -309,8 +311,77 @@ export default function PublicResearchReportPage() {
   const [selectedCohort, setSelectedCohort] = useState<string>("all");
   const [activePillar, setActivePillar] = useState<PillarTab>("all");
   const [simInhibitionBoost, setSimInhibitionBoost] = useState<number>(5);
+  const [categoryChartLayout, setCategoryChartLayout] = useState<"horizontal" | "vertical">("horizontal");
 
   const cohort = COHORT_DATA[selectedCohort];
+
+  const positivePercentage = useMemo(() => {
+    return Number(
+      (((cohort.categories.sangatPede + cohort.categories.pede) / cohort.count) * 100).toFixed(1)
+    );
+  }, [cohort]);
+
+  const confidenceCategoryData = useMemo(() => {
+    const total = cohort.count;
+    return [
+      {
+        key: "sangatPede",
+        category: "Sangat Percaya Diri",
+        range: "Skor > 85%",
+        fullName: "Sangat Percaya Diri (skor di atas 85%)",
+        shortLabel: "Sangat Percaya Diri",
+        count: cohort.categories.sangatPede,
+        pct: Number(((cohort.categories.sangatPede / total) * 100).toFixed(1)),
+        color: "#059669",
+        bgLight: "bg-emerald-50 dark:bg-emerald-950/30",
+        borderLight: "border-emerald-200 dark:border-emerald-800",
+        textColor: "text-emerald-700 dark:text-emerald-400",
+        desc: "Santri proaktif, siap memimpin forum diskusi, berani berpendapat, dan memiliki rasa aman diri yang matang.",
+      },
+      {
+        key: "pede",
+        category: "Percaya Diri",
+        range: "Skor 70% – 84%",
+        fullName: "Percaya Diri (skor 70% sampai 84%)",
+        shortLabel: "Percaya Diri",
+        count: cohort.categories.pede,
+        pct: Number(((cohort.categories.pede / total) * 100).toFixed(1)),
+        color: "#0d9488",
+        bgLight: "bg-teal-50 dark:bg-teal-950/30",
+        borderLight: "border-teal-200 dark:border-teal-800",
+        textColor: "text-teal-700 dark:text-teal-400",
+        desc: "Santri mandiri, nyaman berdiskusi dalam kelompok, dan stabil menjalankan rutinitas kebiasaan harian.",
+      },
+      {
+        key: "cukupPede",
+        category: "Cukup Percaya Diri",
+        range: "Skor 55% – 69%",
+        fullName: "Cukup Percaya Diri (skor 55% sampai 69%)",
+        shortLabel: "Cukup Percaya Diri",
+        count: cohort.categories.cukupPede,
+        pct: Number(((cohort.categories.cukupPede / total) * 100).toFixed(1)),
+        color: "#d97706",
+        bgLight: "bg-amber-50 dark:bg-amber-950/30",
+        borderLight: "border-amber-200 dark:border-amber-800",
+        textColor: "text-amber-700 dark:text-amber-400",
+        desc: "Santri cenderung pasif pada forum besar, namun mampu unjuk diri jika didorong dan dipandu bertahap.",
+      },
+      {
+        key: "perluBimbingan",
+        category: "Perlu Pendampingan",
+        range: "Skor < 55%",
+        fullName: "Perlu Pendampingan Khusus (skor di bawah 55%)",
+        shortLabel: "Perlu Pendampingan",
+        count: cohort.categories.perluBimbingan,
+        pct: Number(((cohort.categories.perluBimbingan / total) * 100).toFixed(1)),
+        color: "#e11d48",
+        bgLight: "bg-rose-50 dark:bg-rose-950/30",
+        borderLight: "border-rose-200 dark:border-rose-800",
+        textColor: "text-rose-700 dark:text-rose-400",
+        desc: "Santri mengalami hambatan adaptasi sosial atau kecemasan unjuk diri; prioritas pendampingan konselor BK.",
+      },
+    ];
+  }, [cohort]);
 
   const leverageChartData = useMemo(() => {
     return KAIH_METADATA.map((k, idx) => ({
@@ -612,88 +683,299 @@ export default function PublicResearchReportPage() {
               </p>
             </div>
 
-            {/* Distribusi Kategori Percaya Diri */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-              <Card className="lg:col-span-2 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-bold flex items-center justify-between">
-                    <span>Sebaran Kategori Kepercayaan Diri ({cohort.name})</span>
-                    <Badge variant="outline" className="font-mono text-[11px]">
-                      91,3% Positif
+            {/* ========================================================================= */}
+            {/* DIAGRAM BATANG SEBARAN KATEGORI KEPERCAYAAN DIRI (LANDSCAPE DIPERBESAR)    */}
+            {/* ========================================================================= */}
+            <Card className="w-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm rounded-xl overflow-hidden">
+              <CardHeader className="pb-3 border-b border-slate-100 dark:border-slate-800/60 bg-slate-50/50 dark:bg-slate-900/50">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <BarChart3 className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                      <CardTitle className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100">
+                        Diagram Batang Sebaran Kategori Kepercayaan Diri ({cohort.name})
+                      </CardTitle>
+                    </div>
+                    <CardDescription className="text-xs text-slate-500 mt-1">
+                      Visualisasi komparatif proporsi santri pada tiap tingkatan kematangan unjuk diri — Format Landscape Diperbesar.
+                    </CardDescription>
+                  </div>
+
+                  <div className="flex items-center gap-2 self-start sm:self-auto">
+                    <Badge variant="outline" className="font-mono text-xs px-2.5 py-1 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border-emerald-300 dark:border-emerald-700">
+                      {positivePercentage}% Kategori Positif
                     </Badge>
-                  </CardTitle>
-                  <CardDescription className="text-xs">
-                    Jumlah dan persentase santri pada tiap tingkatan kematangan unjuk diri.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {[
-                    { label: "Sangat Percaya Diri (skor di atas 85%)", count: cohort.categories.sangatPede, color: "bg-emerald-600", textColor: "text-emerald-700 dark:text-emerald-400" },
-                    { label: "Percaya Diri (skor 70% sampai 84%)", count: cohort.categories.pede, color: "bg-teal-600", textColor: "text-teal-700 dark:text-teal-400" },
-                    { label: "Cukup Percaya Diri (skor 55% sampai 69%)", count: cohort.categories.cukupPede, color: "bg-amber-600", textColor: "text-amber-700 dark:text-amber-400" },
-                    { label: "Perlu Pendampingan Khusus (skor di bawah 55%)", count: cohort.categories.perluBimbingan, color: "bg-rose-600", textColor: "text-rose-700 dark:text-rose-400" },
-                  ].map((cat) => {
-                    const pct = Number(((cat.count / cohort.count) * 100).toFixed(1));
-                    return (
-                      <div key={cat.label} className="space-y-1.5">
-                        <div className="flex items-center justify-between text-xs font-medium">
-                          <span className="text-slate-700 dark:text-slate-300">{cat.label}</span>
-                          <span className={`font-mono font-bold ${cat.textColor}`}>
-                            {cat.count} santri ({pct}%)
-                          </span>
-                        </div>
-                        <div className="h-2 w-full rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
-                          <div
-                            className={`h-full ${cat.color} rounded-full transition-all duration-500`}
-                            style={{ width: `${pct}%` }}
+
+                    {/* Switcher Orientasi Landscape vs Kolom */}
+                    <div className="flex items-center rounded-lg border border-slate-200 dark:border-slate-800 p-0.5 bg-slate-100/70 dark:bg-slate-800 text-[11px] font-medium">
+                      <button
+                        type="button"
+                        onClick={() => setCategoryChartLayout("horizontal")}
+                        className={`px-2.5 py-1 rounded-md transition-all cursor-pointer ${
+                          categoryChartLayout === "horizontal"
+                            ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs font-semibold"
+                            : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                        }`}
+                        title="Orientasi Batang Mendatar (Landscape)"
+                      >
+                        Landscape
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setCategoryChartLayout("vertical")}
+                        className={`px-2.5 py-1 rounded-md transition-all cursor-pointer ${
+                          categoryChartLayout === "vertical"
+                            ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs font-semibold"
+                            : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                        }`}
+                        title="Orientasi Kolom Vertikal"
+                      >
+                        Kolom
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </CardHeader>
+
+              <CardContent className="p-4 sm:p-6 space-y-6">
+                {/* Visualisasi Diagram Batang Diperbesar */}
+                <div className="h-80 sm:h-96 w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    {categoryChartLayout === "horizontal" ? (
+                      <BarChart
+                        data={confidenceCategoryData}
+                        layout="vertical"
+                        margin={{ top: 10, right: 130, left: 160, bottom: 10 }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" opacity={0.15} horizontal={false} />
+                        <XAxis
+                          type="number"
+                          stroke="#94a3b8"
+                          fontSize={12}
+                          tickFormatter={(v) => `${v}`}
+                        />
+                        <YAxis
+                          type="category"
+                          dataKey="category"
+                          stroke="#94a3b8"
+                          fontSize={12}
+                          fontWeight={600}
+                          tickLine={false}
+                          width={150}
+                        />
+                        <Tooltip
+                          content={({ active, payload }) => {
+                            if (active && payload && payload.length) {
+                              const data = payload[0].payload;
+                              return (
+                                <div className="bg-slate-950/95 backdrop-blur-md text-white p-3.5 rounded-xl shadow-2xl border border-slate-800 text-xs max-w-xs space-y-2">
+                                  <div className="flex items-center justify-between gap-2 border-b border-slate-800 pb-2">
+                                    <span className="font-bold text-sm text-slate-100">{data.category}</span>
+                                    <span className="font-mono text-[11px] px-2 py-0.5 rounded-full bg-slate-800 text-amber-400 font-semibold">
+                                      {data.range}
+                                    </span>
+                                  </div>
+                                  <div className="flex items-center justify-between font-mono pt-1">
+                                    <span className="text-slate-400">Populasi:</span>
+                                    <span className="font-bold text-sm text-emerald-400">
+                                      {data.count.toLocaleString("id-ID")} santri ({data.pct}%)
+                                    </span>
+                                  </div>
+                                  <p className="text-[11px] text-slate-300 leading-relaxed italic bg-slate-900/60 p-2 rounded border border-slate-800/80">
+                                    &ldquo;{data.desc}&rdquo;
+                                  </p>
+                                </div>
+                              );
+                            }
+                            return null;
+                          }}
+                        />
+                        <Bar
+                          dataKey="count"
+                          radius={[0, 8, 8, 0]}
+                          barSize={38}
+                        >
+                          {confidenceCategoryData.map((entry) => (
+                            <Cell key={entry.key} fill={entry.color} />
+                          ))}
+                          <LabelList
+                            dataKey="count"
+                            position="right"
+                            formatter={(val: any) => {
+                              const item = confidenceCategoryData.find((c) => c.count === val);
+                              return item ? `  ${item.count.toLocaleString("id-ID")} santri (${item.pct}%)` : `  ${val}`;
+                            }}
+                            style={{ fontSize: 12, fontWeight: 700, fill: "#334155" }}
+                            className="dark:fill-slate-200"
                           />
-                        </div>
+                        </Bar>
+                      </BarChart>
+                    ) : (
+                      <BarChart
+                        data={confidenceCategoryData}
+                        layout="horizontal"
+                        margin={{ top: 25, right: 30, left: 10, bottom: 25 }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" opacity={0.15} vertical={false} />
+                        <XAxis
+                          type="category"
+                          dataKey="shortLabel"
+                          stroke="#94a3b8"
+                          fontSize={12}
+                          fontWeight={600}
+                          tickLine={false}
+                        />
+                        <YAxis
+                          type="number"
+                          stroke="#94a3b8"
+                          fontSize={12}
+                          tickFormatter={(v) => `${v}`}
+                        />
+                        <Tooltip
+                          content={({ active, payload }) => {
+                            if (active && payload && payload.length) {
+                              const data = payload[0].payload;
+                              return (
+                                <div className="bg-slate-950/95 backdrop-blur-md text-white p-3.5 rounded-xl shadow-2xl border border-slate-800 text-xs max-w-xs space-y-2">
+                                  <div className="flex items-center justify-between gap-2 border-b border-slate-800 pb-2">
+                                    <span className="font-bold text-sm text-slate-100">{data.category}</span>
+                                    <span className="font-mono text-[11px] px-2 py-0.5 rounded-full bg-slate-800 text-amber-400 font-semibold">
+                                      {data.range}
+                                    </span>
+                                  </div>
+                                  <div className="flex items-center justify-between font-mono pt-1">
+                                    <span className="text-slate-400">Populasi:</span>
+                                    <span className="font-bold text-sm text-emerald-400">
+                                      {data.count.toLocaleString("id-ID")} santri ({data.pct}%)
+                                    </span>
+                                  </div>
+                                  <p className="text-[11px] text-slate-300 leading-relaxed italic bg-slate-900/60 p-2 rounded border border-slate-800/80">
+                                    &ldquo;{data.desc}&rdquo;
+                                  </p>
+                                </div>
+                              );
+                            }
+                            return null;
+                          }}
+                        />
+                        <Bar
+                          dataKey="count"
+                          radius={[8, 8, 0, 0]}
+                          barSize={56}
+                        >
+                          {confidenceCategoryData.map((entry) => (
+                            <Cell key={entry.key} fill={entry.color} />
+                          ))}
+                          <LabelList
+                            dataKey="count"
+                            position="top"
+                            formatter={(val: any) => {
+                              const item = confidenceCategoryData.find((c) => c.count === val);
+                              return item ? `${item.count} (${item.pct}%)` : `${val}`;
+                            }}
+                            style={{ fontSize: 12, fontWeight: 700, fill: "#334155" }}
+                            className="dark:fill-slate-200"
+                          />
+                        </Bar>
+                      </BarChart>
+                    )}
+                  </ResponsiveContainer>
+                </div>
+
+                {/* 4 Kartu Breakdown Terpisah di Bawah Grafik */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                  {confidenceCategoryData.map((item) => (
+                    <div
+                      key={item.key}
+                      className={`p-3.5 rounded-lg border ${item.borderLight} ${item.bgLight} space-y-2 transition-all`}
+                    >
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="font-semibold text-slate-800 dark:text-slate-200">{item.category}</span>
+                        <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-white/70 dark:bg-slate-900/70 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800">
+                          {item.range}
+                        </span>
                       </div>
-                    );
-                  })}
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-xl sm:text-2xl font-bold font-mono text-slate-900 dark:text-slate-100">
+                          {item.count.toLocaleString("id-ID")}
+                        </span>
+                        <span className={`text-xs font-bold font-mono ${item.textColor}`}>
+                          ({item.pct}%)
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-tight">
+                        {item.desc}
+                      </p>
+                    </div>
+                  ))}
+                </div>
 
-                  <div className="mt-5 p-3.5 rounded-md bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-                    <strong>Fakta Deskriptif Kunci:</strong> Sebanyak <strong>91,3% santri</strong> berada pada kategori percaya diri hingga sangat percaya diri. Hanya 2 orang santri (0,1%) yang berada di kategori perlu pendampingan khusus. Suasana komunal pesantren memberikan rasa aman dasar (*basic psychological safety*) sehingga santri tidak merasa terkucilkan.
+                {/* Kotak Fakta Deskriptif Kunci */}
+                <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-850 border border-slate-200 dark:border-slate-700/80 text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed space-y-1.5">
+                  <div className="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                    <span>Fakta Deskriptif Kunci ({cohort.name}):</span>
                   </div>
-                </CardContent>
-              </Card>
+                  <p>
+                    Sebanyak <strong>{positivePercentage}% santri</strong> berada pada kategori percaya diri hingga sangat percaya diri (skor di atas 70%). Hanya <strong>{cohort.categories.perluBimbingan} santri ({Number(((cohort.categories.perluBimbingan / cohort.count) * 100).toFixed(1))}%)</strong> yang berada pada kategori perlu pendampingan khusus. Suasana komunal pesantren memberikan rasa aman dasar (<em>basic psychological safety</em>) sehingga santri tidak merasa terkucilkan dan terbiasa dengan interaksi harian.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
 
-              {/* Fakta Komparasi Demografi */}
-              <Card className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col justify-between">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-bold">Perbandingan Demografi</CardTitle>
-                  <CardDescription className="text-xs">Fakta komparasi gender dan masa tinggal asrama.</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-3.5 text-xs">
-                  <div className="p-3 rounded border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-850 space-y-1">
-                    <span className="font-semibold text-slate-900 dark:text-slate-100">
-                      Kenaikan di Kelas XII (+8,2%)
-                    </span>
+            {/* ========================================================================= */}
+            {/* PERBANDINGAN DEMOGRAFI TERPISAH (LANDSCAPE 3 KOLOM)                        */}
+            {/* ========================================================================= */}
+            <Card className="w-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm rounded-xl overflow-hidden">
+              <CardHeader className="pb-3 border-b border-slate-100 dark:border-slate-800/60 bg-slate-50/50 dark:bg-slate-900/50">
+                <CardTitle className="text-sm sm:text-base font-bold flex items-center gap-2">
+                  <Users className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                  <span>Perbandingan Demografi &amp; Dinamika Kohort</span>
+                </CardTitle>
+                <CardDescription className="text-xs">
+                  Fakta komparasi gender (Ikhwan vs Akhwat) serta traktori maturasi berdasarkan masa tinggal asrama.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="p-4 sm:p-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                  <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-850/70 space-y-2">
+                    <div className="flex items-center gap-2">
+                      <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                      <span className="font-bold text-sm text-slate-900 dark:text-slate-100">
+                        Kenaikan di Kelas XII (+8,2%)
+                      </span>
+                    </div>
                     <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
-                      Skor kepercayaan diri naik dari 72,3% di kelas X menjadi 80,4% di kelas XII. Santri yang siap memimpin forum meningkat dari 19,0% menjadi 40,0%.
+                      Skor rata-rata kepercayaan diri naik signifikan dari <strong>72,3%</strong> di kelas X menjadi <strong>80,4%</strong> di kelas XII. Santri berkarakter mandiri dan siap memimpin forum (<em>The Anchored Leader</em>) meningkat dari <strong>19,0%</strong> menjadi <strong>40,0%</strong>.
                     </p>
                   </div>
 
-                  <div className="p-3 rounded border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-850 space-y-1">
-                    <span className="font-semibold text-slate-900 dark:text-slate-100">
-                      Keteraturan Santriwati Akhwat
-                    </span>
+                  <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-850/70 space-y-2">
+                    <div className="flex items-center gap-2">
+                      <span className="h-2 w-2 rounded-full bg-teal-500" />
+                      <span className="font-bold text-sm text-slate-900 dark:text-slate-100">
+                        Keteraturan Santriwati Akhwat
+                      </span>
+                    </div>
                     <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
-                      Santriwati mencatatkan skor indeks karakter 75,7%, lebih tinggi daripada santriwan (73,3%), terutama berkat kerapian jadwal asrama dan adab bermasyarakat.
+                      Santriwati mencatatkan skor indeks karakter <strong>75,7%</strong>, sedikit lebih tinggi dibandingkan santriwan (<strong>73,3%</strong>). Hal ini dipicu oleh keteraturan jadwal kebersihan asrama, kerapian catatan, dan adab bermasyarakat harian.
                     </p>
                   </div>
 
-                  <div className="p-3 rounded border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-850 space-y-1">
-                    <span className="font-semibold text-slate-900 dark:text-slate-100">
-                      Penurunan Masalah Kurang Tidur
-                    </span>
+                  <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-850/70 space-y-2">
+                    <div className="flex items-center gap-2">
+                      <span className="h-2 w-2 rounded-full bg-amber-500" />
+                      <span className="font-bold text-sm text-slate-900 dark:text-slate-100">
+                        Penyusutan Masalah Kurang Tidur
+                      </span>
+                    </div>
                     <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
-                      Kelompok santri yang mengalami kelelahan tercatat 3,9% pada kelas X dan XI, lalu menurun hingga 0% di kelas XII seiring terbentuknya ritme istirahat mandiri.
+                      Kelompok santri yang mengalami kelelahan akibat defisit istirahat (<em>The Exhausted Santri</em>) menyusut dari <strong>3,9%</strong> pada kelas X &amp; XI hingga mendekati <strong>0%</strong> di kelas XII berkat adaptasi ritme biologis asrama yang matang.
                     </p>
                   </div>
-                </CardContent>
-              </Card>
-            </div>
+                </div>
+              </CardContent>
+            </Card>
 
             {/* TABEL STATISTIK DESKRIPTIF LENGKAP */}
             <Card className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden">
