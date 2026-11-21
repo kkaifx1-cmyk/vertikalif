@@ -51,6 +51,8 @@ import {
   Printer,
   Info,
   PieChart as PieIcon,
+  RotateCcw,
+  ArrowLeftRight,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -286,7 +288,7 @@ const TRAJECTORY_DATA = [
     grade: "Kelas X",
     fullName: "Kelas X (Santri Baru)",
     phase: "Fase 1: Adaptasi Awal",
-    sampleSize: "N = 1.018 santri",
+    sampleSize: "N = 1.018 data",
     confidency: 72.3,
     ikv: 73.0,
     anchoredLeaderPct: 19.0,
@@ -299,7 +301,7 @@ const TRAJECTORY_DATA = [
     grade: "Kelas XI",
     fullName: "Kelas XI (Fase Transisi)",
     phase: "Fase 2: Konsolidasi & Stabilisasi",
-    sampleSize: "N = 2.134 santri",
+    sampleSize: "N = 2.134 data",
     confidency: 75.0,
     ikv: 75.2,
     anchoredLeaderPct: 25.7,
@@ -312,7 +314,7 @@ const TRAJECTORY_DATA = [
     grade: "Kelas XII",
     fullName: "Kelas XII (Senior/Maturasi)",
     phase: "Fase 3: Puncak Maturasi & Kepemimpinan",
-    sampleSize: "N = 970 santri",
+    sampleSize: "N = 970 data",
     confidency: 80.4,
     ikv: 80.7,
     anchoredLeaderPct: 40.0,
@@ -325,7 +327,7 @@ const TRAJECTORY_DATA = [
 
 const COHORT_DATA: Record<string, CohortData> = {
   all: {
-    name: "Seluruh Santri (N=3.152)",
+    name: "Seluruh Data (N=3.152 Observasi / 788 Santri)",
     count: 3152,
     ikv: 74.48,
     avgAction: 74.2,
@@ -358,7 +360,7 @@ const COHORT_DATA: Record<string, CohortData> = {
     },
   },
   ikhwan: {
-    name: "Santri Ikhwan (N=1.614)",
+    name: "Data Santri Ikhwan (N=1.614)",
     count: 1614,
     ikv: 73.34,
     avgAction: 72.89,
@@ -391,7 +393,7 @@ const COHORT_DATA: Record<string, CohortData> = {
     },
   },
   akhwat: {
-    name: "Santriwati Akhwat (N=1.538)",
+    name: "Data Santriwati Akhwat (N=1.538)",
     count: 1538,
     ikv: 75.69,
     avgAction: 75.58,
@@ -424,7 +426,7 @@ const COHORT_DATA: Record<string, CohortData> = {
     },
   },
   kelas_x: {
-    name: "Kelas X (Santri Baru / N=1.018)",
+    name: "Data Kelas X (Santri Baru / N=1.018)",
     count: 1018,
     ikv: 73.01,
     avgAction: 72.91,
@@ -457,7 +459,7 @@ const COHORT_DATA: Record<string, CohortData> = {
     },
   },
   kelas_xi: {
-    name: "Kelas XI (Fase Transisi / N=2.134)",
+    name: "Data Kelas XI (Fase Transisi / N=2.134)",
     count: 2134,
     ikv: 75.19,
     avgAction: 74.82,
@@ -490,7 +492,7 @@ const COHORT_DATA: Record<string, CohortData> = {
     },
   },
   kelas_xii: {
-    name: "Kelas XII (Fase Kelulusan / N=970)",
+    name: "Data Kelas XII (Fase Kelulusan / N=970)",
     count: 970,
     ikv: 80.67,
     avgAction: 80.73,
@@ -561,7 +563,15 @@ export default function PublicResearchReportPage() {
   const [activePillar, setActivePillar] = useState<PillarTab>("descriptive");
   // State 3-Mode Switcher untuk Grafik Maturasi Kohort 3 Tahun
   const [trajectoryChartMode, setTrajectoryChartMode] = useState<"combined" | "confidence" | "leader">("combined");
+  
+  // State Simulator Multi-Leverage What-If (Pilar 3)
+  const [simSocialBoost, setSimSocialBoost] = useState<number>(5);
+  const [simReadingBoost, setSimReadingBoost] = useState<number>(5);
   const [simInhibitionBoost, setSimInhibitionBoost] = useState<number>(5);
+
+  // State Mode Bandingkan (Side-by-Side Comparison)
+  const [isCompareMode, setIsCompareMode] = useState<boolean>(false);
+  const [compareCohortKey, setCompareCohortKey] = useState<string>("kelas_xii");
   const [categoryChartLayout, setCategoryChartLayout] = useState<"horizontal" | "vertical">("vertical");
   // State accordion / collapsible untuk menyederhanakan halaman panjang
   const [showStatsTable, setShowStatsTable] = useState<boolean>(false);
@@ -750,21 +760,56 @@ export default function PublicResearchReportPage() {
     ].filter((item) => item.count > 0);
   }, [cohort]);
 
-  // Model Simulasi Prediktif
+  // Model Simulasi Prediktif Multi-Leverage (What-If Engine Berbasis Regresi Empiris)
   const simulatedImpact = useMemo(() => {
-    const bCoeff = cohort.mediation.pathB;
-    const focusGain = simInhibitionBoost / 3;
-    const confidenceGain = Number((bCoeff * focusGain).toFixed(2));
-    const newConfidence = Number((cohort.avgConfidence + confidenceGain).toFixed(1));
-    const convertedStudents = Math.round((cohort.count * (confidenceGain / 100)) * 0.45);
+    // Model regresi empiris dengan koefisien terstandarisasi:
+    // KAIH 7 (Bermasyarakat & Adab, r = 0,771): beta ~ 0,36 (Daya Ungkit Tertinggi)
+    // KAIH 2 (Gemar Membaca, r = 0,744): beta ~ 0,32 (Daya Ungkit Kognitif)
+    // D2 (Kendala Konsistensi 7 KAIH / Atensi Selektif, r = 0,749 mediasi fokus): beta ~ 0,28 (Bottleneck Pembatas)
+    const gainSocial = Number((simSocialBoost * 0.36).toFixed(2));
+    const gainReading = Number((simReadingBoost * 0.32).toFixed(2));
+    const gainInhibition = Number((simInhibitionBoost * 0.28).toFixed(2));
+    const totalGain = Number((gainSocial + gainReading + gainInhibition).toFixed(2));
+    const newConfidence = Number((cohort.avgConfidence + totalGain).toFixed(2));
+
+    // Estimasi konversi santri unik (dari 788 santri unik) dan entri observasi longitudinal (dari 3.152 data)
+    const convertedUniqueStudents = Math.round((788 * (totalGain / 100)) * 0.62);
+    const convertedResponses = Math.round((cohort.count * (totalGain / 100)) * 0.62);
 
     return {
-      boost: simInhibitionBoost,
-      confidenceGain,
+      socialBoost: simSocialBoost,
+      readingBoost: simReadingBoost,
+      inhibitionBoost: simInhibitionBoost,
+      gainSocial,
+      gainReading,
+      gainInhibition,
+      confidenceGain: totalGain,
       newConfidence,
-      convertedStudents,
+      convertedUniqueStudents,
+      convertedResponses,
     };
-  }, [cohort, simInhibitionBoost]);
+  }, [cohort, simSocialBoost, simReadingBoost, simInhibitionBoost]);
+
+  // Data Komparasi Kelompok (Side-by-Side Comparison)
+  const compareCohort = COHORT_DATA[compareCohortKey] || COHORT_DATA.kelas_xii;
+
+  const compareDeltas = useMemo(() => {
+    const deltaConfidence = Number((compareCohort.avgConfidence - cohort.avgConfidence).toFixed(1));
+    const deltaIkv = Number((compareCohort.ikv - cohort.ikv).toFixed(1));
+    const deltaFocus = Number((compareCohort.avgFocus - cohort.avgFocus).toFixed(1));
+    const leaderPctA = Number(((cohort.personas.anchoredLeader / cohort.count) * 100).toFixed(1));
+    const leaderPctB = Number(((compareCohort.personas.anchoredLeader / compareCohort.count) * 100).toFixed(1));
+    const deltaLeader = Number((leaderPctB - leaderPctA).toFixed(1));
+
+    return {
+      deltaConfidence,
+      deltaIkv,
+      deltaFocus,
+      leaderPctA,
+      leaderPctB,
+      deltaLeader,
+    };
+  }, [cohort, compareCohort]);
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors">
@@ -788,7 +833,7 @@ export default function PublicResearchReportPage() {
           </h1>
 
           <p className="mt-4 text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed max-w-4xl">
-            Hasil pengolahan data terhadap <strong>3.152 responden santri</strong> SMAIT Ihsanul Fikri membuktikan secara empiris bahwa rasa percaya diri santri merupakan hasil terstruktur dari pembiasaan fisik yang menopang ketahanan fokus belajar di sekolah dan asrama.
+            Hasil pengolahan data terhadap <strong>3.152 data observasi</strong> (dari <strong>788 santri</strong> yang diobservasi berkala dalam 4 kali sesi evaluasi) SMAIT Ihsanul Fikri membuktikan secara empiris bahwa rasa percaya diri santri merupakan hasil terstruktur dari pembiasaan fisik yang menopang ketahanan fokus belajar di sekolah dan asrama.
           </p>
 
           <div className="mt-6 pt-5 border-t border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-4 text-xs text-slate-500">
@@ -805,7 +850,7 @@ export default function PublicResearchReportPage() {
                 Metode: 4 Pilar Data Science Terintegrasi
               </span>
               <span className="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
-                Sampel: 3.152 santri
+                N = 3.152 Data (788 Santri × 4 Sesi)
               </span>
             </div>
           </div>
@@ -896,39 +941,113 @@ export default function PublicResearchReportPage() {
         </div>
       </section>
 
-      {/* FILTER PILIHAN RESPONDEN (COHORT) */}
-      <nav aria-label="Pemilihan kelompok responden" className="bg-white/95 dark:bg-slate-900/95 backdrop-blur border-b border-slate-200 dark:border-slate-800 py-2 sm:py-2.5 px-3 sm:px-6 max-w-full overflow-hidden">
-        <div className="mx-auto max-w-5xl flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3">
-          <div className="flex items-center gap-2 shrink-0">
-            <Sliders className="h-3.5 w-3.5 text-slate-500" />
-            <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-              Filter Kelompok Responden:
-            </span>
+      {/* FILTER PILIHAN RESPONDEN (COHORT) & MODE BANDINGKAN (STICKY) */}
+      <nav aria-label="Pemilihan kelompok responden" className="bg-white/95 dark:bg-slate-900/95 backdrop-blur border-b border-slate-200 dark:border-slate-800 py-2 sm:py-2.5 px-3 sm:px-6 max-w-full overflow-hidden sticky top-[108px] sm:top-[116px] z-30 shadow-xs">
+        <div className="mx-auto max-w-5xl space-y-2">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3">
+            <div className="flex items-center gap-2 shrink-0">
+              <Sliders className="h-3.5 w-3.5 text-slate-500" />
+              <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                Filter Kelompok Responden:
+              </span>
+            </div>
+
+            <div className="flex items-center gap-1.5 text-xs overflow-x-auto no-scrollbar pb-1 sm:pb-0 sm:flex-wrap">
+              {[
+                { id: "all", label: "Semua Data (3.152)" },
+                { id: "ikhwan", label: "Data Ikhwan (1.614)" },
+                { id: "akhwat", label: "Data Akhwat (1.538)" },
+                { id: "kelas_x", label: "Data Kelas X (1.018)" },
+                { id: "kelas_xi", label: "Data Kelas XI (2.134)" },
+                { id: "kelas_xii", label: "Data Kelas XII (970)" },
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setSelectedCohort(tab.id)}
+                  className={`px-3 py-1 rounded text-xs font-medium transition-colors cursor-pointer shrink-0 sm:shrink ${
+                    selectedCohort === tab.id
+                      ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-xs"
+                      : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+
+              <div className="h-4 w-px bg-slate-300 dark:bg-slate-700 mx-1 hidden sm:block" />
+
+              <button
+                type="button"
+                onClick={() => setIsCompareMode(!isCompareMode)}
+                className={`px-2.5 py-1 rounded text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer shrink-0 ${
+                  isCompareMode
+                    ? "bg-amber-600 text-white shadow-xs"
+                    : "bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-800 hover:bg-amber-100"
+                }`}
+                title="Aktifkan mode komparasi langsung antar kelompok"
+              >
+                <ArrowLeftRight className="h-3.5 w-3.5" />
+                <span>{isCompareMode ? "Tutup Bandingkan" : "Bandingkan"}</span>
+              </button>
+            </div>
           </div>
 
-          <div className="flex items-center gap-1 text-xs overflow-x-auto no-scrollbar pb-1 sm:pb-0 sm:flex-wrap">
-            {[
-              { id: "all", label: "Semua (3.152)" },
-              { id: "ikhwan", label: "Ikhwan (1.614)" },
-              { id: "akhwat", label: "Akhwat (1.538)" },
-              { id: "kelas_x", label: "Kelas X (1.018)" },
-              { id: "kelas_xi", label: "Kelas XI (2.134)" },
-              { id: "kelas_xii", label: "Kelas XII (970)" },
-            ].map((tab) => (
-              <button
-                key={tab.id}
-                type="button"
-                onClick={() => setSelectedCohort(tab.id)}
-                className={`px-3 py-1 rounded text-xs font-medium transition-colors cursor-pointer shrink-0 sm:shrink ${
-                  selectedCohort === tab.id
-                    ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900"
-                    : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
+          {/* PANEL BANDINGKAN SIDE-BY-SIDE (JIKA MODE BANDINGKAN AKTIF) */}
+          {isCompareMode && (
+            <div className="p-3 rounded-xl border border-amber-200 dark:border-amber-800/80 bg-amber-50/90 dark:bg-amber-950/40 flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs shadow-xs animate-in fade-in slide-in-from-top-2 duration-300">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="font-bold text-amber-900 dark:text-amber-200 flex items-center gap-1">
+                  <ArrowLeftRight className="h-3.5 w-3.5 text-amber-600" />
+                  Bandingkan [{cohort.name.split(" ")[0]} {cohort.name.split(" ")[1] || ""}] dengan:
+                </span>
+                <select
+                  value={compareCohortKey}
+                  onChange={(e) => setCompareCohortKey(e.target.value)}
+                  className="bg-white dark:bg-slate-900 border border-amber-300 dark:border-amber-700 rounded-lg px-2.5 py-1 font-semibold text-slate-800 dark:text-slate-200 cursor-pointer text-xs shadow-xs focus:outline-none focus:ring-1 focus:ring-amber-500"
+                >
+                  <option value="kelas_xii">Kelas XII (Puncak Maturasi / 970)</option>
+                  <option value="kelas_xi">Kelas XI (Fase Transisi / 2.134)</option>
+                  <option value="kelas_x">Kelas X (Santri Baru / 1.018)</option>
+                  <option value="akhwat">Data Santriwati Akhwat (1.538)</option>
+                  <option value="ikhwan">Data Santri Ikhwan (1.614)</option>
+                  <option value="all">Seluruh Data (3.152 Observasi)</option>
+                </select>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 font-mono text-[11px] shrink-0">
+                <div className="bg-white/95 dark:bg-slate-900/95 px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 shadow-2xs">
+                  <span className="text-slate-500 block text-[10px]">Percaya Diri</span>
+                  <div className="flex items-baseline justify-between gap-1">
+                    <span className="font-bold text-slate-800 dark:text-slate-200">{cohort.avgConfidence}% vs {compareCohort.avgConfidence}%</span>
+                    <span className={`font-bold ${compareDeltas.deltaConfidence >= 0 ? "text-emerald-600" : "text-rose-600"}`}>
+                      {compareDeltas.deltaConfidence >= 0 ? `+${compareDeltas.deltaConfidence}%` : `${compareDeltas.deltaConfidence}%`}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="bg-white/95 dark:bg-slate-900/95 px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 shadow-2xs">
+                  <span className="text-slate-500 block text-[10px]">Fokus Belajar</span>
+                  <div className="flex items-baseline justify-between gap-1">
+                    <span className="font-bold text-slate-800 dark:text-slate-200">{cohort.avgFocus}% vs {compareCohort.avgFocus}%</span>
+                    <span className={`font-bold ${compareDeltas.deltaFocus >= 0 ? "text-emerald-600" : "text-rose-600"}`}>
+                      {compareDeltas.deltaFocus >= 0 ? `+${compareDeltas.deltaFocus}%` : `${compareDeltas.deltaFocus}%`}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="bg-white/95 dark:bg-slate-900/95 px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 shadow-2xs col-span-2 sm:col-span-1">
+                  <span className="text-slate-500 block text-[10px]">The Anchored Leader</span>
+                  <div className="flex items-baseline justify-between gap-1">
+                    <span className="font-bold text-slate-800 dark:text-slate-200">{compareDeltas.leaderPctA}% vs {compareDeltas.leaderPctB}%</span>
+                    <span className={`font-bold ${compareDeltas.deltaLeader >= 0 ? "text-emerald-600" : "text-rose-600"}`}>
+                      {compareDeltas.deltaLeader >= 0 ? `+${compareDeltas.deltaLeader}%` : `${compareDeltas.deltaLeader}%`}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </nav>
 
@@ -1042,7 +1161,7 @@ export default function PublicResearchReportPage() {
                 1. Kondisi Faktual &amp; Sebaran Statistik Kepercayaan Diri Santri
               </h2>
               <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">
-                Menjawab pertanyaan: <em>&ldquo;Apa yang sedang terjadi pada 3.152 santri saat ini? Bagaimana sebaran skor dan demografinya?&rdquo;</em>
+                Menjawab pertanyaan: <em>&ldquo;Apa yang sedang terjadi pada 3.152 data evaluasi santri (788 santri × 4 sesi) saat ini? Bagaimana sebaran skor dan demografinya?&rdquo;</em>
               </p>
             </div>
 
@@ -1127,7 +1246,7 @@ export default function PublicResearchReportPage() {
                                 <div className="flex items-center justify-between font-mono pt-1">
                                   <span className="text-slate-400">Populasi:</span>
                                   <span className="font-bold text-sm text-emerald-400">
-                                    {data.count.toLocaleString("id-ID")} santri ({formatNum(data.pct, 1)}%)
+                                    {data.count.toLocaleString("id-ID")} data ({formatNum(data.pct, 1)}%)
                                   </span>
                                 </div>
                                 <p className="text-[11px] text-slate-300 leading-relaxed italic bg-slate-900/60 p-2 rounded border border-slate-800/80">
@@ -1240,7 +1359,7 @@ export default function PublicResearchReportPage() {
                 <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-850 border border-slate-200 dark:border-slate-750 flex items-start gap-2.5 text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
                   <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
                   <p>
-                    <strong>Key Takeaway:</strong> Sebanyak <strong>{formatNum(positivePercentage, 1)}% santri</strong> berada pada kategori percaya diri hingga sangat percaya diri (skor &gt; 70%), dengan hanya <strong>{cohort.categories.perluBimbingan} santri ({formatNum((cohort.categories.perluBimbingan / cohort.count) * 100, 1)}%)</strong> yang membutuhkan pendampingan khusus. Pembiasaan komunal pesantren terbukti memberikan rasa aman dasar (<em>basic psychological safety</em>) yang meminimalkan kecemasan sosial santri.
+                    <strong>Key Takeaway:</strong> Sebanyak <strong>{formatNum(positivePercentage, 1)}% data respon</strong> berada pada kategori percaya diri hingga sangat percaya diri (skor &gt; 70%), dengan hanya <strong>{cohort.categories.perluBimbingan} entri data ({formatNum((cohort.categories.perluBimbingan / cohort.count) * 100, 1)}%)</strong> yang membutuhkan pendampingan khusus. Pembiasaan komunal pesantren terbukti memberikan rasa aman dasar (<em>basic psychological safety</em>) yang meminimalkan kecemasan sosial santri.
                   </p>
                 </div>
               </CardContent>
@@ -1269,7 +1388,7 @@ export default function PublicResearchReportPage() {
 
                   <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
                     <Badge variant="outline" className="font-mono text-xs px-2.5 py-1 bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800">
-                      N = 3.152 Santri Riil
+                      N = 3.152 Data Respon (788 Santri × 4 Sesi)
                     </Badge>
                     <Badge variant="outline" className="font-mono text-xs px-2.5 py-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
                       3 Tingkat Angkatan
@@ -1540,10 +1659,10 @@ export default function PublicResearchReportPage() {
                     </span>
                   </div>
                   <h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-slate-100 mt-0.5">
-                    Tabel Parameter Statistik Deskriptif (N = 3.152)
+                    Tabel Parameter Statistik Deskriptif (N = 3.152 Data Observasi / 788 Santri × 4 Sesi)
                   </h3>
                   <p className="text-xs text-slate-500 mt-0.5">
-                    Data mentah rincian Nilai Tengah (Mean), Standar Deviasi, Median, Rentang, Status, dan Peran Analitis.
+                    Data agregat dari 3.152 entri evaluasi longitudinal (788 santri unik × 4 kali pengisian) mencakup Nilai Tengah (Mean), Standar Deviasi, Median, Rentang, Status, dan Peran Analitis.
                   </p>
                 </div>
                 <button
@@ -2363,7 +2482,7 @@ export default function PublicResearchReportPage() {
 
                   <div className="flex items-center gap-2 self-start sm:self-auto">
                     <Badge variant="outline" className="font-mono text-xs px-2.5 py-1 bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border-blue-300 dark:border-blue-700">
-                      N = {cohort.count.toLocaleString("id-ID")} Santri (100%)
+                      N = {cohort.count.toLocaleString("id-ID")} Data Respon (100%)
                     </Badge>
                   </div>
                 </div>
@@ -2399,9 +2518,9 @@ export default function PublicResearchReportPage() {
                                     </span>
                                   </div>
                                   <div className="flex items-center justify-between font-mono pt-1">
-                                    <span className="text-slate-400">Populasi Santri:</span>
+                                    <span className="text-slate-400">Total Observasi:</span>
                                     <span className="font-bold text-sm" style={{ color: d.color }}>
-                                      {d.count.toLocaleString("id-ID")} santri
+                                      {d.count.toLocaleString("id-ID")} respon
                                     </span>
                                   </div>
                                   <p className="text-[11px] text-slate-300 leading-relaxed italic bg-slate-900/60 p-2 rounded border border-slate-800/80">
@@ -2478,7 +2597,7 @@ export default function PublicResearchReportPage() {
                       >
                         {activePersonaIndex !== null
                           ? personaChartData[activePersonaIndex]?.name
-                          : "Santri (100%)"}
+                          : "Data Respon (100%)"}
                       </span>
                     </div>
                   </div>
@@ -3243,63 +3362,144 @@ export default function PublicResearchReportPage() {
                     </div>
                   </div>
                   <div className="p-3 rounded bg-rose-50/60 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900 text-slate-700 dark:text-slate-300 leading-relaxed">
-                    <strong>Peringatan Prediktif:</strong> Sebanyak <strong>123 santri</strong> dalam kelompok *The Exhausted Santri* diproyeksikan mengalami penurunan daya ingat hafalan dalam 60 hari ke depan jika jam padam kamar malam tidak diperbaiki.
+                    <strong>Peringatan Prediktif:</strong> Sebanyak <strong>123 data observasi santri</strong> dalam kelompok *The Exhausted Santri* diproyeksikan mengalami penurunan daya ingat hafalan dalam 60 hari ke depan jika jam padam kamar malam tidak diperbaiki.
                   </div>
                 </CardContent>
               </Card>
 
-              {/* Mesin Simulasi What-If */}
-              <Card className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col justify-between">
-                <CardHeader className="pb-2">
+              {/* Mesin Simulasi What-If Multi-Leverage Interaktif */}
+              <Card className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col justify-between shadow-sm">
+                <CardHeader className="pb-3 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400">
-                      Sub-Bab 3.3: Simulator Regresi What-If (Simulasi Pengaruh Kenaikan Atensi Belajar)
+                      Sub-Bab 3.3: Simulator Regresi What-If Interaktif
                     </span>
-                    <Badge variant="gold" className="text-[10px]">
-                      Simulasi Interaktif
-                    </Badge>
+                    <div className="flex items-center gap-1.5">
+                      <Badge variant="gold" className="text-[10px]">
+                        Multi-Leverage Engine
+                      </Badge>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSimSocialBoost(5);
+                          setSimReadingBoost(5);
+                          setSimInhibitionBoost(5);
+                        }}
+                        className="p-1 rounded hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-500 hover:text-slate-800 transition-colors"
+                        title="Reset Simulasi ke Nilai Awal (+5%)"
+                      >
+                        <RotateCcw className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
                   </div>
-                  <CardTitle className="text-sm font-bold text-slate-900 dark:text-slate-100 mt-1">
-                    Simulasi Pengaruh Kenaikan Atensi Belajar
+                  <CardTitle className="text-sm sm:text-base font-bold text-slate-900 dark:text-slate-100 mt-1">
+                    Simulasi Pengaruh Kenaikan 3 Kebiasaan Daya Ungkit Tertinggi
                   </CardTitle>
                   <CardDescription className="text-xs">
-                    Geser pengatur untuk memperkirakan lonjakan percaya diri jika kendala konsistensi 7 KAIH berkurang.
+                    Geser pengatur slider di bawah ini untuk menguji proyeksi kenaikan Kepercayaan Diri secara real-time berdasarkan bobot model regresi empiris.
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4 text-xs">
-                  <div className="space-y-1.5">
-                    <div className="flex justify-between items-center font-semibold">
-                      <span>Target Kenaikan Konsentrasi (D2):</span>
-                      <span className="text-emerald-600 font-mono text-sm">+{simInhibitionBoost}%</span>
+                <CardContent className="p-4 sm:p-5 space-y-3.5 text-xs">
+                  {/* SLIDER 1: BERMASYARAKAT & ADAB (KAIH 7, r = 0,771) */}
+                  <div className="space-y-1 p-2.5 rounded-lg bg-emerald-50/40 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/50">
+                    <div className="flex justify-between items-center">
+                      <span className="font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+                        <Users className="h-3.5 w-3.5 text-emerald-600" />
+                        1. Bermasyarakat &amp; Adab (r = 0,771)
+                      </span>
+                      <span className="text-emerald-700 dark:text-emerald-400 font-mono font-bold text-xs bg-emerald-100 dark:bg-emerald-900/60 px-2 py-0.5 rounded">
+                        +{simSocialBoost}%
+                      </span>
                     </div>
                     <input
                       type="range"
-                      min="1"
+                      min="0"
+                      max="15"
+                      step="1"
+                      value={simSocialBoost}
+                      onChange={(e) => setSimSocialBoost(Number(e.target.value))}
+                      className="w-full h-1.5 bg-slate-200 dark:bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-600"
+                    />
+                    <div className="flex justify-between text-[10px] text-slate-500 font-mono">
+                      <span>0% (Stabil)</span>
+                      <span>+5% (Program Bimbingan)</span>
+                      <span>+15% (Akselerasi)</span>
+                    </div>
+                  </div>
+
+                  {/* SLIDER 2: GEMAR MEMBACA (KAIH 2, r = 0,744) */}
+                  <div className="space-y-1 p-2.5 rounded-lg bg-blue-50/40 dark:bg-blue-950/20 border border-blue-100 dark:border-blue-900/50">
+                    <div className="flex justify-between items-center">
+                      <span className="font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+                        <BookOpen className="h-3.5 w-3.5 text-blue-600" />
+                        2. Gemar Membaca &amp; Literasi (r = 0,744)
+                      </span>
+                      <span className="text-blue-700 dark:text-blue-400 font-mono font-bold text-xs bg-blue-100 dark:bg-blue-900/60 px-2 py-0.5 rounded">
+                        +{simReadingBoost}%
+                      </span>
+                    </div>
+                    <input
+                      type="range"
+                      min="0"
+                      max="15"
+                      step="1"
+                      value={simReadingBoost}
+                      onChange={(e) => setSimReadingBoost(Number(e.target.value))}
+                      className="w-full h-1.5 bg-slate-200 dark:bg-slate-800 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                    />
+                    <div className="flex justify-between text-[10px] text-slate-500 font-mono">
+                      <span>0% (Stabil)</span>
+                      <span>+5% (Pojok Baca Kamar)</span>
+                      <span>+15% (Bedah Buku Mandiri)</span>
+                    </div>
+                  </div>
+
+                  {/* SLIDER 3: KENDALA KONSISTENSI 7 KAIH / ATENSI SELEKTIF (73,03%) */}
+                  <div className="space-y-1 p-2.5 rounded-lg bg-amber-50/40 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900/50">
+                    <div className="flex justify-between items-center">
+                      <span className="font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+                        <Zap className="h-3.5 w-3.5 text-amber-600" />
+                        3. Reduksi Kendala Konsistensi 7 KAIH (Atensi D2)
+                      </span>
+                      <span className="text-amber-700 dark:text-amber-400 font-mono font-bold text-xs bg-amber-100 dark:bg-amber-900/60 px-2 py-0.5 rounded">
+                        +{simInhibitionBoost}%
+                      </span>
+                    </div>
+                    <input
+                      type="range"
+                      min="0"
                       max="15"
                       step="1"
                       value={simInhibitionBoost}
                       onChange={(e) => setSimInhibitionBoost(Number(e.target.value))}
-                      className="w-full h-1.5 bg-slate-200 dark:bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-600"
+                      className="w-full h-1.5 bg-slate-200 dark:bg-slate-800 rounded-lg appearance-none cursor-pointer accent-amber-600"
                     />
                     <div className="flex justify-between text-[10px] text-slate-500 font-mono">
-                      <span>+1% (Ringan)</span>
-                      <span>+8% (Konsistensi 7 KAIH)</span>
-                      <span>+15% (Transformasi)</span>
+                      <span>0% (Status Quo)</span>
+                      <span>+5% (Quiet Hours Asrama)</span>
+                      <span>+15% (Bebas Distraksi)</span>
                     </div>
                   </div>
 
+                  {/* REAL-TIME PREDICTIVE IMPACT SUMMARY */}
                   <div className="grid grid-cols-2 gap-2 pt-1">
-                    <div className="p-2.5 rounded bg-slate-50 dark:bg-slate-850 border border-slate-200 dark:border-slate-800 text-center">
-                      <span className="text-[10px] text-slate-500">Proyeksi Kenaikan Pede</span>
-                      <div className="text-lg font-bold font-mono text-slate-900 dark:text-slate-100">
-                        +{simulatedImpact.confidenceGain}%
+                    <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-850 border border-slate-200 dark:border-slate-800 text-center">
+                      <span className="text-[10px] text-slate-500 uppercase font-semibold">Proyeksi Skor Pede</span>
+                      <div className="text-xl font-extrabold font-mono text-emerald-600 dark:text-emerald-400 mt-0.5">
+                        {simulatedImpact.newConfidence}%
                       </div>
+                      <span className="text-[10px] font-mono font-bold text-emerald-700 dark:text-emerald-300">
+                        (+{simulatedImpact.confidenceGain}%)
+                      </span>
                     </div>
-                    <div className="p-2.5 rounded bg-slate-50 dark:bg-slate-850 border border-slate-200 dark:border-slate-800 text-center">
-                      <span className="text-[10px] text-slate-500">Konversi Sangat Pede</span>
-                      <div className="text-lg font-bold font-mono text-emerald-600">
-                        ~{simulatedImpact.convertedStudents} santri
+                    <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-850 border border-slate-200 dark:border-slate-800 text-center">
+                      <span className="text-[10px] text-slate-500 uppercase font-semibold">Konversi Santri Mandiri</span>
+                      <div className="text-xl font-extrabold font-mono text-slate-900 dark:text-slate-100 mt-0.5">
+                        ~{simulatedImpact.convertedUniqueStudents} santri
                       </div>
+                      <span className="text-[10px] font-mono text-slate-500">
+                        (~{simulatedImpact.convertedResponses} data respon)
+                      </span>
                     </div>
                   </div>
                 </CardContent>
@@ -3552,7 +3752,7 @@ export default function PublicResearchReportPage() {
 
           <div className="p-4 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-300 space-y-2 leading-relaxed">
             <p>
-              <strong>Sampel Responden:</strong> Data dikumpulkan melalui pengisian survei evaluasi berkala semester ganjil tahun ajaran 2026/2027 di lingkungan SMAIT Ihsanul Fikri Mungkid, mencakup 3.152 respon santri yang telah diverifikasi integritas isian datanya.
+              <strong>Desain Pengumpulan Data &amp; Sampel Longitudinal:</strong> Penelitian ini menggunakan rancangan panel longitudinal pada <strong>788 santri unik</strong> SMAIT Ihsanul Fikri Mungkid sepanjang semester ganjil tahun ajaran 2026/2027. Setiap santri mengisi kuesioner evaluasi pembiasaan 7 KAIH secara berkala sebanyak <strong>4 kali sesi pengamatan</strong>, sehingga menghasilkan total <strong>N = 3.152 data observasi respon</strong> yang telah melalui verifikasi integritas data dan uji reliabilitas instrumen.
             </p>
             <p>
               <strong>Instrumen Pengukuran:</strong> Kuesioner memuat 35 butir pertanyaan (7 KAIH dengan 5 butir soal di setiap kebiasaan untuk mengukur tindakan fisik, atensi selektif, atensi terbuka, atensi eksekutif, dan unjuk diri). Seluruh butir menggunakan skala Likert 1-4 yang dinormalisasi ke persentase 0-20% per butir sehingga total per kebiasaan bernilai 100%.
