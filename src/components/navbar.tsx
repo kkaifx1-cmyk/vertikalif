@@ -4,7 +4,17 @@ import React, { Suspense, useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
-import { ClipboardCheck, Home, Sparkles, Users2, Lock, ShieldCheck, BarChart3 } from "lucide-react";
+import {
+  ClipboardCheck,
+  Home,
+  BookOpen,
+  Users2,
+  Lock,
+  ShieldCheck,
+  BarChart3,
+  Menu,
+  X,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "./theme-toggle";
 
@@ -14,11 +24,12 @@ function NavbarContent() {
   const router = useRouter();
 
   const isHome = pathname === "/";
-  const currentTab = isHome ? (searchParams.get("tab") || "beranda") : null;
+  const currentTab = isHome ? searchParams.get("tab") || "beranda" : null;
 
   // Status Kunci Profil Pembuat: Dibuka resmi sesuai instruksi pengguna
   const IS_PROFILE_LOCKED = false;
   const [lockedNotice, setLockedNotice] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Shortcut Global: Tekan Ctrl + A (atau Cmd + A di Mac) untuk membuka portal Super Admin
   useEffect(() => {
@@ -43,6 +54,20 @@ function NavbarContent() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [router]);
 
+  // Tutup menu mobile ketika navigasi berubah
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [pathname, searchParams]);
+
+  // Tutup menu mobile saat tombol Escape ditekan
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMobileMenuOpen(false);
+    };
+    window.addEventListener("keydown", handleEscape);
+    return () => window.removeEventListener("keydown", handleEscape);
+  }, []);
+
   const handleSwitchTab = (tab: "beranda" | "kaih" | "profil") => {
     if (tab === "profil" && IS_PROFILE_LOCKED) {
       setLockedNotice(true);
@@ -50,7 +75,9 @@ function NavbarContent() {
       return;
     }
     if (typeof window !== "undefined") {
-      window.dispatchEvent(new CustomEvent("vertikalif_switch_tab", { detail: tab }));
+      window.dispatchEvent(
+        new CustomEvent("vertikalif_switch_tab", { detail: tab })
+      );
     }
     if (isHome) {
       router.push(`/?tab=${tab}`, { scroll: false });
@@ -60,14 +87,17 @@ function NavbarContent() {
   };
 
   return (
-    <div className="sticky top-2 sm:top-4 z-50 px-2 sm:px-6 w-full pointer-events-none">
-      <header className="pointer-events-auto mx-auto max-w-7xl rounded-2xl border border-white/70 dark:border-slate-800/90 bg-white/85 dark:bg-slate-900/85 px-2.5 sm:px-5 py-2 sm:py-2.5 shadow-[0_8px_30px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_35px_rgba(0,0,0,0.5)] backdrop-blur-md transition-all duration-300 flex items-center justify-between gap-2 sm:gap-4">
+    <header className="sticky top-0 z-50 w-full border-b border-slate-200/90 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md shadow-xs transition-colors duration-200">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
         {/* ========================================================================= */}
-        {/* SISI KIRI: LOGO + BRAND + BADGE SIKLUS TA                                */}
+        {/* SISI KIRI: LOGO + IDENTITAS SEKOLAH                                       */}
         {/* ========================================================================= */}
-        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-          <Link href="/" className="flex items-center gap-2 group">
-            <div className="relative h-9 w-9 sm:h-10 sm:w-10 shrink-0 overflow-hidden rounded-full border-2 border-emerald-500/80 bg-white dark:bg-slate-950 p-0.5 shadow-sm transition-transform duration-200 group-hover:scale-105">
+        <div className="flex items-center gap-3 shrink-0">
+          <Link
+            href="/"
+            className="flex items-center gap-2.5 group rounded-lg focus-visible:outline-2 focus-visible:outline-emerald-600 focus-visible:outline-offset-2"
+          >
+            <div className="relative h-9 w-9 sm:h-10 sm:w-10 shrink-0 overflow-hidden rounded-full border border-emerald-500/40 bg-white dark:bg-slate-950 p-0.5 shadow-xs transition-transform duration-200 group-hover:scale-105">
               <Image
                 src="/logo-ihsanul-fikri.png"
                 alt="Logo SMAIT Ihsanul Fikri Magelang"
@@ -80,287 +110,257 @@ function NavbarContent() {
               <span className="text-xs sm:text-sm font-extrabold tracking-tight text-slate-950 dark:text-white leading-tight">
                 SMAIT IHSANUL FIKRI
               </span>
-              <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 hidden lg:inline">
+              <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 hidden sm:inline">
                 Kabupaten Magelang
               </span>
             </div>
           </Link>
 
-          {/* Badge Mini Monospaced Siklus TA */}
-          <span className="hidden xl:inline-flex items-center text-[10px] font-mono tracking-wider text-emerald-800 dark:text-emerald-300 bg-emerald-50/90 dark:bg-emerald-950/70 px-2.5 py-0.5 rounded-full border border-emerald-300/80 dark:border-emerald-500/50 font-bold shadow-xs">
-            SIKLUS TA 2026/2027
+          {/* Badge Tahun Ajaran */}
+          <span className="hidden xl:inline-flex items-center text-[10px] font-semibold text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-md border border-emerald-200/80 dark:border-emerald-800/80">
+            TA 2026/2027
           </span>
         </div>
 
         {/* ========================================================================= */}
-        {/* TIGA TOMBOL DOCK TERINTEGRASI DI DALAM FLOAT TRANSPARAN (DI TENGAH)      */}
-        {/* DENGAN EFEK 3D TIMBUL & EFEK CAHAYA TULISAN MENYALA                      */}
+        {/* TENGAH: NAVIGASI UTAMA BERLABEL JELAS (DESKTOP)                            */}
         {/* ========================================================================= */}
         <nav
           aria-label="Navigasi Menu Utama"
-          className="relative inline-flex items-center gap-1 sm:gap-1.5 p-1 sm:p-1.5 rounded-2xl bg-slate-200/90 dark:bg-black/90 backdrop-blur-md border-2 border-emerald-500/40 dark:border-emerald-500/60 shadow-[inset_0_2px_4px_rgba(0,0,0,0.08),0_4px_16px_rgba(16,185,129,0.18)] dark:shadow-[inset_0_2px_6px_rgba(0,0,0,0.9),0_0_25px_rgba(16,185,129,0.35)] transition-all duration-300"
+          className="hidden md:flex items-center gap-1 lg:gap-1.5 text-xs lg:text-sm font-medium"
         >
-          {/* Ambient Glowing Halo di Balik Dock */}
-          <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-emerald-500 via-amber-400 to-emerald-600 opacity-20 dark:opacity-40 blur-md pointer-events-none -z-10" />
-
-          {/* 1. Tombol Beranda (Hanya Ikon - Teks Muncul Saat Kursor Mendekat) */}
+          {/* 1. Beranda */}
           <button
             type="button"
             onClick={() => handleSwitchTab("beranda")}
-            aria-label="Beranda & Visi Sekolah"
             className={cn(
-              "group/btn relative inline-flex items-center justify-center h-9 w-9 sm:h-10 sm:w-10 rounded-xl transition-all duration-200 cursor-pointer active:scale-95",
-              currentTab === "beranda"
-                ? "bg-gradient-to-b from-emerald-600 via-emerald-700 to-emerald-900 text-white font-black border-t-2 border-t-emerald-300/80 border-x border-emerald-600 border-b-[3.5px] border-b-emerald-950 -translate-y-0.5 shadow-[0_4px_0_0_#064e3b,0_8px_20px_rgba(16,185,129,0.5),0_0_18px_rgba(52,211,153,0.4)] active:translate-y-0.5 active:border-b-2 active:shadow-[0_2px_0_0_#064e3b]"
-                : "bg-gradient-to-b from-white via-slate-50 to-slate-200 dark:from-slate-800 dark:via-slate-850 dark:to-slate-900 text-slate-800 dark:text-slate-200 font-bold border-t border-t-white/90 dark:border-t-slate-700 border-x border-slate-300 dark:border-slate-800 border-b-[3px] border-b-slate-400 dark:border-b-slate-950 shadow-[0_3px_0_0_rgba(148,163,184,0.6)] dark:shadow-[0_3px_0_0_#020617] hover:-translate-y-0.5 hover:border-b-[3.5px] hover:border-b-emerald-700 dark:hover:border-b-emerald-500 hover:text-emerald-950 dark:hover:text-emerald-300 hover:shadow-[0_4px_0_0_#047857,0_6px_16px_rgba(16,185,129,0.35)] dark:hover:shadow-[0_4px_0_0_#064e3b,0_0_18px_rgba(16,185,129,0.4)] active:translate-y-0.5 active:border-b-2"
+              "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs lg:text-sm font-semibold transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-emerald-600 focus-visible:outline-offset-2",
+              isHome && currentTab === "beranda"
+                ? "bg-emerald-50 text-emerald-900 dark:bg-emerald-950/70 dark:text-emerald-300 font-bold border border-emerald-200/80 dark:border-emerald-800/80"
+                : "text-slate-600 hover:text-slate-950 dark:text-slate-300 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-slate-800/60"
             )}
           >
-            <Home
-              className={cn(
-                "h-4.5 w-4.5 sm:h-5 sm:w-5 shrink-0 transition-transform duration-200 group-hover/btn:scale-115",
-                currentTab === "beranda"
-                  ? "text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.9)]"
-                  : "text-emerald-700 dark:text-emerald-400"
-              )}
-            />
-
-            {/* Tooltip Mengambang - Muncul Saat Kursor Mendekat */}
-            <div className="absolute top-full mt-2.5 left-1/2 -translate-x-1/2 pointer-events-none opacity-0 scale-90 -translate-y-1 group-hover/btn:opacity-100 group-hover/btn:scale-100 group-hover/btn:translate-y-0 group-focus-visible/btn:opacity-100 group-focus-visible/btn:scale-100 group-focus-visible/btn:translate-y-0 transition-all duration-200 ease-out z-50 whitespace-nowrap">
-              <div className="relative rounded-xl border border-emerald-500/50 dark:border-emerald-400/60 bg-slate-950/95 dark:bg-black/95 text-white px-3 py-1.5 text-xs font-bold shadow-xl shadow-emerald-950/40 backdrop-blur-md flex items-center gap-1.5">
-                <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-slate-950 dark:bg-black border-t border-l border-emerald-500/50 dark:border-emerald-400/60 rotate-45" />
-                <span className="text-emerald-300 [text-shadow:_0_0_8px_rgba(52,211,153,0.8)]">
-                  Beranda
-                </span>
-              </div>
-            </div>
+            <Home className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+            <span>Beranda</span>
           </button>
 
-          {/* 2. Tombol 7 Karakter KAIH (Hanya Ikon - Teks Muncul Saat Kursor Mendekat) */}
+          {/* 2. 7 Karakter KAIH */}
           <button
             type="button"
             onClick={() => handleSwitchTab("kaih")}
-            aria-label="7 Karakter KAIH (35 Butir Refleksi)"
             className={cn(
-              "group/btn relative inline-flex items-center justify-center h-9 w-9 sm:h-10 sm:w-10 rounded-xl transition-all duration-200 cursor-pointer active:scale-95",
-              currentTab === "kaih"
-                ? "bg-gradient-to-b from-emerald-600 via-emerald-700 to-emerald-900 text-white font-black border-t-2 border-t-amber-300/80 border-x border-emerald-600 border-b-[3.5px] border-b-emerald-950 -translate-y-0.5 shadow-[0_4px_0_0_#064e3b,0_8px_20px_rgba(245,158,11,0.5),0_0_20px_rgba(251,191,36,0.5)] active:translate-y-0.5 active:border-b-2 active:shadow-[0_2px_0_0_#064e3b]"
-                : "bg-gradient-to-b from-white via-slate-50 to-slate-200 dark:from-slate-800 dark:via-slate-850 dark:to-slate-900 text-slate-800 dark:text-slate-200 font-bold border-t border-t-white/90 dark:border-t-slate-700 border-x border-slate-300 dark:border-slate-800 border-b-[3px] border-b-slate-400 dark:border-b-slate-950 shadow-[0_3px_0_0_rgba(148,163,184,0.6)] dark:shadow-[0_3px_0_0_#020617] hover:-translate-y-0.5 hover:border-b-[3.5px] hover:border-b-amber-600 dark:hover:border-b-amber-500 hover:text-amber-950 dark:hover:text-amber-300 hover:shadow-[0_4px_0_0_#b45309,0_6px_16px_rgba(245,158,11,0.35)] dark:hover:shadow-[0_4px_0_0_#78350f,0_0_18px_rgba(245,158,11,0.45)] active:translate-y-0.5 active:border-b-2"
+              "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs lg:text-sm font-semibold transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-emerald-600 focus-visible:outline-offset-2",
+              isHome && currentTab === "kaih"
+                ? "bg-emerald-50 text-emerald-900 dark:bg-emerald-950/70 dark:text-emerald-300 font-bold border border-emerald-200/80 dark:border-emerald-800/80"
+                : "text-slate-600 hover:text-slate-950 dark:text-slate-300 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-slate-800/60"
             )}
           >
-            <Sparkles
-              className={cn(
-                "h-4.5 w-4.5 sm:h-5 sm:w-5 shrink-0 transition-transform duration-200 group-hover/btn:scale-115",
-                currentTab === "kaih"
-                  ? "text-amber-300 drop-shadow-[0_0_10px_rgba(251,191,36,1)] animate-pulse"
-                  : "text-amber-500 dark:text-amber-400"
-              )}
-            />
-
-            {/* Tooltip Mengambang - Muncul Saat Kursor Mendekat */}
-            <div className="absolute top-full mt-2.5 left-1/2 -translate-x-1/2 pointer-events-none opacity-0 scale-90 -translate-y-1 group-hover/btn:opacity-100 group-hover/btn:scale-100 group-hover/btn:translate-y-0 group-focus-visible/btn:opacity-100 group-focus-visible/btn:scale-100 group-focus-visible/btn:translate-y-0 transition-all duration-200 ease-out z-50 whitespace-nowrap">
-              <div className="relative rounded-xl border border-amber-500/50 dark:border-amber-400/60 bg-slate-950/95 dark:bg-black/95 text-white px-3 py-1.5 text-xs font-bold shadow-xl shadow-amber-950/40 backdrop-blur-md flex items-center gap-2">
-                <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-slate-950 dark:bg-black border-t border-l border-amber-500/50 dark:border-amber-400/60 rotate-45" />
-                <span className="text-amber-300 [text-shadow:_0_0_8px_rgba(251,191,36,0.8)]">
-                  7 Karakter KAIH
-                </span>
-                <span className="text-[10px] font-black bg-amber-400 text-slate-950 px-1.5 py-0.2 rounded-full border border-amber-200 shadow-[0_0_8px_rgba(251,191,36,0.9)]">
-                  35
-                </span>
-              </div>
-            </div>
+            <BookOpen className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+            <span>7 Karakter KAIH</span>
           </button>
 
-          {/* 3. Tombol Profil Pembuat */}
+          {/* 3. Laporan Riset */}
+          <Link
+            href="/laporan"
+            className={cn(
+              "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs lg:text-sm font-semibold transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-emerald-600 focus-visible:outline-offset-2",
+              pathname === "/laporan"
+                ? "bg-emerald-50 text-emerald-900 dark:bg-emerald-950/70 dark:text-emerald-300 font-bold border border-emerald-200/80 dark:border-emerald-800/80"
+                : "text-slate-600 hover:text-slate-950 dark:text-slate-300 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-slate-800/60"
+            )}
+          >
+            <BarChart3 className="h-4 w-4 shrink-0 text-teal-600 dark:text-teal-400" />
+            <span>Laporan Riset</span>
+          </Link>
+
+          {/* 4. Profil Tim */}
           <button
             type="button"
             onClick={() => handleSwitchTab("profil")}
-            aria-label={IS_PROFILE_LOCKED ? "Profil Tim Pembuat & Pembimbing (Ditutup Sementara)" : "Profil Tim Pembuat & Pembimbing"}
-            title={IS_PROFILE_LOCKED ? "Akses profil ditutup sementara" : "Profil Tim Pembuat & Pembimbing"}
+            disabled={IS_PROFILE_LOCKED}
             className={cn(
-              "group/btn relative inline-flex items-center justify-center h-9 w-9 sm:h-10 sm:w-10 rounded-xl transition-all duration-200 active:scale-95",
-              IS_PROFILE_LOCKED
-                ? "bg-slate-100 dark:bg-slate-900/80 text-slate-400 dark:text-slate-500 border border-dashed border-amber-500/50 hover:border-amber-400 shadow-xs cursor-not-allowed"
-                : currentTab === "profil"
-                ? "cursor-pointer bg-gradient-to-b from-emerald-600 via-emerald-700 to-emerald-900 text-white font-black border-t-2 border-t-emerald-300/80 border-x border-emerald-600 border-b-[3.5px] border-b-emerald-950 -translate-y-0.5 shadow-[0_4px_0_0_#064e3b,0_8px_20px_rgba(16,185,129,0.5),0_0_18px_rgba(52,211,153,0.4)] active:translate-y-0.5 active:border-b-2 active:shadow-[0_2px_0_0_#064e3b]"
-                : "cursor-pointer bg-gradient-to-b from-white via-slate-50 to-slate-200 dark:from-slate-800 dark:via-slate-850 dark:to-slate-900 text-slate-800 dark:text-slate-200 font-bold border-t border-t-white/90 dark:border-t-slate-700 border-x border-slate-300 dark:border-slate-800 border-b-[3px] border-b-slate-400 dark:border-b-slate-950 shadow-[0_3px_0_0_rgba(148,163,184,0.6)] dark:shadow-[0_3px_0_0_#020617] hover:-translate-y-0.5 hover:border-b-[3.5px] hover:border-b-emerald-700 dark:hover:border-b-emerald-500 hover:text-emerald-950 dark:hover:text-emerald-300 hover:shadow-[0_4px_0_0_#047857,0_6px_16px_rgba(16,185,129,0.35)] dark:hover:shadow-[0_4px_0_0_#064e3b,0_0_18px_rgba(16,185,129,0.4)] active:translate-y-0.5 active:border-b-2"
+              "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs lg:text-sm font-semibold transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-emerald-600 focus-visible:outline-offset-2",
+              isHome && currentTab === "profil"
+                ? "bg-emerald-50 text-emerald-900 dark:bg-emerald-950/70 dark:text-emerald-300 font-bold border border-emerald-200/80 dark:border-emerald-800/80"
+                : "text-slate-600 hover:text-slate-950 dark:text-slate-300 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-slate-800/60",
+              IS_PROFILE_LOCKED && "opacity-60 cursor-not-allowed"
             )}
           >
-            <Users2
-              className={cn(
-                "h-4.5 w-4.5 sm:h-5 sm:w-5 shrink-0 transition-transform duration-200 group-hover/btn:scale-115",
-                IS_PROFILE_LOCKED
-                  ? "text-slate-400 dark:text-slate-500"
-                  : currentTab === "profil"
-                  ? "text-emerald-200 drop-shadow-[0_0_8px_rgba(52,211,153,1)]"
-                  : "text-emerald-700 dark:text-emerald-400"
-              )}
-            />
-
-            {/* Mini Lock Badge (Hanya saat profil terkunci) */}
-            {IS_PROFILE_LOCKED && (
-              <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-amber-500 text-slate-950 shadow-xs border border-white dark:border-black">
-                <Lock className="h-2 w-2 stroke-[3]" />
-              </span>
-            )}
-
-            {/* Tooltip Mengambang - Muncul Saat Kursor Mendekat */}
-            <div className="absolute top-full mt-2.5 left-1/2 -translate-x-1/2 pointer-events-none opacity-0 scale-90 -translate-y-1 group-hover/btn:opacity-100 group-hover/btn:scale-100 group-hover/btn:translate-y-0 group-focus-visible/btn:opacity-100 group-focus-visible/btn:scale-100 group-focus-visible/btn:translate-y-0 transition-all duration-200 ease-out z-50 whitespace-nowrap">
-              {IS_PROFILE_LOCKED ? (
-                <div className="relative rounded-xl border border-amber-500/50 dark:border-amber-400/60 bg-slate-950/95 dark:bg-black/95 text-white px-3 py-1.5 text-xs font-bold shadow-xl shadow-amber-950/40 backdrop-blur-md flex items-center gap-1.5">
-                  <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-slate-950 dark:bg-black border-t border-l border-amber-500/50 dark:border-amber-400/60 rotate-45" />
-                  <Lock className="h-3 w-3 text-amber-400" />
-                  <span className="text-amber-300">
-                    Profil Ditutup Sementara
-                  </span>
-                </div>
-              ) : (
-                <div className="relative rounded-xl border border-emerald-500/50 dark:border-emerald-400/60 bg-slate-950/95 dark:bg-black/95 text-white px-3 py-1.5 text-xs font-bold shadow-xl shadow-emerald-950/40 backdrop-blur-md flex items-center gap-1.5">
-                  <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-slate-950 dark:bg-black border-t border-l border-emerald-500/50 dark:border-emerald-400/60 rotate-45" />
-                  <span className="text-emerald-300 [text-shadow:_0_0_8px_rgba(52,211,153,0.8)]">
-                    Profil Pembuat
-                  </span>
-                </div>
-              )}
-            </div>
+            <Users2 className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+            <span>Profil Tim</span>
+            {IS_PROFILE_LOCKED && <Lock className="h-3 w-3 text-amber-500" />}
           </button>
-
-          {/* 4. Tombol Laporan Riset Publik */}
-          <Link
-            href="/laporan"
-            aria-label="Laporan Riset Data Science 7 KAIH"
-            title="Laporan Riset Sains: Kepercayaan Diri & 7 KAIH"
-            className={cn(
-              "group/btn relative inline-flex items-center justify-center h-9 w-9 sm:h-10 sm:w-10 rounded-xl transition-all duration-200 cursor-pointer active:scale-95",
-              pathname === "/laporan"
-                ? "bg-gradient-to-b from-teal-600 via-teal-700 to-teal-900 text-white font-black border-t-2 border-t-teal-300/80 border-x border-teal-600 border-b-[3.5px] border-b-teal-950 -translate-y-0.5 shadow-[0_4px_0_0_#134e4a,0_8px_20px_rgba(20,184,166,0.5),0_0_18px_rgba(45,212,191,0.4)] active:translate-y-0.5 active:border-b-2"
-                : "bg-gradient-to-b from-white via-slate-50 to-slate-200 dark:from-slate-800 dark:via-slate-850 dark:to-slate-900 text-slate-800 dark:text-slate-200 font-bold border-t border-t-white/90 dark:border-t-slate-700 border-x border-slate-300 dark:border-slate-800 border-b-[3px] border-b-slate-400 dark:border-b-slate-950 shadow-[0_3px_0_0_rgba(148,163,184,0.6)] dark:shadow-[0_3px_0_0_#020617] hover:-translate-y-0.5 hover:border-b-[3.5px] hover:border-b-teal-700 dark:hover:border-b-teal-500 hover:text-teal-950 dark:hover:text-teal-300 hover:shadow-[0_4px_0_0_#0f766e,0_6px_16px_rgba(20,184,166,0.35)] dark:hover:shadow-[0_4px_0_0_#134e4a,0_0_18px_rgba(20,184,166,0.4)] active:translate-y-0.5 active:border-b-2"
-            )}
-          >
-            <BarChart3
-              className={cn(
-                "h-4.5 w-4.5 sm:h-5 sm:w-5 shrink-0 transition-transform duration-200 group-hover/btn:scale-115",
-                pathname === "/laporan"
-                  ? "text-teal-200 drop-shadow-[0_0_8px_rgba(45,212,191,1)]"
-                  : "text-teal-700 dark:text-teal-400"
-              )}
-            />
-
-            {/* Tooltip Mengambang - Muncul Saat Kursor Mendekat */}
-            <div className="absolute top-full mt-2.5 left-1/2 -translate-x-1/2 pointer-events-none opacity-0 scale-90 -translate-y-1 group-hover/btn:opacity-100 group-hover/btn:scale-100 group-hover/btn:translate-y-0 group-focus-visible/btn:opacity-100 group-focus-visible/btn:scale-100 group-focus-visible/btn:translate-y-0 transition-all duration-200 ease-out z-50 whitespace-nowrap">
-              <div className="relative rounded-xl border border-teal-500/50 dark:border-teal-400/60 bg-slate-950/95 dark:bg-black/95 text-white px-3 py-1.5 text-xs font-bold shadow-xl shadow-teal-950/40 backdrop-blur-md flex items-center gap-1.5">
-                <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-slate-950 dark:bg-black border-t border-l border-teal-500/50 dark:border-teal-400/60 rotate-45" />
-                <span className="text-teal-300 [text-shadow:_0_0_8px_rgba(45,212,191,0.8)]">
-                  Laporan Riset
-                </span>
-              </div>
-            </div>
-          </Link>
-
-          {/* 5. Tombol Super Admin (Akses Global Terbuka) */}
-          <Link
-            href="/super-admin"
-            aria-label="Super Admin Portal (Akses Global Terbuka)"
-            title="Portal Super Admin & Database (Shortcut: Ctrl + A)"
-            className={cn(
-              "group/btn relative inline-flex items-center justify-center h-9 w-9 sm:h-10 sm:w-10 rounded-xl transition-all duration-200 cursor-pointer active:scale-95",
-              pathname === "/super-admin"
-                ? "bg-gradient-to-b from-purple-600 via-purple-700 to-purple-900 text-white font-black border-t-2 border-t-purple-300/80 border-x border-purple-600 border-b-[3.5px] border-b-purple-950 -translate-y-0.5 shadow-[0_4px_0_0_#3b0764,0_8px_20px_rgba(168,85,247,0.5),0_0_18px_rgba(192,132,252,0.4)] active:translate-y-0.5 active:border-b-2"
-                : "bg-gradient-to-b from-white via-slate-50 to-slate-200 dark:from-slate-800 dark:via-slate-850 dark:to-slate-900 text-slate-800 dark:text-slate-200 font-bold border-t border-t-white/90 dark:border-t-slate-700 border-x border-slate-300 dark:border-slate-800 border-b-[3px] border-b-slate-400 dark:border-b-slate-950 shadow-[0_3px_0_0_rgba(148,163,184,0.6)] dark:shadow-[0_3px_0_0_#020617] hover:-translate-y-0.5 hover:border-b-[3.5px] hover:border-b-purple-700 dark:hover:border-b-purple-500 hover:text-purple-950 dark:hover:text-purple-300 hover:shadow-[0_4px_0_0_#581c87,0_6px_16px_rgba(168,85,247,0.35)] dark:hover:shadow-[0_4px_0_0_#3b0764,0_0_18px_rgba(168,85,247,0.4)] active:translate-y-0.5 active:border-b-2"
-            )}
-          >
-            <ShieldCheck
-              className={cn(
-                "h-4.5 w-4.5 sm:h-5 sm:w-5 shrink-0 transition-transform duration-200 group-hover/btn:scale-115",
-                pathname === "/super-admin"
-                  ? "text-purple-200 drop-shadow-[0_0_8px_rgba(192,132,252,1)]"
-                  : "text-purple-700 dark:text-purple-400"
-              )}
-            />
-
-            {/* Tooltip Mengambang - Muncul Saat Kursor Mendekat */}
-            <div className="absolute top-full mt-2.5 left-1/2 -translate-x-1/2 pointer-events-none opacity-0 scale-90 -translate-y-1 group-hover/btn:opacity-100 group-hover/btn:scale-100 group-hover/btn:translate-y-0 group-focus-visible/btn:opacity-100 group-focus-visible/btn:scale-100 group-focus-visible/btn:translate-y-0 transition-all duration-200 ease-out z-50 whitespace-nowrap">
-              <div className="relative rounded-xl border border-purple-500/50 dark:border-purple-400/60 bg-slate-950/95 dark:bg-black/95 text-white px-3 py-1.5 text-xs font-bold shadow-xl shadow-purple-950/40 backdrop-blur-md flex items-center gap-1.5">
-                <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-slate-950 dark:bg-black border-t border-l border-purple-500/50 dark:border-purple-400/60 rotate-45" />
-                <span className="text-purple-300 [text-shadow:_0_0_8px_rgba(192,132,252,0.8)]">
-                  Super Admin
-                </span>
-                <span className="text-[10px] font-mono text-purple-200 bg-purple-900/80 px-1 py-0.2 rounded border border-purple-700">
-                  Ctrl+A
-                </span>
-              </div>
-            </div>
-          </Link>
         </nav>
 
         {/* Floating Locked Notice Toast */}
         {lockedNotice && (
-          <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 px-4 py-2 rounded-xl bg-slate-950 text-white text-xs font-bold shadow-2xl flex items-center gap-2 animate-in fade-in slide-in-from-top-2 duration-200 z-50 border border-amber-400/80 whitespace-nowrap">
-            <span className="flex h-2 w-2 rounded-full bg-amber-400 animate-ping" />
+          <div className="absolute top-18 left-1/2 -translate-x-1/2 px-4 py-2 rounded-xl bg-slate-950 text-white text-xs font-bold shadow-xl flex items-center gap-2 animate-in fade-in slide-in-from-top-2 duration-200 z-50 border border-amber-400 whitespace-nowrap">
             <Lock className="h-3.5 w-3.5 text-amber-400" />
             <span>Akses Profil Pembuat sedang dinonaktifkan sementara.</span>
           </div>
         )}
 
         {/* ========================================================================= */}
-        {/* SISI KANAN: THEME TOGGLE, SHORTCUT SUPER ADMIN & CTA MULAI SURVEI         */}
+        {/* SISI KANAN: THEME TOGGLE, PORTAL ADMIN & CTA UTAMA                        */}
         {/* ========================================================================= */}
         <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
           <ThemeToggle />
 
-          {/* Tombol Akses Cepat Laporan Riset Publik di Navbar Sisi Kanan */}
-          <Link
-            href="/laporan"
-            aria-label="Laporan Riset Data Science 7 KAIH"
-            title="Laporan Riset Sains KAIH (Publik)"
-            className={cn(
-              "hidden sm:inline-flex items-center gap-1.5 rounded-xl px-2.5 sm:px-3 py-2 text-xs font-bold transition-all duration-200 cursor-pointer whitespace-nowrap active:scale-95 border",
-              pathname === "/laporan"
-                ? "bg-teal-700 text-white border-teal-500 shadow-sm"
-                : "bg-teal-50 hover:bg-teal-100 dark:bg-teal-950/60 dark:hover:bg-teal-900/70 text-teal-900 dark:text-teal-200 border-teal-200 dark:border-teal-800 shadow-2xs hover:-translate-y-0.5"
-            )}
-          >
-            <BarChart3 className="h-3.5 w-3.5 text-teal-600 dark:text-teal-400" />
-            <span>Laporan Riset</span>
-          </Link>
-
-          {/* Tombol Akses Cepat Super Admin di Navbar Sisi Kanan */}
+          {/* Akses Portal Super Admin (Diskrit & Profesional) */}
           <Link
             href="/super-admin"
-            aria-label="Super Admin Portal (Global)"
-            title="Portal Super Admin & Database Terbuka (Shortcut: Ctrl + A)"
+            aria-label="Portal Super Admin (Shortcut Ctrl+A)"
+            title="Portal Super Admin dan Manajemen Basis Data (Shortcut: Ctrl + A)"
             className={cn(
-              "hidden md:inline-flex items-center gap-1.5 rounded-xl px-2.5 sm:px-3 py-2 text-xs font-bold transition-all duration-200 cursor-pointer whitespace-nowrap active:scale-95 border",
+              "hidden sm:inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap border focus-visible:outline-2 focus-visible:outline-emerald-600",
               pathname === "/super-admin"
-                ? "bg-purple-700 text-white border-purple-500 shadow-sm"
-                : "bg-purple-50 hover:bg-purple-100 dark:bg-purple-950/60 dark:hover:bg-purple-900/70 text-purple-900 dark:text-purple-200 border-purple-200 dark:border-purple-800 shadow-2xs hover:-translate-y-0.5"
+                ? "bg-slate-900 text-white dark:bg-white dark:text-slate-950 border-transparent shadow-xs"
+                : "text-slate-600 hover:text-slate-950 dark:text-slate-300 dark:hover:text-white border-slate-200/80 dark:border-slate-800 hover:bg-slate-100/80 dark:hover:bg-slate-800/60"
             )}
           >
             <ShieldCheck className="h-3.5 w-3.5 text-purple-600 dark:text-purple-400" />
-            <span>Super Admin</span>
-            <span className="text-[9px] font-mono bg-purple-200 dark:bg-purple-900 text-purple-800 dark:text-purple-300 px-1 py-0.2 rounded">
+            <span>Admin</span>
+            <kbd className="hidden lg:inline-block text-[10px] font-mono text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-1 py-0.2 rounded border border-slate-200 dark:border-slate-700">
               Ctrl+A
-            </span>
+            </kbd>
           </Link>
 
+          {/* CTA Utama: Mulai Survei */}
           <Link
             href="/survei"
-            aria-label="Mulai Survei Sekarang - Kuesioner Evaluasi 7 KAIH"
-            title="Mulai Survei Sekarang"
+            aria-label="Mulai Survei Sekarang: Kuesioner Evaluasi 7 KAIH"
+            title="Mulai Survei Evaluasi 7 KAIH"
             className={cn(
-              "inline-flex items-center gap-1.5 sm:gap-2 rounded-xl px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-black transition-all duration-200 cursor-pointer whitespace-nowrap active:scale-95 text-white",
+              "inline-flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs sm:text-sm font-bold text-white transition-all cursor-pointer whitespace-nowrap shadow-xs active:scale-95 focus-visible:outline-2 focus-visible:outline-emerald-600 focus-visible:outline-offset-2",
               pathname === "/survei"
-                ? "bg-gradient-to-b from-emerald-600 via-emerald-700 to-emerald-900 border-t-2 border-t-emerald-300/80 border-b-[3.5px] border-b-emerald-950 shadow-[0_4px_0_0_#064e3b,0_6px_16px_rgba(16,185,129,0.4)]"
-                : "bg-gradient-to-b from-[#0F766E] to-[#0a524c] hover:from-[#11847c] hover:to-[#0c5d56] border-t border-t-emerald-300/60 border-b-[3.5px] border-b-emerald-950 shadow-[0_3px_0_0_#064e3b,0_4px_12px_rgba(15,118,110,0.35)] hover:-translate-y-0.5 hover:shadow-[0_4px_0_0_#064e3b,0_8px_18px_rgba(15,118,110,0.45)] active:translate-y-0.5 active:border-b-2"
+                ? "bg-emerald-700 ring-2 ring-emerald-500/40"
+                : "bg-emerald-600 hover:bg-emerald-700 shadow-emerald-900/10 hover:shadow-emerald-900/20"
             )}
           >
-            <ClipboardCheck className="h-4 w-4 shrink-0 drop-shadow-[0_0_6px_rgba(255,255,255,0.8)]" />
-            <span className="tracking-wide hidden xs:inline sm:inline [text-shadow:_0_1px_2px_rgba(0,0,0,0.8)]">
-              Mulai Survei
-            </span>
+            <ClipboardCheck className="h-4 w-4 shrink-0" />
+            <span>Mulai Survei</span>
           </Link>
+
+          {/* Tombol Hamburger Menu Mobile */}
+          <button
+            type="button"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-expanded={mobileMenuOpen}
+            aria-label={mobileMenuOpen ? "Tutup menu navigasi" : "Buka menu navigasi"}
+            className="md:hidden inline-flex items-center justify-center h-9 w-9 rounded-lg border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-emerald-600"
+          >
+            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
         </div>
-      </header>
-    </div>
+      </div>
+
+      {/* ========================================================================= */}
+      {/* DRAWER MENU NAVIGASI MOBILE (RESPONSIF & BEBAS MISTERI)                    */}
+      {/* ========================================================================= */}
+      {mobileMenuOpen && (
+        <div className="md:hidden border-t border-slate-200/90 dark:border-slate-800 bg-white/98 dark:bg-slate-900/98 backdrop-blur-lg px-4 pt-3 pb-5 space-y-1.5 shadow-lg animate-in fade-in slide-in-from-top-2 duration-150">
+          <button
+            type="button"
+            onClick={() => {
+              setMobileMenuOpen(false);
+              handleSwitchTab("beranda");
+            }}
+            className={cn(
+              "w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-colors cursor-pointer text-left",
+              isHome && currentTab === "beranda"
+                ? "bg-emerald-50 text-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-300 font-bold border border-emerald-200/60 dark:border-emerald-800/60"
+                : "text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
+            )}
+          >
+            <Home className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+            <span>Beranda</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              setMobileMenuOpen(false);
+              handleSwitchTab("kaih");
+            }}
+            className={cn(
+              "w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-colors cursor-pointer text-left",
+              isHome && currentTab === "kaih"
+                ? "bg-emerald-50 text-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-300 font-bold border border-emerald-200/60 dark:border-emerald-800/60"
+                : "text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
+            )}
+          >
+            <BookOpen className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+            <span>7 Karakter KAIH</span>
+          </button>
+
+          <Link
+            href="/laporan"
+            onClick={() => setMobileMenuOpen(false)}
+            className={cn(
+              "w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-colors cursor-pointer",
+              pathname === "/laporan"
+                ? "bg-emerald-50 text-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-300 font-bold border border-emerald-200/60 dark:border-emerald-800/60"
+                : "text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
+            )}
+          >
+            <BarChart3 className="h-4 w-4 text-teal-600 dark:text-teal-400" />
+            <span>Laporan Riset</span>
+          </Link>
+
+          <button
+            type="button"
+            onClick={() => {
+              setMobileMenuOpen(false);
+              handleSwitchTab("profil");
+            }}
+            disabled={IS_PROFILE_LOCKED}
+            className={cn(
+              "w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-colors cursor-pointer text-left",
+              isHome && currentTab === "profil"
+                ? "bg-emerald-50 text-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-300 font-bold border border-emerald-200/60 dark:border-emerald-800/60"
+                : "text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800",
+              IS_PROFILE_LOCKED && "opacity-60 cursor-not-allowed"
+            )}
+          >
+            <span className="flex items-center gap-3">
+              <Users2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+              <span>Profil Tim dan Pembimbing</span>
+            </span>
+            {IS_PROFILE_LOCKED && <Lock className="h-3.5 w-3.5 text-amber-500" />}
+          </button>
+
+          <div className="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-2">
+            <Link
+              href="/super-admin"
+              onClick={() => setMobileMenuOpen(false)}
+              className={cn(
+                "w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer",
+                pathname === "/super-admin"
+                  ? "bg-purple-50 text-purple-900 dark:bg-purple-950/60 dark:text-purple-300 font-bold"
+                  : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+              )}
+            >
+              <span className="flex items-center gap-2.5">
+                <ShieldCheck className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+                <span>Portal Super Admin</span>
+              </span>
+              <kbd className="text-[10px] font-mono bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded border border-slate-200 dark:border-slate-700">
+                Ctrl+A
+              </kbd>
+            </Link>
+
+            <Link
+              href="/survei"
+              onClick={() => setMobileMenuOpen(false)}
+              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-xs transition-colors cursor-pointer"
+            >
+              <ClipboardCheck className="h-4 w-4" />
+              <span>Mulai Survei 7 KAIH</span>
+            </Link>
+          </div>
+        </div>
+      )}
+    </header>
   );
 }
 

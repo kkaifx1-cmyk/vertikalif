@@ -45,12 +45,12 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
       <body
-        className={`${inter.className} relative min-h-full flex flex-col bg-slate-50 dark:bg-black text-slate-900 dark:text-slate-100 transition-colors duration-300 selection:bg-emerald-600 selection:text-white`}
+        className={`${inter.className} relative min-h-full flex flex-col bg-slate-50 dark:bg-black text-slate-900 dark:text-slate-100 transition-colors duration-300 selection:bg-emerald-600 selection:text-white max-w-full overflow-x-hidden`}
       >
         <ThemeProvider>
           <AnimatedBackground />
           <Navbar />
-          <main className="flex-1">{children}</main>
+          <main className="flex-1 max-w-full overflow-x-hidden">{children}</main>
           <Footer />
         </ThemeProvider>
       </body>
