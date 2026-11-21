@@ -1073,7 +1073,7 @@ export default function PublicResearchReportPage() {
               <div className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                 Efek Mediasi Kausalitas
               </div>
-              <div className="text-2xl font-extrabold font-mono text-slate-900 dark:text-slate-100">
+              <div className="text-3xl font-black font-stat text-slate-900 dark:text-slate-100 tracking-tight tabular-nums">
                 {formatNum(cohort.mediation.mediationPct, 1)}%
               </div>
               <p className="text-xs text-slate-600 dark:text-slate-400 leading-snug">
@@ -1092,9 +1092,9 @@ export default function PublicResearchReportPage() {
               <div className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                 Korelasi Pearson (r)
               </div>
-              <div className="text-2xl font-extrabold font-mono text-slate-900 dark:text-slate-100 flex items-baseline gap-2">
+              <div className="text-3xl font-black font-stat text-slate-900 dark:text-slate-100 flex items-baseline gap-2 tracking-tight tabular-nums">
                 <span>r = 0,771</span>
-                <span className="text-[10px] font-sans font-semibold text-blue-600 dark:text-blue-400">R² = 59,5%</span>
+                <span className="text-xs font-sans font-bold text-blue-600 dark:text-blue-400">R² = 59,5%</span>
               </div>
               <p className="text-xs text-slate-600 dark:text-slate-400 leading-snug">
                 Santri yang gemar membaca buku dan ramah bergaul terbukti paling berani tampil dan berbicara di forum umum.
@@ -1112,7 +1112,7 @@ export default function PublicResearchReportPage() {
               <div className="text-[10px] font-semibold text-rose-600/80 dark:text-rose-400/80 uppercase tracking-wider">
                 Skor Dimensi Terendah
               </div>
-              <div className="text-2xl font-extrabold font-mono text-rose-600 dark:text-rose-400">
+              <div className="text-3xl font-black font-stat text-rose-600 dark:text-rose-400 tracking-tight tabular-nums">
                 {formatNum(cohort.dimScores[1], 2)}%
               </div>
               <p className="text-xs text-slate-600 dark:text-slate-400 leading-snug">
@@ -1131,9 +1131,9 @@ export default function PublicResearchReportPage() {
               <div className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                 Rata-Rata 7 KAIH
               </div>
-              <div className="text-2xl font-extrabold font-mono text-slate-900 dark:text-slate-100 flex items-baseline gap-2">
+              <div className="text-3xl font-black font-stat text-slate-900 dark:text-slate-100 flex items-baseline gap-2 tracking-tight tabular-nums">
                 <span>{formatNum(cohort.ikv, 2)}%</span>
-                <span className="text-[10px] font-sans font-semibold text-emerald-600 dark:text-emerald-400">Kategori Baik</span>
+                <span className="text-xs font-sans font-bold text-emerald-600 dark:text-emerald-400">Kategori Baik</span>
               </div>
               <p className="text-xs text-slate-600 dark:text-slate-400 leading-snug">
                 Secara umum, kedisiplinan dan kebiasaan harian santri sudah berjalan tertib, sehat, dan konsisten.
@@ -1299,7 +1299,7 @@ export default function PublicResearchReportPage() {
                                   textAnchor="middle"
                                   fill={item.color}
                                   style={{
-                                    fontFamily: "var(--font-inter), system-ui, -apple-system, sans-serif",
+                                    fontFamily: "var(--font-jakarta), var(--font-inter), system-ui, -apple-system, sans-serif",
                                     fontSize: 10.5,
                                     fontWeight: 700,
                                   }}
@@ -1339,10 +1339,10 @@ export default function PublicResearchReportPage() {
                         </div>
 
                         <div className="flex items-baseline gap-2 pt-0.5">
-                          <span className="text-2xl sm:text-3xl font-extrabold font-mono text-slate-900 dark:text-slate-100 tabular-nums">
+                          <span className="text-2xl sm:text-3xl font-black font-stat text-slate-900 dark:text-slate-100 tracking-tight tabular-nums">
                             {item.count.toLocaleString("id-ID")}
                           </span>
-                          <span className={`text-xs font-bold font-mono px-2 py-0.5 rounded-md ${item.textColor} bg-white/80 dark:bg-slate-900/80 border border-slate-200/60 dark:border-slate-700/60`}>
+                          <span className={`text-xs font-bold font-stat px-2 py-0.5 rounded-md ${item.textColor} bg-white/80 dark:bg-slate-900/80 border border-slate-200/60 dark:border-slate-700/60 tabular-nums`}>
                             {formatNum(item.pct, 1)}%
                           </span>
                         </div>
@@ -2055,9 +2055,9 @@ export default function PublicResearchReportPage() {
                                 fill={item.color}
                                 className="tracking-tight"
                                 style={{
-                                  fontFamily: "var(--font-inter), system-ui, -apple-system, sans-serif",
+                                  fontFamily: "var(--font-jakarta), var(--font-inter), system-ui, -apple-system, sans-serif",
                                   fontSize: 11,
-                                  fontWeight: 600,
+                                  fontWeight: 700,
                                 }}
                               >
                                 {`r = ${item.r.toFixed(3)} (${item.r2.toFixed(1).replace(".", ",")}%)`}
@@ -2384,18 +2384,18 @@ export default function PublicResearchReportPage() {
                   </div>
 
                   {/* Koefisien Jalur Regresi */}
-                  <div className="mt-5 pt-4 border-t border-slate-800 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs font-mono text-center">
+                  <div className="mt-5 pt-4 border-t border-slate-800 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs text-center font-sans">
                     <div className="p-2.5 rounded-lg bg-slate-800/60 border border-slate-700/50">
                       <span className="text-slate-400 text-[11px]">Jalur a (Rutinitas → Fokus):</span>
-                      <div className="text-base font-bold text-emerald-400 mt-0.5">β = {cohort.mediation.pathA}</div>
+                      <div className="text-base font-black font-stat text-emerald-400 mt-0.5 tracking-tight tabular-nums">β = {cohort.mediation.pathA}</div>
                     </div>
                     <div className="p-2.5 rounded-lg bg-slate-800/60 border border-slate-700/50">
                       <span className="text-slate-400 text-[11px]">Jalur b (Fokus → Percaya Diri):</span>
-                      <div className="text-base font-bold text-amber-400 mt-0.5">β = {cohort.mediation.pathB}</div>
+                      <div className="text-base font-black font-stat text-amber-400 mt-0.5 tracking-tight tabular-nums">β = {cohort.mediation.pathB}</div>
                     </div>
                     <div className="p-2.5 rounded-lg bg-slate-800/60 border border-slate-700/50">
                       <span className="text-slate-400 text-[11px]">Jalur c&#39; (Pengaruh Langsung Tanpa M):</span>
-                      <div className="text-base font-bold text-slate-300 mt-0.5">β = {cohort.mediation.pathCPrime}</div>
+                      <div className="text-base font-black font-stat text-slate-300 mt-0.5 tracking-tight tabular-nums">β = {cohort.mediation.pathCPrime}</div>
                     </div>
                   </div>
                 </div>
@@ -2574,16 +2574,16 @@ export default function PublicResearchReportPage() {
                         chartPersonaDonutView.isInView ? "opacity-100 scale-100 delay-300" : "opacity-0 scale-75"
                       }`}
                     >
-                      <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400 dark:text-slate-500">
+                      <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400 dark:text-slate-500 font-sans">
                         {activePersonaIndex !== null ? "Proporsi Persona" : "Total Populasi"}
                       </span>
-                      <span className="text-2xl sm:text-3xl font-extrabold font-mono text-slate-900 dark:text-slate-100 mt-0.5">
+                      <span className="text-3xl sm:text-4xl font-black font-stat text-slate-950 dark:text-white mt-0.5 tracking-tight tabular-nums drop-shadow-xs">
                         {activePersonaIndex !== null
                           ? `${formatNum(personaChartData[activePersonaIndex]?.pct ?? 0, 1)}%`
                           : cohort.count.toLocaleString("id-ID")}
                       </span>
                       <span
-                        className="text-[11px] font-semibold mt-0.5 px-2.5 py-0.5 rounded-full truncate max-w-[170px]"
+                        className="text-[11px] font-semibold mt-1 px-2.5 py-0.5 rounded-full truncate max-w-[170px]"
                         style={{
                           color:
                             activePersonaIndex !== null
@@ -2633,12 +2633,12 @@ export default function PublicResearchReportPage() {
                                 #{idx + 1} {item.name}
                               </span>
                             </div>
-                            <div className="flex items-center gap-2 font-mono shrink-0">
-                              <span className="font-bold text-slate-700 dark:text-slate-300 text-xs">
+                            <div className="flex items-center gap-2 font-stat shrink-0">
+                              <span className="font-bold text-slate-800 dark:text-slate-200 text-xs tabular-nums">
                                 {item.count.toLocaleString("id-ID")}
                               </span>
                               <span
-                                className="text-[11px] font-extrabold px-1.5 py-0.5 rounded"
+                                className="text-[11px] font-black px-1.5 py-0.5 rounded tabular-nums"
                                 style={{
                                   backgroundColor: `${item.color}15`,
                                   color: item.color,
@@ -3112,7 +3112,7 @@ export default function PublicResearchReportPage() {
                                     textAnchor="middle"
                                     className="fill-emerald-800 dark:fill-emerald-300 font-bold"
                                     style={{
-                                      fontFamily: "var(--font-inter), system-ui, -apple-system, sans-serif",
+                                      fontFamily: "var(--font-jakarta), var(--font-inter), system-ui, -apple-system, sans-serif",
                                       fontSize: 10.5,
                                       fontWeight: 700,
                                     }}
@@ -3176,7 +3176,7 @@ export default function PublicResearchReportPage() {
                                     fill="#d97706"
                                     className="font-bold"
                                     style={{
-                                      fontFamily: "var(--font-inter), system-ui, -apple-system, sans-serif",
+                                      fontFamily: "var(--font-jakarta), var(--font-inter), system-ui, -apple-system, sans-serif",
                                       fontSize: 10.5,
                                       fontWeight: 700,
                                     }}
@@ -3207,10 +3207,10 @@ export default function PublicResearchReportPage() {
                       </span>
                     </div>
                     <div className="flex items-baseline gap-2">
-                      <span className="text-3xl font-extrabold font-mono text-emerald-600 dark:text-emerald-400 tabular-nums">
+                      <span className="text-3xl font-black font-stat text-emerald-600 dark:text-emerald-400 tabular-nums tracking-tight">
                         +8,1%
                       </span>
-                      <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+                      <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 font-sans">
                         (72,3% &rarr; 80,4%)
                       </span>
                     </div>
@@ -3231,10 +3231,10 @@ export default function PublicResearchReportPage() {
                       </span>
                     </div>
                     <div className="flex items-baseline gap-2">
-                      <span className="text-3xl font-extrabold font-mono text-amber-600 dark:text-amber-400 tabular-nums">
+                      <span className="text-3xl font-black font-stat text-amber-600 dark:text-amber-400 tabular-nums tracking-tight">
                         2,1x Lipat
                       </span>
-                      <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+                      <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 font-sans">
                         (19,0% &rarr; 40,0%)
                       </span>
                     </div>
@@ -3255,7 +3255,7 @@ export default function PublicResearchReportPage() {
                       </span>
                     </div>
                     <div className="flex items-baseline gap-2">
-                      <span className="text-3xl font-extrabold font-mono text-blue-600 dark:text-blue-400 tabular-nums">
+                      <span className="text-3xl font-black font-stat text-blue-600 dark:text-blue-400 tabular-nums tracking-tight">
                         0,0%
                       </span>
                       <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
@@ -3485,19 +3485,19 @@ export default function PublicResearchReportPage() {
                   <div className="grid grid-cols-2 gap-2 pt-1">
                     <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-850 border border-slate-200 dark:border-slate-800 text-center">
                       <span className="text-[10px] text-slate-500 uppercase font-semibold">Proyeksi Skor Pede</span>
-                      <div className="text-xl font-extrabold font-mono text-emerald-600 dark:text-emerald-400 mt-0.5">
+                      <div className="text-2xl font-black font-stat text-emerald-600 dark:text-emerald-400 mt-0.5 tracking-tight tabular-nums">
                         {simulatedImpact.newConfidence}%
                       </div>
-                      <span className="text-[10px] font-mono font-bold text-emerald-700 dark:text-emerald-300">
+                      <span className="text-[10px] font-stat font-bold text-emerald-700 dark:text-emerald-300">
                         (+{simulatedImpact.confidenceGain}%)
                       </span>
                     </div>
                     <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-850 border border-slate-200 dark:border-slate-800 text-center">
                       <span className="text-[10px] text-slate-500 uppercase font-semibold">Konversi Santri Mandiri</span>
-                      <div className="text-xl font-extrabold font-mono text-slate-900 dark:text-slate-100 mt-0.5">
+                      <div className="text-2xl font-black font-stat text-slate-900 dark:text-slate-100 mt-0.5 tracking-tight tabular-nums">
                         ~{simulatedImpact.convertedUniqueStudents} santri
                       </div>
-                      <span className="text-[10px] font-mono text-slate-500">
+                      <span className="text-[10px] font-stat text-slate-500">
                         (~{simulatedImpact.convertedResponses} data respon)
                       </span>
                     </div>
