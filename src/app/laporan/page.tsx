@@ -2635,7 +2635,7 @@ export default function PublicResearchReportPage() {
                       Implikasi Kebijakan Pilar 2
                     </span>
                     <h4 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-slate-100">
-                      Mengatasi Bottleneck Kebisingan Kamar &amp; Penguatan Minat Baca
+                      Mengatasi Bottleneck Kendala Konsistensi 7 KAIH &amp; Penguatan Minat Baca
                     </h4>
                   </div>
                 </div>
@@ -2652,7 +2652,7 @@ export default function PublicResearchReportPage() {
               {showDiagnosticImplication && (
                 <div className="p-5 rounded-xl border border-blue-200 dark:border-blue-800/80 bg-white dark:bg-slate-900 text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed space-y-2 shadow-xs transition-all">
                   <p>
-                    Temuan diagnostik membuktikan rasa percaya diri santri mengalir melalui jalur perantara fokus belajar (efek mediasi 80,4%). Memaksa santri langsung tampil berpidato tanpa menertibkan distraksi suara kamar malam (D2: 73,03%) hanya menimbulkan kecemasan berbicara.
+                    Temuan diagnostik membuktikan rasa percaya diri santri mengalir melalui jalur perantara fokus belajar (efek mediasi 80,4%). Memaksa santri langsung tampil berpidato tanpa mengatasi kendala konsistensi 7 KAIH (D2: 73,03%) hanya menimbulkan kecemasan berbicara.
                   </p>
                   <p className="text-slate-500 dark:text-slate-400">
                     <strong>Rekomendasi Intervensi:</strong> Terapkan 20 menit membaca hening setiap malam di lorong asrama dan fungsikan ruang baca perpustakaan untuk belajar mandiri malam hari agar konsentrasi santri terjaga.
@@ -3263,7 +3263,7 @@ export default function PublicResearchReportPage() {
                     Simulasi Pengaruh Kenaikan Atensi Belajar
                   </CardTitle>
                   <CardDescription className="text-xs">
-                    Geser pengatur untuk memperkirakan lonjakan percaya diri jika kebisingan kamar berkurang.
+                    Geser pengatur untuk memperkirakan lonjakan percaya diri jika kendala konsistensi 7 KAIH berkurang.
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4 text-xs">
@@ -3283,7 +3283,7 @@ export default function PublicResearchReportPage() {
                     />
                     <div className="flex justify-between text-[10px] text-slate-500 font-mono">
                       <span>+1% (Ringan)</span>
-                      <span>+8% (Disiplin Kamar)</span>
+                      <span>+8% (Konsistensi 7 KAIH)</span>
                       <span>+15% (Transformasi)</span>
                     </div>
                   </div>
@@ -3448,11 +3448,11 @@ export default function PublicResearchReportPage() {
                   <CardHeader className="p-4 pb-2">
                     <CardTitle className="text-xs font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
                       <AlertCircle className="h-3.5 w-3.5 text-rose-600" />
-                      Pengurangan Distraksi Suara di Kamar
+                      Penanganan Kendala Konsistensi 7 KAIH di Asrama
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="p-4 pt-1 text-xs text-slate-600 dark:text-slate-300 space-y-1">
-                    <p>Ketidakmampuan menyaring kebisingan suara obrolan saat jam belajar malam menjadi hambatan utama konsentrasi.</p>
+                    <p>Ketidakmampuan menjaga fokus saat konsistensi 7 KAIH berkurang menjadi hambatan utama ketahanan atensi santri.</p>
                     <p className="font-medium text-rose-800 dark:text-rose-300 pt-1">
                       Langkah: Terapkan aturan jam hening di lorong asrama dan fungsikan perpustakaan untuk belajar mandiri malam.
                     </p>
