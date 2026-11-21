@@ -726,51 +726,65 @@ export default function PublicResearchReportPage() {
           </h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
-            <div className="p-4 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 space-y-1">
-              <span className="text-[11px] font-semibold text-emerald-800 dark:text-emerald-300">
-                Pengaruh Mediasi Kausalitas
-              </span>
-              <div className="text-2xl font-bold font-mono text-slate-900 dark:text-slate-100">
+            <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xs space-y-1.5">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
+                  Kunci Percaya Diri
+                </span>
+                <Sparkles className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+              </div>
+              <div className="text-2xl font-extrabold font-mono text-slate-900 dark:text-slate-100">
                 {cohort.mediation.mediationPct}%
               </div>
-              <p className="text-xs text-slate-500 leading-snug">
-                Rasa percaya diri mengalir melalui perantara ketahanan konsentrasi dan regulasi diri santri.
+              <p className="text-xs text-slate-600 dark:text-slate-400 leading-snug">
+                Sebagian besar rasa percaya diri santri terbentuk saat mereka mampu fokus belajar dan mengendalikan diri.
               </p>
             </div>
 
-            <div className="p-4 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 space-y-1">
-              <span className="text-[11px] font-semibold text-emerald-800 dark:text-emerald-300">
-                Pengungkit Tertinggi
-              </span>
-              <div className="text-2xl font-bold font-mono text-slate-900 dark:text-slate-100">
-                r = 0,771
+            <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xs space-y-1.5">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-blue-700 dark:text-blue-400">
+                  Kebiasaan Paling Berpengaruh
+                </span>
+                <TrendingUp className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
               </div>
-              <p className="text-xs text-slate-500 leading-snug">
-                Adab bermasyarakat dan kebiasaan membaca menjadi faktor paling kuat mendorong keberanian bicara.
+              <div className="text-2xl font-extrabold font-mono text-slate-900 dark:text-slate-100 flex items-baseline gap-2">
+                <span>r = 0,771</span>
+                <span className="text-[10px] font-sans font-semibold text-blue-600 dark:text-blue-400">Hubungan Sangat Kuat</span>
+              </div>
+              <p className="text-xs text-slate-600 dark:text-slate-400 leading-snug">
+                Santri yang gemar membaca buku dan ramah bergaul terbukti paling berani tampil dan berbicara di forum umum.
               </p>
             </div>
 
-            <div className="p-4 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 space-y-1">
-              <span className="text-[11px] font-semibold text-rose-700 dark:text-rose-400">
-                Hambatan Utama
-              </span>
-              <div className="text-2xl font-bold font-mono text-slate-900 dark:text-slate-100">
+            <div className="p-4 rounded-xl border border-rose-200/80 dark:border-rose-900/50 bg-rose-50/20 dark:bg-rose-950/10 shadow-xs space-y-1.5">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-rose-700 dark:text-rose-400">
+                  Tantangan Terbesar
+                </span>
+                <AlertCircle className="h-3.5 w-3.5 text-rose-600 dark:text-rose-400" />
+              </div>
+              <div className="text-2xl font-extrabold font-mono text-rose-600 dark:text-rose-400">
                 {cohort.dimScores[1]}%
               </div>
-              <p className="text-xs text-slate-500 leading-snug">
-                Kemampuan menepis gangguan suara dan obrolan sekamar tercatat sebagai skor paling rendah.
+              <p className="text-xs text-slate-600 dark:text-slate-400 leading-snug">
+                Santri paling sering kesulitan menahan godaan mengobrol dan suara bising saat belajar malam di asrama.
               </p>
             </div>
 
-            <div className="p-4 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 space-y-1">
-              <span className="text-[11px] font-semibold text-emerald-800 dark:text-emerald-300">
-                Indeks Karakter IKV
-              </span>
-              <div className="text-2xl font-bold font-mono text-slate-900 dark:text-slate-100">
-                {cohort.ikv}%
+            <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xs space-y-1.5">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                  Nilai Rata-Rata Karakter
+                </span>
+                <ShieldCheck className="h-3.5 w-3.5 text-slate-600 dark:text-slate-400" />
               </div>
-              <p className="text-xs text-slate-500 leading-snug">
-                Rata-rata mutu pembiasaan angkatan tergolong berkategori kondusif dan berkarakter baik.
+              <div className="text-2xl font-extrabold font-mono text-slate-900 dark:text-slate-100 flex items-baseline gap-2">
+                <span>{cohort.ikv}%</span>
+                <span className="text-[10px] font-sans font-semibold text-emerald-600 dark:text-emerald-400">Kategori Baik</span>
+              </div>
+              <p className="text-xs text-slate-600 dark:text-slate-400 leading-snug">
+                Secara umum, kedisiplinan dan kebiasaan harian santri sudah berjalan tertib, sehat, dan konsisten.
               </p>
             </div>
           </div>
