@@ -1015,33 +1015,57 @@ export default function PublicResearchReportPage() {
                 </select>
               </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 font-mono text-[11px] shrink-0">
-                <div className="bg-white/95 dark:bg-slate-900/95 px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 shadow-2xs">
-                  <span className="text-slate-500 block text-[10px]">Percaya Diri</span>
-                  <div className="flex items-baseline justify-between gap-1">
-                    <span className="font-bold text-slate-800 dark:text-slate-200">{cohort.avgConfidence}% vs {compareCohort.avgConfidence}%</span>
-                    <span className={`font-bold ${compareDeltas.deltaConfidence >= 0 ? "text-emerald-600" : "text-rose-600"}`}>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 w-full md:w-auto shrink-0">
+                <div className="bg-white/95 dark:bg-slate-900/95 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs space-y-1">
+                  <div className="flex items-center justify-between text-[10px] text-slate-500 font-semibold uppercase tracking-wider">
+                    <span>Percaya Diri</span>
+                    <span className={`font-black font-stat px-1.5 py-0.5 rounded tabular-nums text-[11px] ${compareDeltas.deltaConfidence >= 0 ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300" : "bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300"}`}>
                       {compareDeltas.deltaConfidence >= 0 ? `+${compareDeltas.deltaConfidence}%` : `${compareDeltas.deltaConfidence}%`}
                     </span>
                   </div>
-                </div>
-
-                <div className="bg-white/95 dark:bg-slate-900/95 px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 shadow-2xs">
-                  <span className="text-slate-500 block text-[10px]">Fokus Belajar</span>
-                  <div className="flex items-baseline justify-between gap-1">
-                    <span className="font-bold text-slate-800 dark:text-slate-200">{cohort.avgFocus}% vs {compareCohort.avgFocus}%</span>
-                    <span className={`font-bold ${compareDeltas.deltaFocus >= 0 ? "text-emerald-600" : "text-rose-600"}`}>
-                      {compareDeltas.deltaFocus >= 0 ? `+${compareDeltas.deltaFocus}%` : `${compareDeltas.deltaFocus}%`}
+                  <div className="flex items-baseline gap-1.5 font-stat">
+                    <span className="font-black text-sm text-slate-900 dark:text-slate-100 tabular-nums">
+                      {cohort.avgConfidence}%
+                    </span>
+                    <span className="text-[10px] font-bold text-slate-400 uppercase">vs</span>
+                    <span className="font-black text-sm text-slate-600 dark:text-slate-400 tabular-nums">
+                      {compareCohort.avgConfidence}%
                     </span>
                   </div>
                 </div>
 
-                <div className="bg-white/95 dark:bg-slate-900/95 px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 shadow-2xs col-span-2 sm:col-span-1">
-                  <span className="text-slate-500 block text-[10px]">The Anchored Leader</span>
-                  <div className="flex items-baseline justify-between gap-1">
-                    <span className="font-bold text-slate-800 dark:text-slate-200">{compareDeltas.leaderPctA}% vs {compareDeltas.leaderPctB}%</span>
-                    <span className={`font-bold ${compareDeltas.deltaLeader >= 0 ? "text-emerald-600" : "text-rose-600"}`}>
+                <div className="bg-white/95 dark:bg-slate-900/95 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs space-y-1">
+                  <div className="flex items-center justify-between text-[10px] text-slate-500 font-semibold uppercase tracking-wider">
+                    <span>Fokus Belajar</span>
+                    <span className={`font-black font-stat px-1.5 py-0.5 rounded tabular-nums text-[11px] ${compareDeltas.deltaFocus >= 0 ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300" : "bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300"}`}>
+                      {compareDeltas.deltaFocus >= 0 ? `+${compareDeltas.deltaFocus}%` : `${compareDeltas.deltaFocus}%`}
+                    </span>
+                  </div>
+                  <div className="flex items-baseline gap-1.5 font-stat">
+                    <span className="font-black text-sm text-slate-900 dark:text-slate-100 tabular-nums">
+                      {cohort.avgFocus}%
+                    </span>
+                    <span className="text-[10px] font-bold text-slate-400 uppercase">vs</span>
+                    <span className="font-black text-sm text-slate-600 dark:text-slate-400 tabular-nums">
+                      {compareCohort.avgFocus}%
+                    </span>
+                  </div>
+                </div>
+
+                <div className="bg-white/95 dark:bg-slate-900/95 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs space-y-1 col-span-1">
+                  <div className="flex items-center justify-between text-[10px] text-slate-500 font-semibold uppercase tracking-wider">
+                    <span>The Anchored Leader</span>
+                    <span className={`font-black font-stat px-1.5 py-0.5 rounded tabular-nums text-[11px] ${compareDeltas.deltaLeader >= 0 ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300" : "bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300"}`}>
                       {compareDeltas.deltaLeader >= 0 ? `+${compareDeltas.deltaLeader}%` : `${compareDeltas.deltaLeader}%`}
+                    </span>
+                  </div>
+                  <div className="flex items-baseline gap-1.5 font-stat">
+                    <span className="font-black text-sm text-slate-900 dark:text-slate-100 tabular-nums">
+                      {compareDeltas.leaderPctA}%
+                    </span>
+                    <span className="text-[10px] font-bold text-slate-400 uppercase">vs</span>
+                    <span className="font-black text-sm text-slate-600 dark:text-slate-400 tabular-nums">
+                      {compareDeltas.leaderPctB}%
                     </span>
                   </div>
                 </div>
@@ -1494,16 +1518,26 @@ export default function PublicResearchReportPage() {
                       </div>
 
                       <div>
-                        <div className="flex items-baseline gap-2">
-                          <span className="text-2xl sm:text-3xl font-extrabold tracking-tight text-teal-600 dark:text-teal-400 tabular-nums">
-                            75,7%
-                          </span>
-                          <span className="text-xs font-semibold text-slate-400">vs</span>
-                          <span className="text-xl sm:text-2xl font-bold text-slate-500 dark:text-slate-400 tabular-nums">
-                            73,3%
-                          </span>
+                        <div className="flex flex-wrap items-baseline gap-2.5">
+                          <div className="flex items-baseline gap-1.5">
+                            <span className="text-2xl sm:text-3xl font-black font-stat tracking-tight text-teal-600 dark:text-teal-400 tabular-nums">
+                              75,7%
+                            </span>
+                            <span className="text-[10px] font-bold text-teal-700 dark:text-teal-300 uppercase tracking-wider bg-teal-100/80 dark:bg-teal-900/50 px-1.5 py-0.5 rounded">
+                              Akhwat
+                            </span>
+                          </div>
+                          <span className="text-xs font-bold uppercase tracking-wider text-slate-400">vs</span>
+                          <div className="flex items-baseline gap-1.5">
+                            <span className="text-2xl sm:text-3xl font-black font-stat tracking-tight text-slate-700 dark:text-slate-200 tabular-nums">
+                              73,3%
+                            </span>
+                            <span className="text-[10px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded">
+                              Ikhwan
+                            </span>
+                          </div>
                         </div>
-                        <h4 className="text-sm sm:text-base font-bold text-slate-900 dark:text-slate-100 mt-1 leading-snug">
+                        <h4 className="text-sm sm:text-base font-bold text-slate-900 dark:text-slate-100 mt-1.5 leading-snug">
                           Keteraturan Habituasi Santriwati Akhwat
                         </h4>
                         <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
@@ -1708,12 +1742,12 @@ export default function PublicResearchReportPage() {
                                 <span className="font-mono text-emerald-700 dark:text-emerald-400 font-bold mr-1.5">{row.code}</span>
                                 <span>{row.name}</span>
                               </td>
-                              <td className="py-2.5 px-3 font-mono font-bold text-emerald-700 dark:text-emerald-400">
+                              <td className="py-2.5 px-3 font-stat font-bold text-emerald-700 dark:text-emerald-400 whitespace-nowrap tabular-nums">
                                 {row.mean}
                               </td>
-                              <td className="py-2.5 px-3 font-mono">{row.sd}</td>
-                              <td className="py-2.5 px-3 font-mono">{row.median}</td>
-                              <td className="py-2.5 px-3 font-mono text-slate-500">{row.range}</td>
+                              <td className="py-2.5 px-3 font-stat whitespace-nowrap tabular-nums">{row.sd}</td>
+                              <td className="py-2.5 px-3 font-stat whitespace-nowrap tabular-nums">{row.median}</td>
+                              <td className="py-2.5 px-3 font-stat text-slate-500 whitespace-nowrap tabular-nums">{row.range}</td>
                               <td className="py-2.5 px-3">
                                 <span
                                   className={`px-2 py-0.5 rounded text-[10px] font-semibold ${
@@ -1742,12 +1776,12 @@ export default function PublicResearchReportPage() {
                               <span className="font-mono text-blue-600 dark:text-blue-400 mr-1.5">{DESCRIPTIVE_DEPENDENT.code}:</span>
                               <span>{DESCRIPTIVE_DEPENDENT.name}</span>
                             </td>
-                            <td className="py-3 px-3 font-mono text-emerald-700 dark:text-emerald-300 text-sm">
+                            <td className="py-3 px-3 font-stat font-bold text-emerald-700 dark:text-emerald-300 text-sm whitespace-nowrap tabular-nums">
                               {DESCRIPTIVE_DEPENDENT.mean}
                             </td>
-                            <td className="py-3 px-3 font-mono">{DESCRIPTIVE_DEPENDENT.sd}</td>
-                            <td className="py-3 px-3 font-mono">{DESCRIPTIVE_DEPENDENT.median}</td>
-                            <td className="py-3 px-3 font-mono text-slate-500">{DESCRIPTIVE_DEPENDENT.range}</td>
+                            <td className="py-3 px-3 font-stat whitespace-nowrap tabular-nums">{DESCRIPTIVE_DEPENDENT.sd}</td>
+                            <td className="py-3 px-3 font-stat whitespace-nowrap tabular-nums">{DESCRIPTIVE_DEPENDENT.median}</td>
+                            <td className="py-3 px-3 font-stat text-slate-500 whitespace-nowrap tabular-nums">{DESCRIPTIVE_DEPENDENT.range}</td>
                             <td className="py-3 px-3">
                               <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-200/80 text-emerald-900 dark:bg-emerald-900 dark:text-emerald-200">
                                 {DESCRIPTIVE_DEPENDENT.status}
@@ -1874,12 +1908,12 @@ export default function PublicResearchReportPage() {
                           </div>
                           <div className="flex items-baseline gap-2 mt-0.5">
                             <span
-                              className="font-mono text-xs font-extrabold"
+                              className="font-stat text-xs font-black tabular-nums"
                               style={{ color: item.color }}
                             >
                               r = {item.r.toFixed(3)}
                             </span>
-                            <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
+                            <span className="text-[11px] text-slate-500 dark:text-slate-400 font-bold font-stat tabular-nums">
                               (R²: {item.r2}%)
                             </span>
                           </div>
@@ -1894,11 +1928,12 @@ export default function PublicResearchReportPage() {
                 {/* GRAFIK BAR HORIZONTAL DENGAN WARNA BERVARIASI & FONT ELEGAN */}
                 <div
                   ref={chartLeverageView.ref}
-                  className={`h-96 sm:h-[430px] w-full transition-all duration-700 ${
+                  className={`h-96 sm:h-[430px] w-full overflow-x-auto transition-all duration-700 ${
                     chartLeverageView.isInView ? "animate-chart-fade opacity-100" : "opacity-0 translate-y-4"
                   }`}
                 >
-                  <ResponsiveContainer width="100%" height="100%">
+                  <div className="h-full min-w-[500px]">
+                    <ResponsiveContainer width="100%" height="100%">
                     <BarChart
                       key={`leverage-chart-${selectedCohort}-${chartLeverageView.isInView ? "in" : "out"}`}
                       data={leverageChartData}
@@ -2069,6 +2104,7 @@ export default function PublicResearchReportPage() {
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
+              </div>
 
                 {/* CALLOUT BOX DIAGNOSA DAYA UNGKIT */}
                 <div className="p-4 sm:p-5 rounded-xl bg-gradient-to-r from-emerald-50/70 via-teal-50/50 to-blue-50/50 dark:from-emerald-950/30 dark:via-teal-950/20 dark:to-blue-950/30 border border-emerald-200/80 dark:border-emerald-800/60 text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed space-y-2">
