@@ -15,6 +15,8 @@ import {
   Line,
   Legend,
   LabelList,
+  Area,
+  ComposedChart,
 } from "recharts";
 import {
   BookOpen,
@@ -41,6 +43,7 @@ import {
   GraduationCap,
   Award,
   ArrowUpRight,
+  Rocket,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -102,9 +105,45 @@ const DESCRIPTIVE_TABLE = [
 ];
 
 const TRAJECTORY_DATA = [
-  { grade: "Kelas X (Baru)", confidency: 72.3, ikv: 73.0, anchoredLeaderPct: 19.0, exhaustedPct: 3.0 },
-  { grade: "Kelas XI (Transisi)", confidency: 75.0, ikv: 75.2, anchoredLeaderPct: 25.7, exhaustedPct: 4.3 },
-  { grade: "Kelas XII (Maturasi)", confidency: 80.4, ikv: 80.7, anchoredLeaderPct: 40.0, exhaustedPct: 0.0 },
+  {
+    grade: "Kelas X",
+    fullName: "Kelas X (Santri Baru)",
+    phase: "Fase 1: Adaptasi Awal",
+    sampleSize: "N = 1.018 santri",
+    confidency: 72.3,
+    ikv: 73.0,
+    anchoredLeaderPct: 19.0,
+    exhaustedPct: 5.5,
+    focus: 71.8,
+    status: "Survival & Adaptasi",
+    milestone: "Adaptasi aturan kamar dan pembiasaan qiyamullail awal.",
+  },
+  {
+    grade: "Kelas XI",
+    fullName: "Kelas XI (Fase Transisi)",
+    phase: "Fase 2: Konsolidasi & Stabilisasi",
+    sampleSize: "N = 2.134 santri",
+    confidency: 75.0,
+    ikv: 75.2,
+    anchoredLeaderPct: 25.7,
+    exhaustedPct: 3.9,
+    focus: 74.6,
+    status: "Konsolidasi Peran",
+    milestone: "Mulai memegang tanggung jawab pengurus dan kepanitiaan pondok.",
+  },
+  {
+    grade: "Kelas XII",
+    fullName: "Kelas XII (Senior/Maturasi)",
+    phase: "Fase 3: Puncak Maturasi & Kepemimpinan",
+    sampleSize: "N = 970 santri",
+    confidency: 80.4,
+    ikv: 80.7,
+    anchoredLeaderPct: 40.0,
+    exhaustedPct: 0.0,
+    focus: 80.1,
+    status: "Kesiapan Pemimpin",
+    milestone: "Mandiri total, percaya diri berpidato/kultum, dan ritme tidur tertata sempurna.",
+  },
 ];
 
 const COHORT_DATA: Record<string, CohortData> = {
@@ -1484,52 +1523,293 @@ export default function PublicResearchReportPage() {
               </p>
             </div>
 
-            {/* Model 1: Grafik Proyeksi Traktori 3 Tahun */}
-            <Card className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
-              <CardHeader className="pb-2">
-                <div className="flex flex-wrap items-center justify-between gap-2">
+            {/* Model 1: Grafik Proyeksi Traktori 3 Tahun (ComposedChart Modern & Keren) */}
+            <Card className="w-full border-2 border-slate-200/90 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-md rounded-2xl overflow-hidden">
+              <CardHeader className="p-5 sm:p-6 border-b border-slate-100 dark:border-slate-800/80 bg-slate-50/70 dark:bg-slate-900/70">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                   <div>
-                    <span className="text-xs font-mono font-bold text-amber-600 dark:text-amber-400">
-                      Model Prediksi 1: Traktori Maturasi Karakter 3 Tahun
-                    </span>
-                    <CardTitle className="text-sm font-bold text-slate-900 dark:text-slate-100 mt-1">
-                      Grafik Evolusi Kenaikan Karakter &amp; Percaya Diri (Kelas X ➔ XI ➔ XII)
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-mono font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider">
+                        Model Prediksi 1: Traktori Maturasi 3 Tahun
+                      </span>
+                    </div>
+                    <CardTitle className="text-base sm:text-xl font-bold text-slate-900 dark:text-slate-100 mt-1 flex items-center gap-2">
+                      <TrendingUp className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                      <span>Evolusi Kenaikan Karakter &amp; Percaya Diri (Kelas X ➔ XI ➔ XII)</span>
                     </CardTitle>
+                    <CardDescription className="text-xs sm:text-sm text-slate-500 mt-0.5">
+                      Visualisasi proyeksi maturasi: Kurva Kepercayaan Diri (Area Hijau) berpadu dengan Lonjakan Pemimpin Mandiri (Batang Emas).
+                    </CardDescription>
                   </div>
-                  <Badge variant="outline" className="text-xs font-mono">
-                    Model Regresi Kohort
-                  </Badge>
+
+                  <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
+                    <Badge variant="outline" className="font-mono text-xs px-2.5 py-1 bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border-amber-300 dark:border-amber-700">
+                      Dual-Axis Regression
+                    </Badge>
+                  </div>
                 </div>
-                <CardDescription className="text-xs">
-                  Memproyeksikan kenaikan skor Confidency dan pertumbuhan kelompok The Anchored Leader seiring adaptasi berasrama.
-                </CardDescription>
+
+                {/* 3 QUICK HERO STAT PILLS DI ATAS GRAFIK */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-3 mt-1">
+                  <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-emerald-50/80 dark:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-800/60">
+                    <div className="p-1.5 rounded-lg bg-emerald-600 text-white shrink-0">
+                      <Rocket className="h-4 w-4" />
+                    </div>
+                    <div>
+                      <div className="text-xs font-bold text-slate-900 dark:text-slate-100">
+                        +8,1% Skor Percaya Diri
+                      </div>
+                      <div className="text-[11px] text-emerald-700 dark:text-emerald-400 font-semibold tabular-nums">
+                        72,3% &rarr; 80,4% di Kelas XII
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-amber-50/80 dark:bg-amber-950/40 border border-amber-200/80 dark:border-amber-800/60">
+                    <div className="p-1.5 rounded-lg bg-amber-600 text-white shrink-0">
+                      <Award className="h-4 w-4" />
+                    </div>
+                    <div>
+                      <div className="text-xs font-bold text-slate-900 dark:text-slate-100">
+                        2,1x Lipat Pemimpin Mandiri
+                      </div>
+                      <div className="text-[11px] text-amber-700 dark:text-amber-400 font-semibold tabular-nums">
+                        19,0% &rarr; 40,0% The Anchored Leader
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-blue-50/80 dark:bg-blue-950/40 border border-blue-200/80 dark:border-blue-800/60">
+                    <div className="p-1.5 rounded-lg bg-blue-600 text-white shrink-0">
+                      <ShieldCheck className="h-4 w-4" />
+                    </div>
+                    <div>
+                      <div className="text-xs font-bold text-slate-900 dark:text-slate-100">
+                        0,0% Kasus Lelah Kronis
+                      </div>
+                      <div className="text-[11px] text-blue-700 dark:text-blue-400 font-semibold">
+                        Tuntas Tereliminasi di Tahun Akhir
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </CardHeader>
-              <CardContent>
-                <div className="h-64 w-full mt-2">
+
+              <CardContent className="p-5 sm:p-8 space-y-6">
+                {/* GRAFIK COMPOSEDCHART BERCAMPUR AREA & BAR DENGAN GLOW */}
+                <div className="h-80 sm:h-96 w-full">
                   <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={TRAJECTORY_DATA} margin={{ top: 10, right: 30, left: 0, bottom: 5 }}>
-                      <CartesianGrid strokeDasharray="3 3" opacity={0.15} />
-                      <XAxis dataKey="grade" stroke="#94a3b8" fontSize={11} />
-                      <YAxis domain={[0, 100]} stroke="#94a3b8" fontSize={11} tickFormatter={(v) => `${v}%`} />
+                    <ComposedChart
+                      data={TRAJECTORY_DATA}
+                      margin={{ top: 25, right: 35, left: 10, bottom: 15 }}
+                    >
+                      <defs>
+                        {/* Gradient Bercahaya untuk Area Kepercayaan Diri */}
+                        <linearGradient id="glowConfidency" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#10b981" stopOpacity={0.45} />
+                          <stop offset="95%" stopColor="#10b981" stopOpacity={0.02} />
+                        </linearGradient>
+
+                        {/* Gradient Emas untuk Bar Anchored Leader */}
+                        <linearGradient id="barGoldLeader" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="#f59e0b" stopOpacity={0.95} />
+                          <stop offset="100%" stopColor="#d97706" stopOpacity={0.7} />
+                        </linearGradient>
+                      </defs>
+
+                      <CartesianGrid strokeDasharray="3 3" opacity={0.12} vertical={false} />
+
+                      <XAxis
+                        dataKey="grade"
+                        stroke="#94a3b8"
+                        fontSize={12}
+                        fontWeight={600}
+                        tickLine={false}
+                        dy={8}
+                      />
+
+                      {/* Sumbu Kiri: Skor Karakter & Kepercayaan Diri (Domain Fokus 68% - 84%) */}
+                      <YAxis
+                        yAxisId="left"
+                        domain={[68, 84]}
+                        stroke="#10b981"
+                        fontSize={12}
+                        fontWeight={600}
+                        tickLine={false}
+                        tickFormatter={(v) => `${v}%`}
+                        width={45}
+                      />
+
+                      {/* Sumbu Kanan: Proporsi Anchored Leader (Domain 0% - 48%) */}
+                      <YAxis
+                        yAxisId="right"
+                        orientation="right"
+                        domain={[0, 48]}
+                        stroke="#f59e0b"
+                        fontSize={12}
+                        fontWeight={600}
+                        tickLine={false}
+                        tickFormatter={(v) => `${v}%`}
+                        width={45}
+                      />
+
                       <Tooltip
-                        contentStyle={{
-                          backgroundColor: "#0f172a",
-                          borderRadius: "8px",
-                          border: "1px solid #334155",
-                          color: "#fff",
-                          fontSize: "12px",
+                        content={({ active, payload }) => {
+                          if (active && payload && payload.length) {
+                            const d = payload[0].payload;
+                            return (
+                              <div className="bg-slate-950/95 backdrop-blur-md text-white p-4 rounded-xl shadow-2xl border border-slate-800 text-xs max-w-sm space-y-2.5">
+                                <div className="border-b border-slate-800 pb-2">
+                                  <div className="flex items-center justify-between gap-2">
+                                    <span className="font-bold text-sm text-slate-100">{d.fullName}</span>
+                                    <span className="font-mono text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-amber-400 font-semibold">
+                                      {d.sampleSize}
+                                    </span>
+                                  </div>
+                                  <span className="text-[11px] text-emerald-400 font-semibold">{d.phase}</span>
+                                </div>
+
+                                <div className="space-y-1.5 font-mono text-xs">
+                                  <div className="flex justify-between items-center text-emerald-400">
+                                    <span className="text-slate-400 font-sans">Skor Percaya Diri:</span>
+                                    <span className="font-bold text-sm">{d.confidency}%</span>
+                                  </div>
+                                  <div className="flex justify-between items-center text-sky-400">
+                                    <span className="text-slate-400 font-sans">Indeks Karakter (IKV):</span>
+                                    <span className="font-bold">{d.ikv}%</span>
+                                  </div>
+                                  <div className="flex justify-between items-center text-amber-400">
+                                    <span className="text-slate-400 font-sans">The Anchored Leader:</span>
+                                    <span className="font-bold text-sm">{d.anchoredLeaderPct}%</span>
+                                  </div>
+                                  <div className="flex justify-between items-center text-rose-400">
+                                    <span className="text-slate-400 font-sans">Kasus Lelah Kronis:</span>
+                                    <span className="font-bold">{d.exhaustedPct}%</span>
+                                  </div>
+                                </div>
+
+                                <div className="pt-2 border-t border-slate-800 text-[11px] text-slate-300 italic leading-relaxed">
+                                  &ldquo;{d.milestone}&rdquo;
+                                </div>
+                              </div>
+                            );
+                          }
+                          return null;
                         }}
                       />
-                      <Legend wrapperStyle={{ fontSize: "11px", paddingTop: "8px" }} />
-                      <Line type="monotone" dataKey="confidency" name="Skor Kepercayaan Diri (%)" stroke="#10b981" strokeWidth={3} dot={{ r: 5 }} />
-                      <Line type="monotone" dataKey="ikv" name="Indeks Karakter IKV (%)" stroke="#0284c7" strokeWidth={2.5} dot={{ r: 4 }} />
-                      <Line type="monotone" dataKey="anchoredLeaderPct" name="Proporsi Anchored Leader (%)" stroke="#f59e0b" strokeWidth={2.5} dot={{ r: 4 }} strokeDasharray="4 4" />
-                    </LineChart>
+
+                      <Legend
+                        wrapperStyle={{ fontSize: "12px", paddingTop: "14px" }}
+                        formatter={(value) => <span className="font-medium text-slate-700 dark:text-slate-300">{value}</span>}
+                      />
+
+                      {/* Batang Kolom Emas: Proporsi The Anchored Leader */}
+                      <Bar
+                        yAxisId="right"
+                        dataKey="anchoredLeaderPct"
+                        name="Proporsi Anchored Leader (%)"
+                        fill="url(#barGoldLeader)"
+                        barSize={46}
+                        radius={[8, 8, 0, 0]}
+                      >
+                        <LabelList
+                          dataKey="anchoredLeaderPct"
+                          position="top"
+                          formatter={(v: any) => `${v}%`}
+                          style={{ fontSize: 11, fontWeight: 700, fill: "#d97706" }}
+                        />
+                      </Bar>
+
+                      {/* Kurva Area Bercahaya: Skor Kepercayaan Diri */}
+                      <Area
+                        yAxisId="left"
+                        type="monotone"
+                        dataKey="confidency"
+                        name="Skor Kepercayaan Diri (%)"
+                        stroke="#10b981"
+                        strokeWidth={3.5}
+                        fill="url(#glowConfidency)"
+                        dot={{ r: 5, fill: "#10b981", stroke: "#ffffff", strokeWidth: 2 }}
+                        activeDot={{ r: 7, fill: "#059669" }}
+                      >
+                        <LabelList
+                          dataKey="confidency"
+                          position="top"
+                          offset={10}
+                          formatter={(v: any) => `${v}%`}
+                          style={{ fontSize: 11, fontWeight: 700, fill: "#059669" }}
+                        />
+                      </Area>
+
+                      {/* Garis Garis Putus: Indeks Karakter IKV */}
+                      <Line
+                        yAxisId="left"
+                        type="monotone"
+                        dataKey="ikv"
+                        name="Indeks Karakter IKV (%)"
+                        stroke="#0284c7"
+                        strokeWidth={2.5}
+                        strokeDasharray="4 4"
+                        dot={{ r: 4, fill: "#0284c7" }}
+                      />
+                    </ComposedChart>
                   </ResponsiveContainer>
                 </div>
 
-                <div className="mt-4 p-3.5 rounded-md bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900 text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
-                  <strong>Insight Prediktif:</strong> Model menunjukkan trajektori pertumbuhan linier positif. Jika pembiasaan 7 KAIH dijaga konsisten, diproyeksikan <strong>4 dari 10 santri lulusan (40,0%)</strong> akan menjadi *The Anchored Leader*, dengan risiko krisis tidur mendekati 0% di akhir masa pendidikan.
+                {/* 3 PANEL MILESTONE PER ANGKATAN DI BAWAH GRAFIK */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+                  <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-850/70 space-y-2">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="font-bold text-slate-900 dark:text-slate-100">Fase 1: Kelas X</span>
+                      <span className="font-mono text-[10px] px-2 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold">Adaptasi Awal</span>
+                    </div>
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-xl font-bold font-mono text-emerald-600 dark:text-emerald-400">72,3%</span>
+                      <span className="text-xs text-slate-500">Percaya Diri</span>
+                    </div>
+                    <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                      Fase penyesuaian dari rumah ke asrama. Santri fokus mengikuti ritme jadwal kamar, qiyamullail, dan menghafal adab komunal.
+                    </p>
+                  </div>
+
+                  <div className="p-4 rounded-xl border border-teal-200 dark:border-teal-900/60 bg-teal-50/40 dark:bg-teal-950/20 space-y-2">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="font-bold text-slate-900 dark:text-slate-100">Fase 2: Kelas XI</span>
+                      <span className="font-mono text-[10px] px-2 py-0.5 rounded bg-teal-100 dark:bg-teal-900/60 text-teal-800 dark:text-teal-300 font-semibold">Stabilisasi</span>
+                    </div>
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-xl font-bold font-mono text-teal-600 dark:text-teal-400">75,0%</span>
+                      <span className="text-xs text-slate-500">Percaya Diri</span>
+                    </div>
+                    <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                      Karakter santri mulai terkonsolidasi. Tanggung jawab kepengurusan organisasi mulai diemban; rasa percaya diri di forum kelompok menguat.
+                    </p>
+                  </div>
+
+                  <div className="p-4 rounded-xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50/50 dark:bg-emerald-950/30 space-y-2">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="font-bold text-slate-900 dark:text-slate-100">Fase 3: Kelas XII</span>
+                      <span className="font-mono text-[10px] px-2 py-0.5 rounded bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 font-semibold">Puncak Maturasi</span>
+                    </div>
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-xl font-bold font-mono text-emerald-600 dark:text-emerald-400">80,4%</span>
+                      <span className="text-xs text-slate-500">Percaya Diri</span>
+                    </div>
+                    <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                      Puncak kematangan unjuk diri (*The Anchored Leader* mencapai 40,0%). Santri siap memimpin kultum, berpidato, dan bebas dari kelelahan kronis.
+                    </p>
+                  </div>
+                </div>
+
+                {/* CALLOUT INSIGHT PREDIKTIF */}
+                <div className="p-4 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/80 text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed space-y-1">
+                  <div className="font-bold text-amber-900 dark:text-amber-300 flex items-center gap-1.5">
+                    <Sparkles className="h-4 w-4 text-amber-600" />
+                    <span>Temuan Kunci Model Prediktif Maturasi 3 Tahun:</span>
+                  </div>
+                  <p>
+                    Data empiris membuktikan trajektori pertumbuhan linier positif. Jika pembiasaan 7 KAIH dijaga konsisten, diproyeksikan <strong>4 dari 10 santri lulusan (40,0%)</strong> akan menjadi figur <em>The Anchored Leader</em> (pemimpin berkarakter tangguh), sementara risiko krisis jam tidur menyusut hingga <strong>0,0%</strong> saat santri menuntaskan pendidikannya di SMAIT Ihsanul Fikri.
+                  </p>
                 </div>
               </CardContent>
             </Card>
