@@ -84,13 +84,83 @@ interface CohortData {
 }
 
 const KAIH_METADATA = [
-  { id: 1, name: "Gemar Membaca & Riset", short: "Membaca", tier: "Tier 1 (Bobot 3)", color: "#059669", icon: BookOpen },
-  { id: 2, name: "Bermasyarakat & Adab", short: "Bermasyarakat", tier: "Tier 1 (Bobot 3)", color: "#047857", icon: Users },
-  { id: 3, name: "Bangun Pagi & Qiyam", short: "Bangun Pagi", tier: "Tier 2 (Bobot 2)", color: "#0284c7", icon: Clock },
-  { id: 4, name: "Ibadah & Al-Qur'an", short: "Ibadah", tier: "Tier 2 (Bobot 2)", color: "#7c3aed", icon: Sparkles },
-  { id: 5, name: "Olahraga & Kebugaran", short: "Olahraga", tier: "Tier 2 (Bobot 2)", color: "#d97706", icon: HeartPulse },
-  { id: 6, name: "Istirahat & Jam Tidur", short: "Jam Tidur", tier: "Tier 3 (Bobot 1)", color: "#ea580c", icon: Moon },
-  { id: 7, name: "Makan Sehat & Gizi", short: "Makan Sehat", tier: "Tier 3 (Bobot 1)", color: "#0d9488", icon: Flame },
+  {
+    id: 1,
+    name: "Gemar Membaca & Riset",
+    short: "Membaca",
+    tier: "Tier 1 (Bobot 3)",
+    color: "#2563eb",
+    gradId: "grad-membaca",
+    icon: BookOpen,
+    accent: "text-blue-600 dark:text-blue-400",
+    impact: "Membekali santri dengan keluasan kosakata, wawasan literasi, dan nalar berpikir logis saat berargumen.",
+  },
+  {
+    id: 2,
+    name: "Bermasyarakat & Adab",
+    short: "Bermasyarakat",
+    tier: "Tier 1 (Bobot 3)",
+    color: "#059669",
+    gradId: "grad-bermasyarakat",
+    icon: Users,
+    accent: "text-emerald-600 dark:text-emerald-400",
+    impact: "Melatih kepekaan empati komunal, tata krama sosial, dan meniadakan kecemasan berbicara di forum umum.",
+  },
+  {
+    id: 3,
+    name: "Bangun Pagi & Qiyam",
+    short: "Bangun Pagi",
+    tier: "Tier 2 (Bobot 2)",
+    color: "#d97706",
+    gradId: "grad-bangunpagi",
+    icon: Clock,
+    accent: "text-amber-600 dark:text-amber-400",
+    impact: "Membangun kedisiplinan fajar, kesiapan mental menyambut hari, dan ketepatan hadir di halaqah subuh.",
+  },
+  {
+    id: 4,
+    name: "Ibadah & Al-Qur'an",
+    short: "Ibadah",
+    tier: "Tier 2 (Bobot 2)",
+    color: "#0891b2",
+    gradId: "grad-ibadah",
+    icon: Sparkles,
+    accent: "text-cyan-600 dark:text-cyan-400",
+    impact: "Menciptakan rasa aman batin (*spiritual safety*), stabilitas emosional, dan keteguhan akhlak santri.",
+  },
+  {
+    id: 5,
+    name: "Olahraga & Kebugaran",
+    short: "Olahraga",
+    tier: "Tier 2 (Bobot 2)",
+    color: "#ea580c",
+    gradId: "grad-olahraga",
+    icon: HeartPulse,
+    accent: "text-orange-600 dark:text-orange-400",
+    impact: "Memicu hormon endorfin, meningkatkan daya tahan fisik, dan membangun postur tubuh yang tegap tangguh.",
+  },
+  {
+    id: 6,
+    name: "Istirahat & Jam Tidur",
+    short: "Jam Tidur",
+    tier: "Tier 3 (Bobot 1)",
+    color: "#7c3aed",
+    gradId: "grad-jamtidur",
+    icon: Moon,
+    accent: "text-purple-600 dark:text-purple-400",
+    impact: "Menjaga ritme biologis sirkadian otak, mencegah kelelahan kronis (*brain fog*), dan memulihkan energi.",
+  },
+  {
+    id: 7,
+    name: "Makan Sehat & Gizi",
+    short: "Makan Sehat",
+    tier: "Tier 3 (Bobot 1)",
+    color: "#e11d48",
+    gradId: "grad-makansehat",
+    icon: Flame,
+    accent: "text-rose-600 dark:text-rose-400",
+    impact: "Menjaga kestabilan glukosa darah dan stamina metabolik untuk aktivitas belajar dan ibadah padat harian.",
+  },
 ];
 
 const DESCRIPTIVE_TABLE = [
@@ -434,6 +504,10 @@ export default function PublicResearchReportPage() {
       score: cohort.kaihScores[idx],
       tier: k.tier,
       color: k.color,
+      gradId: k.gradId,
+      accent: k.accent,
+      impact: k.impact,
+      icon: k.icon,
     })).sort((a, b) => b.r - a.r);
   }, [cohort]);
 
@@ -1279,49 +1353,251 @@ export default function PublicResearchReportPage() {
               </p>
             </div>
 
-            {/* Sub-Bab 2A: Daya Hubung Korelasi Pearson */}
-            <Card className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
-              <CardHeader className="pb-2">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <CardTitle className="text-sm font-bold">Diagnostik Daya Ungkit (Korelasi Pearson &amp; R²)</CardTitle>
-                  <span className="text-xs font-mono text-slate-500">Nilai r mendekati 1,00 menunjukkan hubungan yang semakin kuat</span>
+            {/* Sub-Bab 2A: Daya Hubung Korelasi Pearson (Warna Bervariasi & Font Elegan) */}
+            <Card className="w-full border-2 border-slate-200/90 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-md rounded-2xl overflow-hidden">
+              <CardHeader className="p-5 sm:p-6 border-b border-slate-100 dark:border-slate-800/80 bg-slate-50/70 dark:bg-slate-900/70">
+                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">
+                        Sub-Bab 2A: Analisis Korelasional &amp; Daya Pengaruh
+                      </span>
+                    </div>
+                    <CardTitle className="text-base sm:text-xl font-bold text-slate-900 dark:text-slate-100 mt-1 flex items-center gap-2">
+                      <Compass className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                      <span>Diagnostik Daya Ungkit (Korelasi Pearson r &amp; Kontribusi R²)</span>
+                    </CardTitle>
+                    <CardDescription className="text-xs sm:text-sm text-slate-500 mt-0.5">
+                      Peringkat kekuatan 7 Kebiasaan Harian (7 KAIH) sebagai motor pengungkit rasa percaya diri santri.
+                    </CardDescription>
+                  </div>
+
+                  <div className="flex items-center gap-2 self-start lg:self-auto px-3 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 text-xs font-semibold text-emerald-800 dark:text-emerald-300">
+                    <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                    <span>Nilai r &ge; 0,70 = Korelasi Sangat Kuat</span>
+                  </div>
+                </div>
+
+                {/* 3 TOP LEVERAGE DRIVERS HIGHLIGHT CHIPS */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-4 mt-1">
+                  {leverageChartData.slice(0, 3).map((item, rank) => {
+                    return (
+                      <div
+                        key={item.name}
+                        className="flex items-center gap-3 p-3 rounded-xl border border-slate-200/90 dark:border-slate-800 bg-white/90 dark:bg-slate-850/90 shadow-xs"
+                      >
+                        <div
+                          className="w-9 h-9 rounded-lg flex items-center justify-center font-extrabold text-xs text-white shrink-0 shadow-sm"
+                          style={{ backgroundColor: item.color }}
+                        >
+                          #{rank + 1}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-bold text-slate-900 dark:text-slate-100 truncate">
+                              {item.fullName}
+                            </span>
+                          </div>
+                          <div className="flex items-baseline gap-2 mt-0.5">
+                            <span
+                              className="font-mono text-xs font-extrabold"
+                              style={{ color: item.color }}
+                            >
+                              r = {item.r.toFixed(3)}
+                            </span>
+                            <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
+                              (R²: {item.r2}%)
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </CardHeader>
-              <CardContent>
-                <div className="h-72 w-full mt-2">
+
+              <CardContent className="p-5 sm:p-7 space-y-6">
+                {/* GRAFIK BAR HORIZONTAL DENGAN WARNA BERVARIASI & FONT ELEGAN */}
+                <div className="h-96 sm:h-[430px] w-full">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart
                       data={leverageChartData}
                       layout="vertical"
-                      margin={{ top: 5, right: 30, left: 85, bottom: 5 }}
+                      margin={{ top: 10, right: 130, left: 95, bottom: 10 }}
+                      barCategoryGap="22%"
                     >
-                      <CartesianGrid strokeDasharray="2 2" opacity={0.15} horizontal={false} />
-                      <XAxis type="number" domain={[0, 1]} tickFormatter={(v) => `r=${v}`} stroke="#94a3b8" fontSize={11} />
-                      <YAxis type="category" dataKey="name" stroke="#94a3b8" fontSize={11} tickLine={false} />
+                      <defs>
+                        {/* Gradasi Tiap Pilar (Vibrant & Elegan) */}
+                        <linearGradient id="grad-bermasyarakat" x1="0" y1="0" x2="1" y2="0">
+                          <stop offset="0%" stopColor="#10b981" />
+                          <stop offset="100%" stopColor="#059669" />
+                        </linearGradient>
+                        <linearGradient id="grad-membaca" x1="0" y1="0" x2="1" y2="0">
+                          <stop offset="0%" stopColor="#3b82f6" />
+                          <stop offset="100%" stopColor="#1d4ed8" />
+                        </linearGradient>
+                        <linearGradient id="grad-olahraga" x1="0" y1="0" x2="1" y2="0">
+                          <stop offset="0%" stopColor="#f59e0b" />
+                          <stop offset="100%" stopColor="#d97706" />
+                        </linearGradient>
+                        <linearGradient id="grad-jamtidur" x1="0" y1="0" x2="1" y2="0">
+                          <stop offset="0%" stopColor="#8b5cf6" />
+                          <stop offset="100%" stopColor="#6d28d9" />
+                        </linearGradient>
+                        <linearGradient id="grad-ibadah" x1="0" y1="0" x2="1" y2="0">
+                          <stop offset="0%" stopColor="#06b6d4" />
+                          <stop offset="100%" stopColor="#0891b2" />
+                        </linearGradient>
+                        <linearGradient id="grad-makansehat" x1="0" y1="0" x2="1" y2="0">
+                          <stop offset="0%" stopColor="#f43f5e" />
+                          <stop offset="100%" stopColor="#be123c" />
+                        </linearGradient>
+                        <linearGradient id="grad-bangunpagi" x1="0" y1="0" x2="1" y2="0">
+                          <stop offset="0%" stopColor="#eab308" />
+                          <stop offset="100%" stopColor="#ca8a04" />
+                        </linearGradient>
+                      </defs>
+
+                      <CartesianGrid strokeDasharray="3 3" opacity={0.12} horizontal={false} />
+
+                      <XAxis
+                        type="number"
+                        domain={[0, 1]}
+                        ticks={[0, 0.25, 0.5, 0.75, 1.0]}
+                        tickFormatter={(v) => `r = ${v.toFixed(2)}`}
+                        stroke="#94a3b8"
+                        fontSize={12}
+                        fontWeight={600}
+                        tickLine={false}
+                      />
+
+                      <YAxis
+                        type="category"
+                        dataKey="name"
+                        stroke="#94a3b8"
+                        tick={(props: any) => {
+                          const { x, y, payload } = props;
+                          return (
+                            <g transform={`translate(${x},${y})`}>
+                              <text
+                                x={-10}
+                                y={4}
+                                textAnchor="end"
+                                className="fill-slate-800 dark:fill-slate-200 text-xs font-semibold"
+                                style={{ fontSize: 12.5, fontWeight: 600 }}
+                              >
+                                {payload.value}
+                              </text>
+                            </g>
+                          );
+                        }}
+                        tickLine={false}
+                        axisLine={{ stroke: "#cbd5e1", strokeWidth: 1.5 }}
+                        width={95}
+                      />
+
                       <Tooltip
-                        formatter={(val: any, name: any, item: any) => [
-                          `r = ${val} (R² = ${item.payload.r2}%)`,
-                          item.payload.fullName,
-                        ]}
-                        contentStyle={{
-                          backgroundColor: "#0f172a",
-                          borderRadius: "8px",
-                          border: "1px solid #334155",
-                          color: "#fff",
-                          fontSize: "12px",
+                        cursor={{ fill: "rgba(148, 163, 184, 0.08)" }}
+                        content={({ active, payload }) => {
+                          if (active && payload && payload.length) {
+                            const d = payload[0].payload;
+                            return (
+                              <div className="bg-slate-950/95 backdrop-blur-md text-white p-4 rounded-xl shadow-2xl border border-slate-800 text-xs max-w-sm space-y-2.5">
+                                <div className="border-b border-slate-800 pb-2">
+                                  <div className="flex items-center justify-between gap-2">
+                                    <span className="font-bold text-sm text-slate-100">{d.fullName}</span>
+                                    <span
+                                      className="font-mono text-[10px] px-2 py-0.5 rounded-full font-semibold"
+                                      style={{ backgroundColor: `${d.color}25`, color: d.color }}
+                                    >
+                                      {d.tier}
+                                    </span>
+                                  </div>
+                                  <span className="text-[11px] text-slate-400 font-medium">
+                                    Peringkat Daya Ungkit: #{leverageChartData.findIndex((x) => x.name === d.name) + 1} dari 7
+                                  </span>
+                                </div>
+
+                                <div className="space-y-1.5 font-mono text-xs">
+                                  <div className="flex justify-between items-center">
+                                    <span className="text-slate-400 font-sans">Korelasi Pearson (r):</span>
+                                    <span className="font-bold text-sm" style={{ color: d.color }}>
+                                      r = {d.r.toFixed(4)}
+                                    </span>
+                                  </div>
+                                  <div className="flex justify-between items-center text-amber-400">
+                                    <span className="text-slate-400 font-sans">Daya Sumbang (R²):</span>
+                                    <span className="font-bold">{d.r2}% varians</span>
+                                  </div>
+                                  <div className="flex justify-between items-center text-emerald-400">
+                                    <span className="text-slate-400 font-sans">Skor Rata-rata Santri:</span>
+                                    <span className="font-bold">{d.score}%</span>
+                                  </div>
+                                </div>
+
+                                <div className="pt-2 border-t border-slate-800 text-[11px] text-slate-300 leading-relaxed italic">
+                                  &ldquo;{d.impact}&rdquo;
+                                </div>
+                              </div>
+                            );
+                          }
+                          return null;
                         }}
                       />
-                      <Bar dataKey="r" radius={[0, 4, 4, 0]}>
+
+                      <Bar
+                        dataKey="r"
+                        radius={[0, 6, 6, 0]}
+                        barSize={24}
+                      >
                         {leverageChartData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={index === 0 ? "#059669" : index === 1 ? "#0284c7" : "#64748b"} />
+                          <Cell
+                            key={`cell-${index}`}
+                            fill={`url(#${entry.gradId || "grad-bermasyarakat"})`}
+                          />
                         ))}
+                        <LabelList
+                          dataKey="r"
+                          position="right"
+                          offset={12}
+                          content={(props: any) => {
+                            const { x, y, width, height, index } = props;
+                            if (x === undefined || y === undefined || index === undefined) return null;
+                            const item = leverageChartData[index];
+                            if (!item) return null;
+                            return (
+                              <text
+                                x={Number(x) + Number(width) + 10}
+                                y={Number(y) + Number(height) / 2 + 4}
+                                fill={item.color}
+                                className="font-mono text-xs font-bold"
+                                style={{
+                                  fontSize: 11.5,
+                                  fontWeight: 700,
+                                }}
+                              >
+                                {`r = ${item.r.toFixed(3)} (${item.r2}%)`}
+                              </text>
+                            );
+                          }}
+                        />
                       </Bar>
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
 
-                <div className="mt-5 p-3.5 rounded-md bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-                  <strong>Diagnosa Pengungkit:</strong> Kebiasaan <strong>Bermasyarakat &amp; Adab (r = 0,771)</strong> serta <strong>Gemar Membaca (r = 0,744)</strong> terbukti memiliki korelasi tertinggi dengan rasa percaya diri. Membaca membekali santri dengan keluasan kosakata dan konsep argumen, sedangkan adab bermasyarakat melatih kepekaan sosial sehingga santri tidak cemas saat berhadapan dengan audiens umum.
+                {/* CALLOUT BOX DIAGNOSA DAYA UNGKIT */}
+                <div className="p-4 sm:p-5 rounded-xl bg-gradient-to-r from-emerald-50/70 via-teal-50/50 to-blue-50/50 dark:from-emerald-950/30 dark:via-teal-950/20 dark:to-blue-950/30 border border-emerald-200/80 dark:border-emerald-800/60 text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed space-y-2">
+                  <div className="font-bold text-emerald-950 dark:text-emerald-300 flex items-center gap-2">
+                    <Sparkles className="h-4 w-4 text-emerald-600" />
+                    <span>Diagnosa Ilmiah Daya Ungkit (Top Leverage Drivers):</span>
+                  </div>
+                  <p>
+                    Data empiris membuktikan bahwa <strong>Bermasyarakat &amp; Adab (r = 0,771 • R² = 59,5%)</strong> serta <strong>Gemar Membaca &amp; Riset (r = 0,744 • R² = 55,3%)</strong> merupakan dua pilar dengan korelasi terkuat terhadap rasa percaya diri santri.
+                  </p>
+                  <p className="text-slate-600 dark:text-slate-400">
+                    <strong>Mekanisme Kognitif:</strong> Membaca memperkaya struktur argumen dan keluasan perbendaharaan kata, sedangkan pembiasaan adab bermasyarakat meniadakan kecemasan sosial ketika berhadapan dengan forum publik. Kombinasi keduanya menjadi katalis utama transformasi santri menjadi <em>The Anchored Leader</em>.
+                  </p>
                 </div>
               </CardContent>
             </Card>
