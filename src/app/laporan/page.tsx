@@ -1585,13 +1585,14 @@ export default function PublicResearchReportPage() {
                                 x={Number(x) + Number(width) + 10}
                                 y={Number(y) + Number(height) / 2 + 4}
                                 fill={item.color}
-                                className="font-mono text-xs font-bold"
+                                className="tracking-tight"
                                 style={{
-                                  fontSize: 11.5,
-                                  fontWeight: 700,
+                                  fontFamily: "var(--font-inter), system-ui, -apple-system, sans-serif",
+                                  fontSize: 11,
+                                  fontWeight: 600,
                                 }}
                               >
-                                {`r = ${item.r.toFixed(3)} (${item.r2}%)`}
+                                {`r = ${item.r.toFixed(3)} (${item.r2.toFixed(1).replace(".", ",")}%)`}
                               </text>
                             );
                           }}
@@ -2029,7 +2030,7 @@ export default function PublicResearchReportPage() {
                         )}
                       />
 
-                      {/* Batang Kolom Emas: Proporsi The Anchored Leader (Label Terpatri di Dalam Puncak Kapsul) */}
+                      {/* Batang Kolom Emas: Proporsi The Anchored Leader (Label Kapsul Halus di Dalam Batang) */}
                       <Bar
                         yAxisId="right"
                         dataKey="anchoredLeaderPct"
@@ -2043,19 +2044,35 @@ export default function PublicResearchReportPage() {
                           content={(props: any) => {
                             const { x, y, width, value } = props;
                             if (x === undefined || y === undefined || width === undefined || value === undefined) return null;
+                            const chipW = 46;
+                            const chipH = 20;
+                            const formatted = Number(value).toFixed(1).replace(".", ",") + "%";
                             return (
-                              <g transform={`translate(${Number(x) + Number(width) / 2}, ${Number(y) + 22})`}>
+                              <g transform={`translate(${Number(x) + (Number(width) - chipW) / 2}, ${Number(y) + 26})`}>
+                                {/* Kapsul Mini Transparan di Dalam Batang */}
+                                <rect
+                                  x={0}
+                                  y={0}
+                                  width={chipW}
+                                  height={chipH}
+                                  rx={10}
+                                  fill="rgba(0, 0, 0, 0.22)"
+                                  stroke="rgba(255, 255, 255, 0.35)"
+                                  strokeWidth={0.8}
+                                />
                                 <text
+                                  x={chipW / 2}
+                                  y={14}
                                   textAnchor="middle"
                                   fill="#ffffff"
-                                  className="font-mono font-bold"
+                                  className="tracking-wide"
                                   style={{
-                                    fontSize: 11.5,
-                                    fontWeight: 800,
-                                    filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.6))",
+                                    fontFamily: "var(--font-inter), system-ui, -apple-system, sans-serif",
+                                    fontSize: 10.5,
+                                    fontWeight: 600,
                                   }}
                                 >
-                                  {value}%
+                                  {formatted}
                                 </text>
                               </g>
                             );
@@ -2063,7 +2080,7 @@ export default function PublicResearchReportPage() {
                         />
                       </Bar>
 
-                      {/* Kurva Area Bercahaya: Skor Kepercayaan Diri (Floating Tooltip Pill Melayang di Atas Titik) */}
+                      {/* Kurva Area Bercahaya: Skor Kepercayaan Diri (Floating Tooltip Pill Halus & Elegan) */}
                       <Area
                         yAxisId="left"
                         type="monotone"
@@ -2080,37 +2097,42 @@ export default function PublicResearchReportPage() {
                           content={(props: any) => {
                             const { x, y, value } = props;
                             if (x === undefined || y === undefined || value === undefined) return null;
-                            const pillW = 62;
-                            const pillH = 26;
+                            const pillW = 56;
+                            const pillH = 24;
+                            const formatted = Number(value).toFixed(1).replace(".", ",") + "%";
                             return (
-                              <g transform={`translate(${Number(x) - pillW / 2}, ${Number(y) - 38})`}>
-                                {/* Floating Badge Chip */}
+                              <g transform={`translate(${Number(x) - pillW / 2}, ${Number(y) - 36})`}>
+                                {/* Floating Badge Chip Halus */}
                                 <rect
                                   x={0}
                                   y={0}
                                   width={pillW}
                                   height={pillH}
-                                  rx={13}
+                                  rx={12}
                                   className="fill-white dark:fill-slate-900"
-                                  stroke="#10b981"
-                                  strokeWidth={1.8}
-                                  style={{ filter: "drop-shadow(0 3px 6px rgba(16, 185, 129, 0.25))" }}
+                                  stroke="#059669"
+                                  strokeWidth={1.2}
+                                  style={{ filter: "drop-shadow(0 2px 5px rgba(5, 150, 105, 0.18))" }}
                                 />
                                 {/* Segitiga Penunjuk ke Titik Kurva */}
                                 <polygon
-                                  points={`${pillW / 2 - 4},${pillH} ${pillW / 2 + 4},${pillH} ${pillW / 2},${pillH + 4}`}
+                                  points={`${pillW / 2 - 3.5},${pillH} ${pillW / 2 + 3.5},${pillH} ${pillW / 2},${pillH + 3.5}`}
                                   className="fill-white dark:fill-slate-900"
-                                  stroke="#10b981"
+                                  stroke="#059669"
                                   strokeWidth={1}
                                 />
                                 <text
                                   x={pillW / 2}
-                                  y={17}
+                                  y={16}
                                   textAnchor="middle"
-                                  className="fill-emerald-700 dark:fill-emerald-400 font-mono font-extrabold"
-                                  style={{ fontSize: 11.5, fontWeight: 800 }}
+                                  className="fill-emerald-800 dark:fill-emerald-300 tracking-tight"
+                                  style={{
+                                    fontFamily: "var(--font-inter), system-ui, -apple-system, sans-serif",
+                                    fontSize: 11,
+                                    fontWeight: 600,
+                                  }}
                                 >
-                                  {value}%
+                                  {formatted}
                                 </text>
                               </g>
                             );
