@@ -166,7 +166,7 @@ export function MultiSessionTrendChart({
         </div>
 
         {/* Diagram Area Longitudinal Recharts */}
-        <div className="h-[280px] w-full pt-2">
+        <div className="h-[280px] w-full pt-2 animate-chart-rise">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={trendData} margin={{ top: 10, right: 15, left: -15, bottom: 0 }}>
               <defs>
@@ -252,6 +252,9 @@ export function MultiSessionTrendChart({
                   strokeWidth={2.5}
                   fillOpacity={1}
                   fill="url(#gradientIkv)"
+                  isAnimationActive={true}
+                  animationDuration={1500}
+                  animationEasing="ease-out"
                 />
               )}
 
@@ -264,6 +267,9 @@ export function MultiSessionTrendChart({
                   strokeWidth={2.5}
                   fillOpacity={1}
                   fill="url(#gradientConf)"
+                  isAnimationActive={true}
+                  animationDuration={1500}
+                  animationEasing="ease-out"
                 />
               )}
 
@@ -277,6 +283,9 @@ export function MultiSessionTrendChart({
                   strokeDasharray="4 4"
                   fillOpacity={1}
                   fill="url(#gradientFocus)"
+                  isAnimationActive={true}
+                  animationDuration={1500}
+                  animationEasing="ease-out"
                 />
               )}
             </AreaChart>

@@ -138,7 +138,7 @@ export function PersonaDistributionDonut({
       <CardContent className="pt-5 space-y-5">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-center">
           {/* Kolom Kiri: Donut Chart dengan Center Badge */}
-          <div className="md:col-span-5 relative flex items-center justify-center min-h-[220px]">
+          <div className="md:col-span-5 relative flex items-center justify-center min-h-[220px] animate-donut-spin">
             <ResponsiveContainer width="100%" height={220}>
               <PieChart>
                 <Tooltip
@@ -172,6 +172,9 @@ export function PersonaDistributionDonut({
                   outerRadius={88}
                   paddingAngle={3}
                   dataKey="count"
+                  isAnimationActive={true}
+                  animationDuration={1500}
+                  animationEasing="ease-out"
                   onMouseEnter={(_, index) => setActiveIndex(index)}
                   onMouseLeave={() => setActiveIndex(null)}
                 >

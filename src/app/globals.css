@@ -82,4 +82,79 @@ body {
   animation: gradient-flow 12s ease-in-out infinite;
 }
 
+/* ========================================================================= */
+/* Chart Entrance & Interactive Animations                                   */
+/* ========================================================================= */
+@keyframes donut-spin-in {
+  0% {
+    transform: rotate(-180deg) scale(0.75);
+    opacity: 0;
+  }
+  60% {
+    transform: rotate(12deg) scale(1.02);
+    opacity: 0.95;
+  }
+  100% {
+    transform: rotate(0deg) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes gauge-spin-in {
+  0% {
+    transform: rotate(-270deg) scale(0.8);
+    opacity: 0;
+  }
+  100% {
+    transform: rotate(-90deg) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes chart-rise-up {
+  0% {
+    transform: translateY(32px) scaleY(0.92);
+    opacity: 0;
+  }
+  60% {
+    transform: translateY(-4px) scaleY(1.01);
+    opacity: 0.95;
+  }
+  100% {
+    transform: translateY(0) scaleY(1);
+    opacity: 1;
+  }
+}
+
+@keyframes chart-fade-slide {
+  0% {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-donut-spin {
+  animation: donut-spin-in 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transform-origin: center center;
+}
+
+.animate-gauge-spin {
+  animation: gauge-spin-in 1.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transform-origin: center center;
+}
+
+.animate-chart-rise {
+  animation: chart-rise-up 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transform-origin: bottom center;
+}
+
+.animate-chart-fade {
+  animation: chart-fade-slide 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+
 

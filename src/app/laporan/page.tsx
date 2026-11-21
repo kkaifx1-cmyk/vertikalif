@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import Link from "next/link";
 import {
   BarChart,
@@ -526,6 +526,35 @@ const COHORT_DATA: Record<string, CohortData> = {
 
 type PillarTab = "all" | "descriptive" | "diagnostic" | "predictive" | "prescriptive";
 
+/**
+ * Hook untuk mendeteksi saat diagram memasuki viewport agar animasi interaktif
+ * (donut berputar, bar/line naik) terpicu seketika saat halaman dimuat atau di-scroll.
+ */
+function useChartInView(threshold = 0.12) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [isInView, setIsInView] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || typeof IntersectionObserver === "undefined") {
+      setIsInView(true);
+      return;
+    }
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsInView(true);
+        }
+      },
+      { threshold }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [threshold]);
+
+  return { ref, isInView };
+}
+
 export default function PublicResearchReportPage() {
   const [selectedCohort, setSelectedCohort] = useState<string>("all");
   // Default tampilan Progressive Disclosure: Ringkasan Eksekutif + Pilar 1
@@ -540,6 +569,13 @@ export default function PublicResearchReportPage() {
   const [showDiagnosticImplication, setShowDiagnosticImplication] = useState<boolean>(false);
   const [showPredictiveImplication, setShowPredictiveImplication] = useState<boolean>(false);
   const [activePersonaIndex, setActivePersonaIndex] = useState<number | null>(null);
+
+  // In-view hooks untuk memicu animasi saat diagram memasuki viewport
+  const chart1View = useChartInView(0.1);
+  const chartLeverageView = useChartInView(0.1);
+  const chartMediationGaugeView = useChartInView(0.1);
+  const chartPersonaDonutView = useChartInView(0.1);
+  const chartTrajectoryView = useChartInView(0.1);
 
   const cohort = COHORT_DATA[selectedCohort];
 
@@ -1041,9 +1077,15 @@ export default function PublicResearchReportPage() {
 
               <CardContent className="p-5 sm:p-8 space-y-6">
                 {/* 1. DIAGRAM BATANG SEBARAN KATEGORI (FULL-WIDTH) */}
-                <div className="h-[320px] sm:h-[360px] w-full pt-2">
+                <div
+                  ref={chart1View.ref}
+                  className={`h-[320px] sm:h-[360px] w-full pt-2 transition-all duration-700 ${
+                    chart1View.isInView ? "animate-chart-rise opacity-100" : "opacity-0 translate-y-6"
+                  }`}
+                >
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart
+                      key={`cat-chart-${selectedCohort}-${chart1View.isInView ? "in" : "out"}`}
                       data={confidenceCategoryData}
                       layout="horizontal"
                       margin={{ top: 35, right: 20, left: 10, bottom: 25 }}
@@ -1101,6 +1143,9 @@ export default function PublicResearchReportPage() {
                         dataKey="count"
                         radius={[10, 10, 0, 0]}
                         maxBarSize={64}
+                        isAnimationActive={true}
+                        animationDuration={1400}
+                        animationEasing="ease-out"
                       >
                         {confidenceCategoryData.map((entry) => (
                           <Cell key={entry.key} fill={entry.color} />
@@ -1728,9 +1773,15 @@ export default function PublicResearchReportPage() {
 
               <CardContent className="p-5 sm:p-7 space-y-6">
                 {/* GRAFIK BAR HORIZONTAL DENGAN WARNA BERVARIASI & FONT ELEGAN */}
-                <div className="h-96 sm:h-[430px] w-full">
+                <div
+                  ref={chartLeverageView.ref}
+                  className={`h-96 sm:h-[430px] w-full transition-all duration-700 ${
+                    chartLeverageView.isInView ? "animate-chart-fade opacity-100" : "opacity-0 translate-y-4"
+                  }`}
+                >
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart
+                      key={`leverage-chart-${selectedCohort}-${chartLeverageView.isInView ? "in" : "out"}`}
                       data={leverageChartData}
                       layout="vertical"
                       margin={{ top: 10, right: 130, left: 95, bottom: 10 }}
@@ -1859,6 +1910,9 @@ export default function PublicResearchReportPage() {
                         dataKey="r"
                         radius={[0, 6, 6, 0]}
                         barSize={24}
+                        isAnimationActive={true}
+                        animationDuration={1500}
+                        animationEasing="ease-out"
                       >
                         {leverageChartData.map((entry, index) => (
                           <Cell
@@ -1996,7 +2050,7 @@ export default function PublicResearchReportPage() {
 
               <CardContent className="p-5 sm:p-8 space-y-7">
                 {/* 1. DUA KARTU DONUT GAUGE ANALISIS JALUR (PERSIS GAMBAR REFERENSI USER) */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div ref={chartMediationGaugeView.ref} className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* KARTU 1: JALUR A (KONSISTENSI -> FOKUS BELAJAR) */}
                   <div className="p-6 sm:p-7 rounded-2xl border-2 border-emerald-100 dark:border-emerald-900/50 bg-gradient-to-b from-emerald-50/40 via-white to-white dark:from-emerald-950/20 dark:via-slate-900 dark:to-slate-900 shadow-sm flex flex-col items-center text-center space-y-4 hover:border-emerald-200 transition-all">
                     <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100/90 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 border border-emerald-200/90 dark:border-emerald-800 text-[11px] font-bold tracking-wider uppercase shadow-xs">
@@ -2006,7 +2060,12 @@ export default function PublicResearchReportPage() {
 
                     {/* Donut Gauge Visual: Emerald 74,9% (r = +0,749) */}
                     <div className="relative w-44 h-44 flex items-center justify-center my-1">
-                      <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                      <svg
+                        className={`w-full h-full transform transition-all duration-1000 ease-out ${
+                          chartMediationGaugeView.isInView ? "animate-gauge-spin opacity-100" : "-rotate-180 scale-75 opacity-0"
+                        }`}
+                        viewBox="0 0 100 100"
+                      >
                         {/* Lingkaran Jalur Abu-abu Latar */}
                         <circle
                           cx="50"
@@ -2024,15 +2083,25 @@ export default function PublicResearchReportPage() {
                           stroke="#10b981"
                           strokeWidth="11"
                           strokeDasharray={2 * Math.PI * 38}
-                          strokeDashoffset={2 * Math.PI * 38 * (1 - (selectedCohort === "all" ? 0.749 : cohort.mediation.pathA))}
+                          strokeDashoffset={
+                            chartMediationGaugeView.isInView
+                              ? 2 * Math.PI * 38 * (1 - (selectedCohort === "all" ? 0.749 : cohort.mediation.pathA))
+                              : 2 * Math.PI * 38
+                          }
                           strokeLinecap="round"
                           fill="transparent"
-                          className="transition-all duration-1000 ease-out"
-                          style={{ filter: "drop-shadow(0 2px 4px rgba(16, 185, 129, 0.25))" }}
+                          style={{
+                            transition: "stroke-dashoffset 1.6s cubic-bezier(0.16, 1, 0.3, 1)",
+                            filter: "drop-shadow(0 2px 4px rgba(16, 185, 129, 0.25))",
+                          }}
                         />
                       </svg>
                       {/* Teks Angka di Tengah Donat */}
-                      <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+                      <div
+                        className={`absolute inset-0 flex flex-col items-center justify-center text-center transition-all duration-700 ${
+                          chartMediationGaugeView.isInView ? "opacity-100 scale-100 delay-300" : "opacity-0 scale-75"
+                        }`}
+                      >
                         <span className="text-3xl sm:text-4xl font-black font-sans text-slate-900 dark:text-white tracking-tight tabular-nums drop-shadow-xs">
                           {selectedCohort === "all" ? "74,9%" : `${formatNum(cohort.mediation.pathA * 100, 1)}%`}
                         </span>
@@ -2080,7 +2149,12 @@ export default function PublicResearchReportPage() {
 
                     {/* Donut Gauge Visual: Amber 91,8% (r = +0,918) */}
                     <div className="relative w-44 h-44 flex items-center justify-center my-1">
-                      <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                      <svg
+                        className={`w-full h-full transform transition-all duration-1000 ease-out ${
+                          chartMediationGaugeView.isInView ? "animate-gauge-spin opacity-100" : "-rotate-180 scale-75 opacity-0"
+                        }`}
+                        viewBox="0 0 100 100"
+                      >
                         {/* Lingkaran Jalur Abu-abu Latar */}
                         <circle
                           cx="50"
@@ -2098,15 +2172,25 @@ export default function PublicResearchReportPage() {
                           stroke="#f59e0b"
                           strokeWidth="11"
                           strokeDasharray={2 * Math.PI * 38}
-                          strokeDashoffset={2 * Math.PI * 38 * (1 - (selectedCohort === "all" ? 0.918 : cohort.mediation.pathB))}
+                          strokeDashoffset={
+                            chartMediationGaugeView.isInView
+                              ? 2 * Math.PI * 38 * (1 - (selectedCohort === "all" ? 0.918 : cohort.mediation.pathB))
+                              : 2 * Math.PI * 38
+                          }
                           strokeLinecap="round"
                           fill="transparent"
-                          className="transition-all duration-1000 ease-out"
-                          style={{ filter: "drop-shadow(0 2px 4px rgba(245, 158, 11, 0.25))" }}
+                          style={{
+                            transition: "stroke-dashoffset 1.6s cubic-bezier(0.16, 1, 0.3, 1)",
+                            filter: "drop-shadow(0 2px 4px rgba(245, 158, 11, 0.25))",
+                          }}
                         />
                       </svg>
                       {/* Teks Angka di Tengah Donat */}
-                      <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+                      <div
+                        className={`absolute inset-0 flex flex-col items-center justify-center text-center transition-all duration-700 ${
+                          chartMediationGaugeView.isInView ? "opacity-100 scale-100 delay-300" : "opacity-0 scale-75"
+                        }`}
+                      >
                         <span className="text-3xl sm:text-4xl font-black font-sans text-slate-900 dark:text-white tracking-tight tabular-nums drop-shadow-xs">
                           {selectedCohort === "all" ? "91,8%" : `${formatNum(cohort.mediation.pathB * 100, 1)}%`}
                         </span>
@@ -2289,9 +2373,16 @@ export default function PublicResearchReportPage() {
                 {/* BENTO GRID: DIAGRAM DONAT (KIRI) + BREAKDOWN PERINGKAT PERSONA (KANAN) */}
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
                   {/* Kolom Kiri: Diagram Donat Interaktif */}
-                  <div className="lg:col-span-5 h-[320px] sm:h-[350px] w-full relative flex items-center justify-center">
+                  <div
+                    ref={chartPersonaDonutView.ref}
+                    className={`lg:col-span-5 h-[320px] sm:h-[350px] w-full relative flex items-center justify-center transition-all duration-700 ${
+                      chartPersonaDonutView.isInView
+                        ? "animate-donut-spin opacity-100"
+                        : "opacity-0 scale-75 rotate-[-120deg]"
+                    }`}
+                  >
                     <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
+                      <PieChart key={`donut-pie-${selectedCohort}-${chartPersonaDonutView.isInView ? "in" : "out"}`}>
                         <Tooltip
                           content={({ active, payload }) => {
                             if (active && payload && payload.length) {
@@ -2332,6 +2423,10 @@ export default function PublicResearchReportPage() {
                           outerRadius={112}
                           paddingAngle={3}
                           cornerRadius={6}
+                          isAnimationActive={true}
+                          animationDuration={1500}
+                          animationEasing="ease-out"
+                          animationBegin={200}
                           onMouseEnter={(_, index) => setActivePersonaIndex(index)}
                           onMouseLeave={() => setActivePersonaIndex(null)}
                         >
@@ -2355,7 +2450,11 @@ export default function PublicResearchReportPage() {
                     </ResponsiveContainer>
 
                     {/* OVERLAY DI TENGAH DONUT HOLE */}
-                    <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center p-4">
+                    <div
+                      className={`absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center p-4 transition-all duration-700 ${
+                        chartPersonaDonutView.isInView ? "opacity-100 scale-100 delay-300" : "opacity-0 scale-75"
+                      }`}
+                    >
                       <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400 dark:text-slate-500">
                         {activePersonaIndex !== null ? "Proporsi Persona" : "Total Populasi"}
                       </span>
@@ -2699,9 +2798,15 @@ export default function PublicResearchReportPage() {
                 </div>
 
                 {/* 2. DIAGRAM GARIS BERSIH, LEBAR (FULL-WIDTH) & MINIMALIS (PERSIS GAYA GAMBAR 2) */}
-                <div className="h-80 sm:h-[340px] w-full pt-2">
+                <div
+                  ref={chartTrajectoryView.ref}
+                  className={`h-80 sm:h-[340px] w-full pt-2 transition-all duration-700 ${
+                    chartTrajectoryView.isInView ? "animate-chart-rise opacity-100" : "opacity-0 translate-y-6"
+                  }`}
+                >
                   <ResponsiveContainer width="100%" height="100%">
                     <ComposedChart
+                      key={`traj-chart-${trajectoryChartMode}-${chartTrajectoryView.isInView ? "in" : "out"}`}
                       data={TRAJECTORY_DATA}
                       margin={{ top: 25, right: 25, left: 0, bottom: 20 }}
                     >
@@ -2850,6 +2955,10 @@ export default function PublicResearchReportPage() {
                           fill="url(#glowConfidency)"
                           dot={{ r: 5, fill: "#ffffff", stroke: "#10b981", strokeWidth: 2.5 }}
                           activeDot={{ r: 7, fill: "#10b981", stroke: "#ffffff", strokeWidth: 2 }}
+                          isAnimationActive={true}
+                          animationDuration={1800}
+                          animationEasing="ease-out"
+                          animationBegin={200}
                         >
                           <LabelList
                             dataKey="confidency"
@@ -2909,6 +3018,10 @@ export default function PublicResearchReportPage() {
                           fill="url(#glowLeader)"
                           dot={{ r: 5, fill: "#ffffff", stroke: "#f59e0b", strokeWidth: 2.5 }}
                           activeDot={{ r: 7, fill: "#f59e0b", stroke: "#ffffff", strokeWidth: 2 }}
+                          isAnimationActive={true}
+                          animationDuration={1800}
+                          animationEasing="ease-out"
+                          animationBegin={400}
                         >
                           <LabelList
                             dataKey="anchoredLeaderPct"
