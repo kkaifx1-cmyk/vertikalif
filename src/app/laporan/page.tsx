@@ -1886,42 +1886,74 @@ export default function PublicResearchReportPage() {
               </CardHeader>
 
               <CardContent className="p-5 sm:p-8 space-y-6">
-                {/* GRAFIK COMPOSEDCHART BERCAMPUR AREA & BAR DENGAN GLOW */}
-                <div className="h-80 sm:h-96 w-full">
+                {/* GRAFIK COMPOSEDCHART DIPERHALUS (NO OVERLAPPING, FLOATING PILLS & CLEAN DUAL-AXIS) */}
+                <div className="h-96 sm:h-[440px] w-full">
                   <ResponsiveContainer width="100%" height="100%">
                     <ComposedChart
                       data={TRAJECTORY_DATA}
-                      margin={{ top: 25, right: 35, left: 10, bottom: 15 }}
+                      margin={{ top: 45, right: 35, left: 15, bottom: 25 }}
                     >
                       <defs>
-                        {/* Gradient Bercahaya untuk Area Kepercayaan Diri */}
+                        {/* Gradient Halus Bercahaya untuk Area Kepercayaan Diri */}
                         <linearGradient id="glowConfidency" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#10b981" stopOpacity={0.45} />
-                          <stop offset="95%" stopColor="#10b981" stopOpacity={0.02} />
+                          <stop offset="0%" stopColor="#10b981" stopOpacity={0.35} />
+                          <stop offset="60%" stopColor="#10b981" stopOpacity={0.08} />
+                          <stop offset="100%" stopColor="#10b981" stopOpacity={0.0} />
                         </linearGradient>
 
-                        {/* Gradient Emas untuk Bar Anchored Leader */}
+                        {/* Gradient Emas Halus untuk Batang Kapsul Anchored Leader */}
                         <linearGradient id="barGoldLeader" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor="#f59e0b" stopOpacity={0.95} />
-                          <stop offset="100%" stopColor="#d97706" stopOpacity={0.7} />
+                          <stop offset="0%" stopColor="#f59e0b" stopOpacity={0.92} />
+                          <stop offset="100%" stopColor="#d97706" stopOpacity={0.55} />
                         </linearGradient>
                       </defs>
 
-                      <CartesianGrid strokeDasharray="3 3" opacity={0.12} vertical={false} />
+                      <CartesianGrid strokeDasharray="4 4" opacity={0.08} vertical={false} />
 
+                      {/* Sumbu X: 2 Baris Elegan (Tingkat Kelas + Fase Perkembangan) */}
                       <XAxis
                         dataKey="grade"
                         stroke="#94a3b8"
-                        fontSize={12}
-                        fontWeight={600}
                         tickLine={false}
-                        dy={8}
+                        tick={(props: any) => {
+                          const { x, y, payload } = props;
+                          const subtitles: Record<string, string> = {
+                            "Kelas X": "Fase Adaptasi",
+                            "Kelas XI": "Fase Konsolidasi",
+                            "Kelas XII": "Puncak Maturasi",
+                          };
+                          const sub = subtitles[payload.value] || "";
+                          return (
+                            <g transform={`translate(${x},${y})`}>
+                              <text
+                                x={0}
+                                y={14}
+                                textAnchor="middle"
+                                className="fill-slate-800 dark:fill-slate-100 font-bold"
+                                style={{ fontSize: 13, fontWeight: 700 }}
+                              >
+                                {payload.value}
+                              </text>
+                              <text
+                                x={0}
+                                y={29}
+                                textAnchor="middle"
+                                className="fill-slate-400 dark:fill-slate-500 font-medium"
+                                style={{ fontSize: 10, fontWeight: 500 }}
+                              >
+                                {sub}
+                              </text>
+                            </g>
+                          );
+                        }}
+                        height={48}
                       />
 
-                      {/* Sumbu Kiri: Skor Karakter & Kepercayaan Diri (Domain Fokus 68% - 84%) */}
+                      {/* Sumbu Kiri: Skor Percaya Diri (Domain Fokus 65% - 85% Berjarak Lega) */}
                       <YAxis
                         yAxisId="left"
-                        domain={[68, 84]}
+                        domain={[65, 85]}
+                        ticks={[65, 70, 75, 80, 85]}
                         stroke="#10b981"
                         fontSize={12}
                         fontWeight={600}
@@ -1930,11 +1962,12 @@ export default function PublicResearchReportPage() {
                         width={45}
                       />
 
-                      {/* Sumbu Kanan: Proporsi Anchored Leader (Domain 0% - 48%) */}
+                      {/* Sumbu Kanan: Proporsi Calon Pemimpin (Domain 0% - 50%) */}
                       <YAxis
                         yAxisId="right"
                         orientation="right"
-                        domain={[0, 48]}
+                        domain={[0, 50]}
+                        ticks={[0, 10, 20, 30, 40, 50]}
                         stroke="#f59e0b"
                         fontSize={12}
                         fontWeight={600}
@@ -1989,28 +2022,47 @@ export default function PublicResearchReportPage() {
                       />
 
                       <Legend
-                        wrapperStyle={{ fontSize: "12px", paddingTop: "14px" }}
-                        formatter={(value) => <span className="font-medium text-slate-700 dark:text-slate-300">{value}</span>}
+                        wrapperStyle={{ fontSize: "12px", paddingTop: "18px" }}
+                        formatter={(value) => (
+                          <span className="font-medium text-slate-700 dark:text-slate-300">{value}</span>
+                        )}
                       />
 
-                      {/* Batang Kolom Emas: Proporsi The Anchored Leader */}
+                      {/* Batang Kolom Emas: Proporsi The Anchored Leader (Label Terpatri di Dalam Puncak Kapsul) */}
                       <Bar
                         yAxisId="right"
                         dataKey="anchoredLeaderPct"
                         name="Proporsi Anchored Leader (%)"
                         fill="url(#barGoldLeader)"
-                        barSize={46}
-                        radius={[8, 8, 0, 0]}
+                        barSize={36}
+                        radius={[12, 12, 4, 4]}
                       >
                         <LabelList
                           dataKey="anchoredLeaderPct"
-                          position="top"
-                          formatter={(v: any) => `${v}%`}
-                          style={{ fontSize: 11, fontWeight: 700, fill: "#d97706" }}
+                          content={(props: any) => {
+                            const { x, y, width, value } = props;
+                            if (x === undefined || y === undefined || width === undefined || value === undefined) return null;
+                            return (
+                              <g transform={`translate(${Number(x) + Number(width) / 2}, ${Number(y) + 22})`}>
+                                <text
+                                  textAnchor="middle"
+                                  fill="#ffffff"
+                                  className="font-mono font-bold"
+                                  style={{
+                                    fontSize: 11.5,
+                                    fontWeight: 800,
+                                    filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.6))",
+                                  }}
+                                >
+                                  {value}%
+                                </text>
+                              </g>
+                            );
+                          }}
                         />
                       </Bar>
 
-                      {/* Kurva Area Bercahaya: Skor Kepercayaan Diri */}
+                      {/* Kurva Area Bercahaya: Skor Kepercayaan Diri (Floating Tooltip Pill Melayang di Atas Titik) */}
                       <Area
                         yAxisId="left"
                         type="monotone"
@@ -2019,29 +2071,51 @@ export default function PublicResearchReportPage() {
                         stroke="#10b981"
                         strokeWidth={3.5}
                         fill="url(#glowConfidency)"
-                        dot={{ r: 5, fill: "#10b981", stroke: "#ffffff", strokeWidth: 2 }}
-                        activeDot={{ r: 7, fill: "#059669" }}
+                        dot={{ r: 6, fill: "#ffffff", stroke: "#10b981", strokeWidth: 3 }}
+                        activeDot={{ r: 8, fill: "#10b981", stroke: "#ffffff", strokeWidth: 2 }}
                       >
                         <LabelList
                           dataKey="confidency"
-                          position="top"
-                          offset={10}
-                          formatter={(v: any) => `${v}%`}
-                          style={{ fontSize: 11, fontWeight: 700, fill: "#059669" }}
+                          content={(props: any) => {
+                            const { x, y, value } = props;
+                            if (x === undefined || y === undefined || value === undefined) return null;
+                            const pillW = 62;
+                            const pillH = 26;
+                            return (
+                              <g transform={`translate(${Number(x) - pillW / 2}, ${Number(y) - 38})`}>
+                                {/* Floating Badge Chip */}
+                                <rect
+                                  x={0}
+                                  y={0}
+                                  width={pillW}
+                                  height={pillH}
+                                  rx={13}
+                                  className="fill-white dark:fill-slate-900"
+                                  stroke="#10b981"
+                                  strokeWidth={1.8}
+                                  style={{ filter: "drop-shadow(0 3px 6px rgba(16, 185, 129, 0.25))" }}
+                                />
+                                {/* Segitiga Penunjuk ke Titik Kurva */}
+                                <polygon
+                                  points={`${pillW / 2 - 4},${pillH} ${pillW / 2 + 4},${pillH} ${pillW / 2},${pillH + 4}`}
+                                  className="fill-white dark:fill-slate-900"
+                                  stroke="#10b981"
+                                  strokeWidth={1}
+                                />
+                                <text
+                                  x={pillW / 2}
+                                  y={17}
+                                  textAnchor="middle"
+                                  className="fill-emerald-700 dark:fill-emerald-400 font-mono font-extrabold"
+                                  style={{ fontSize: 11.5, fontWeight: 800 }}
+                                >
+                                  {value}%
+                                </text>
+                              </g>
+                            );
+                          }}
                         />
                       </Area>
-
-                      {/* Garis Garis Putus: Indeks Karakter IKV */}
-                      <Line
-                        yAxisId="left"
-                        type="monotone"
-                        dataKey="ikv"
-                        name="Indeks Karakter IKV (%)"
-                        stroke="#0284c7"
-                        strokeWidth={2.5}
-                        strokeDasharray="4 4"
-                        dot={{ r: 4, fill: "#0284c7" }}
-                      />
                     </ComposedChart>
                   </ResponsiveContainer>
                 </div>
